@@ -1,0 +1,274 @@
+Build a Production-Ready AI Learning Management System
+
+Build a complete production-ready full-stack SaaS called SkillForge AI.
+
+This must be a commercial-quality application suitable for deployment. Do not create a demo, prototype, or placeholder UI. Every feature should be functional.
+
+Technology Stack
+
+Use modern technologies:
+
+Next.js 15 (App Router)
+TypeScript
+Tailwind CSS
+shadcn/ui
+PostgreSQL
+Prisma ORM
+NextAuth/Auth.js
+React Hook Form
+Zod
+TanStack Query
+Recharts
+Framer Motion
+UploadThing or Supabase Storage
+Docker support
+User Roles
+
+Implement role-based access:
+
+Super Admin
+Instructor
+Student
+
+Each role should have its own dashboard and permissions.
+
+Authentication
+
+Implement:
+
+Email & Password
+Google OAuth
+GitHub OAuth
+Password Reset
+Email Verification
+Two-Factor Authentication (optional)
+Session Management
+Protected Routes
+Student Features
+
+Students can:
+
+Browse courses
+Search and filter courses
+Purchase or enroll
+Watch lessons
+Download resources
+Track progress
+Complete quizzes
+Take exams
+Earn certificates
+Bookmark lessons
+Continue learning
+Leave reviews
+Instructor Features
+
+Instructors can:
+
+Create courses
+Upload videos
+Upload PDFs
+Create quizzes
+Create assignments
+Create exams
+Manage students
+Publish/unpublish courses
+View analytics
+Respond to reviews
+Admin Panel
+
+Super Admin can manage:
+
+Users
+Courses
+Categories
+Payments
+Coupons
+Reports
+Announcements
+Site Settings
+Activity Logs
+Course Builder
+
+Implement:
+
+Drag-and-drop curriculum builder
+Modules
+Lessons
+Video uploads
+PDFs
+Assignments
+Quizzes
+Resources
+Rich text editor
+Preview mode
+AI Features
+
+Implement placeholder AI services if no API keys are available:
+
+AI Course Generator
+AI Quiz Generator
+AI Assignment Generator
+AI Study Planner
+AI Flashcards
+AI Learning Assistant
+AI Lesson Summaries
+AI Code Reviewer (for coding courses)
+
+Design the architecture so real AI APIs can be added later.
+
+Dashboard
+
+Create beautiful dashboards with analytics.
+
+Student Dashboard:
+
+Courses
+Progress
+Upcoming deadlines
+Certificates
+Calendar
+
+Instructor Dashboard:
+
+Revenue
+Students
+Course performance
+Ratings
+Enrollments
+
+Admin Dashboard:
+
+Total Users
+Active Courses
+Revenue
+Daily Signups
+Reports
+Platform Growth
+
+Use Recharts for analytics.
+
+Assessments
+
+Support:
+
+Multiple Choice
+True/False
+Fill in the Blank
+Coding Questions
+Timed Exams
+Auto Grading
+Manual Grading
+Results
+Leaderboards
+Certificates
+
+Automatically generate professional certificates upon course completion.
+
+Notifications
+
+Implement:
+
+Real-time notifications
+Email notification architecture
+Assignment reminders
+Course announcements
+New enrollment alerts
+Messaging
+
+Implement:
+
+Student ↔ Instructor chat
+Course discussions
+Comments
+Replies
+Mentions
+File Storage
+
+Support:
+
+Images
+Videos
+PDFs
+ZIP files
+Course resources
+UI Requirements
+
+Create a premium interface inspired by:
+
+Coursera
+Udemy
+Notion
+Stripe Dashboard
+Linear
+
+Requirements:
+
+Responsive
+Mobile-first
+Dark Mode
+Light Mode
+Beautiful typography
+Smooth animations
+Loading skeletons
+Empty states
+Error states
+Accessibility compliant
+Database
+
+Design a normalized PostgreSQL schema with:
+
+Foreign keys
+Indexes
+Constraints
+Audit fields
+Soft deletes where appropriate
+Efficient relationships
+Security
+
+Implement:
+
+RBAC
+Server-side validation
+Zod validation
+CSRF protection where applicable
+Rate limiting architecture
+Secure authentication
+Environment variables
+Error boundaries
+Code Quality
+
+Requirements:
+
+Strict TypeScript
+Modular architecture
+Reusable components
+Clean folder structure
+API routes
+Service layer
+Utility functions
+Comprehensive error handling
+DevOps
+
+Include:
+
+Dockerfile
+docker-compose.yml
+.env.example
+README.md
+ESLint
+Prettier
+GitHub Actions CI workflow for linting and tests
+Deliverables
+
+Generate:
+
+Complete frontend
+Complete backend
+Database schema
+Prisma migrations
+Seed data
+API documentation
+Setup guide
+Deployment guide
+
+Ensure the application is production-ready, scalable, and maintainable. Every page, API route, database model, and user flow should be fully implemented with realistic sample data where appropriate. The project should run locally with minimal configuration and be ready for deployment after environment variables are configured.

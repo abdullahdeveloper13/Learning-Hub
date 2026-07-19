@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "SkillForge AI"
+version = "1.0.0"
+id = "artifacts/skillforge-ai"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25768
+
+[services.development]
+run = "pnpm --filter @workspace/skillforge-ai run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/skillforge-ai", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/skillforge-ai/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25768"
+BASE_PATH = "/"

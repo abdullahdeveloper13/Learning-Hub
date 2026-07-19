@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./api": "./src/generated/api.ts",
+    "./api.schemas": "./src/generated/api.schemas.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "catalog:"

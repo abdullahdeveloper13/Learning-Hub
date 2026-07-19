@@ -1,0 +1,2 @@
+- [SkillForge AI Architecture](skillforge-ai-arch.md) — full-stack LMS: Express API at /api, React+Vite frontend at /, PostgreSQL via Drizzle ORM, JWT auth.
+- [SkillForge Icon Pitfalls](skillforge-icon-pitfalls.md) — lucide-react missing icons found in design subagent output; patterns to watch for.
