@@ -114,14 +114,23 @@ function FlashcardGenerator() {
             <h3 className="font-semibold text-lg">Your Flashcards</h3>
             <div className="grid gap-4">
               {result.flashcards.map((card: any, i: number) => (
-                <div key={i} className="group perspective h-40">
-                  <div className="relative preserve-3d group-hover:my-rotate-y-180 w-full h-full duration-700">
-                    <div className="absolute backface-hidden border-2 bg-card rounded-xl w-full h-full p-6 flex items-center justify-center text-center shadow-sm">
-                      <p className="font-medium">{card.front}</p>
-                      <span className="absolute bottom-2 right-3 text-xs text-muted-foreground">Hover to flip</span>
+                <div key={i} className="group h-44" style={{ perspective: "1000px" }}>
+                  <div
+                    className="relative w-full h-full transition-transform duration-500 group-hover:[transform:rotateY(180deg)]"
+                    style={{ transformStyle: "preserve-3d" }}
+                  >
+                    <div
+                      className="absolute inset-0 border-2 border-primary/25 bg-background rounded-xl p-6 flex items-center justify-center text-center shadow-sm"
+                      style={{ backfaceVisibility: "hidden" }}
+                    >
+                      <p className="font-semibold text-foreground leading-relaxed">{card.front}</p>
+                      <span className="absolute bottom-3 right-4 text-xs text-muted-foreground">Hover to flip</span>
                     </div>
-                    <div className="absolute my-rotate-y-180 backface-hidden border-2 border-primary/20 bg-primary/5 rounded-xl w-full h-full p-6 flex items-center justify-center text-center shadow-sm">
-                      <p className="text-primary-foreground text-sm font-medium text-foreground">{card.back}</p>
+                    <div
+                      className="absolute inset-0 border-2 border-primary/30 bg-primary/10 rounded-xl p-6 flex items-center justify-center text-center shadow-sm"
+                      style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+                    >
+                      <p className="text-sm font-semibold text-foreground leading-relaxed">{card.back}</p>
                     </div>
                   </div>
                 </div>

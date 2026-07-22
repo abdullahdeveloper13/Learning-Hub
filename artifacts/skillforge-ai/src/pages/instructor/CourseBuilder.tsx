@@ -35,7 +35,15 @@ import { MediaUpload } from "@/components/shared/MediaUpload";
 import { LessonEditorDialog } from "@/components/shared/LessonEditorDialog";
 import { ModuleEditorDialog } from "@/components/shared/ModuleEditorDialog";
 
-const API_BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
+const API_BASE = (import.meta.env.VITE_API_URL || import.meta.env.BASE_URL || "").replace(/\/$/, "");
+
+const FALLBACK_CATEGORIES = [
+  { id: 1, name: "Web Development" },
+  { id: 2, name: "Artificial Intelligence" },
+  { id: 3, name: "Data Analytics" },
+  { id: 4, name: "Design" },
+  { id: 5, name: "Business" },
+];
 
 const courseSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
@@ -94,6 +102,7 @@ export default function CourseBuilder() {
   const [publishLoading, setPublishLoading] = useState(false);
 
   const { data: categories } = useGetCategories();
+  const categoryOptions = Array.isArray(categories) && categories.length > 0 ? categories : FALLBACK_CATEGORIES;
 
   const { data: course, isLoading: courseLoading, refetch: refetchCourse } = useGetCourse(courseId, {
     query: {
@@ -347,7 +356,7 @@ export default function CourseBuilder() {
                           <Select onValueChange={(v) => field.onChange(parseInt(v))} value={field.value ? field.value.toString() : ""}>
                             <FormControl><SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger></FormControl>
                             <SelectContent>
-                              {(categories as any[])?.map((c: any) => (
+                              {categoryOptions.map((c: any) => (
                                 <SelectItem key={c.id} value={c.id.toString()}>{c.name}</SelectItem>
                               ))}
                             </SelectContent>

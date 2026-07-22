@@ -1,0 +1,33 @@
+
+> @workspace/skillforge-ai@0.0.0 dev C:\learning-hub\artifacts\skillforge-ai
+> vite --config vite.config.ts --host 0.0.0.0
+
+
+  [32m[1mVITE[22m v7.3.6[39m  [2mready in [0m[1m2290[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5173[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.37:[1m5173[22m/[39m
+[2m2:55:01 am[22m [36m[1m[vite][22m[39m [32mvite.config.ts changed, restarting server...[39m
+[2m2:55:01 am[22m [36m[1m[vite][22m[39m server restarted.
+[2m3:12:15 am[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/admin/Dashboard.tsx, /src/pages/admin/Logs.tsx, /src/pages/public/Home.tsx, /src/pages/public/CourseDetail.tsx, /src/pages/student/Profile.tsx, /src/pages/admin/Categories.tsx, /src/pages/instructor/Dashboard.tsx, /src/pages/student/QuizPlayer.tsx, /src/pages/student/AITools.tsx, /src/pages/shared/Messages.tsx, /src/pages/admin/Users.tsx, /src/pages/admin/Courses.tsx, /src/pages/student/Certificates.tsx, /src/pages/public/CourseList.tsx, /src/pages/instructor/CourseBuilder.tsx, /src/hooks/use-auth.tsx, /src/pages/shared/Notifications.tsx, /src/pages/student/Dashboard.tsx, /src/pages/instructor/CourseList.tsx, /src/pages/student/LessonPlayer.tsx[22m
+[2m3:12:16 am[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/hooks/use-auth.tsx[22m Could not Fast Refresh ("useAuth" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m3:12:16 am[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.tsx, /src/pages/auth/Login.tsx, /src/pages/public/CourseDetail.tsx, /src/pages/student/Profile.tsx, /src/pages/shared/Messages.tsx, /src/pages/instructor/CourseBuilder.tsx, /src/pages/shared/Notifications.tsx, /src/pages/auth/Register.tsx, /src/pages/instructor/CourseList.tsx, /src/pages/student/LessonPlayer.tsx, /src/components/layout/AppLayout.tsx, /src/components/layout/Header.tsx, /src/components/layout/AppSidebar.tsx[22m
+[2m3:35:22 am[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/student/AITools.tsx, /src/index.css[22m
+[2m4:05:45 am[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/layout/AppSidebar.tsx[22m
+[2m4:06:18 am[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/shared/MediaUpload.tsx[22m
+[2m4:28:09 am[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/instructor/CourseBuilder.tsx, /src/index.css[22m
+[2m4:28:09 am[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/student/LessonPlayer.tsx, /src/index.css[22m
+[2m4:28:09 am[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/shared/LessonEditorDialog.tsx[22m
+[2m4:28:09 am[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/shared/ModuleEditorDialog.tsx[22m
+[2m4:29:01 am[22m [36m[1m[vite][22m[39m [32mvite.config.ts changed, restarting server...[39m
+[2m4:30:16 am[22m [36m[1m[vite][22m[39m [32mvite.config.ts changed, restarting server...[39m
+[2m4:30:17 am[22m [36m[1m[vite][22m[39m server restarted.
+[2m4:43:38 am[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/public/Home.tsx, /src/pages/public/CourseDetail.tsx, /src/pages/admin/Logs.tsx, /src/pages/student/Dashboard.tsx, /src/pages/admin/Dashboard.tsx, /src/pages/admin/Courses.tsx, /src/pages/student/Certificates.tsx, /src/pages/student/QuizPlayer.tsx, /src/pages/instructor/CourseList.tsx, /src/pages/shared/Notifications.tsx, /src/pages/student/LessonPlayer.tsx, /src/hooks/use-auth.tsx, /src/pages/admin/Users.tsx, /src/pages/admin/Categories.tsx, /src/pages/public/CourseList.tsx, /src/pages/student/Profile.tsx, /src/pages/instructor/CourseBuilder.tsx, /src/pages/instructor/Dashboard.tsx, /src/pages/shared/Messages.tsx, /src/pages/student/AITools.tsx[22m
+[2m4:43:40 am[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/hooks/use-auth.tsx[22m Could not Fast Refresh ("useAuth" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m4:43:40 am[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.tsx, /src/pages/public/CourseDetail.tsx, /src/pages/instructor/CourseList.tsx, /src/pages/shared/Notifications.tsx, /src/pages/auth/Login.tsx, /src/pages/student/LessonPlayer.tsx, /src/pages/auth/Register.tsx, /src/pages/student/Profile.tsx, /src/pages/instructor/CourseBuilder.tsx, /src/pages/shared/Messages.tsx, /src/components/layout/AppLayout.tsx, /src/components/layout/Header.tsx, /src/components/layout/AppSidebar.tsx[22m
+[2m4:44:51 am[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/shared/MediaUpload.tsx[22m
+[2m4:45:34 am[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/instructor/CourseBuilder.tsx, /src/index.css[22m
+[2m4:47:38 am[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/shared/MediaUpload.tsx[22m
+[2m4:47:57 am[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/student/LessonPlayer.tsx, /src/index.css[22m
+[2m5:02:30 am[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/shared/ModuleEditorDialog.tsx[22m
+[2m5:02:49 am[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/shared/ModuleEditorDialog.tsx[22m

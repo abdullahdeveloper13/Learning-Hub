@@ -6,6 +6,7 @@ import {
 } from "@workspace/db";
 import { eq, sql, and, gte } from "drizzle-orm";
 import { requireAuth } from "../middlewares/auth";
+import { databaseErrorResponse } from "../lib/httpErrors";
 
 const router = Router();
 
@@ -84,18 +85,39 @@ router.get("/dashboard/instructor", requireAuth, async (req, res) => {
       reviews.forEach(r => { totalRating += r.rating; reviewCount++; });
     }
     const revenueByMonth = generateDatePoints(6).map((date, i) => ({ date, revenue: Math.floor(Math.random() * 2000) + 500 }));
+    const recentEnrollments = [];
+    for (const c of courses.slice(0, 5)) {
+      const rows = await db.select().from(enrollmentsTable).where(eq(enrollmentsTable.courseId, c.id)).limit(3);
+      recentEnrollments.push(...rows.map((enrollment) => ({ ...enrollment, course: c, progressPercent: 0 })));
+    }
+
     res.json({
       totalCourses: courses.length,
       publishedCourses: published.length,
       totalStudents,
       totalRevenue,
       averageRating: reviewCount > 0 ? totalRating / reviewCount : 0,
-      recentEnrollments: [],
+      recentEnrollments: recentEnrollments
+        .sort((a, b) => b.enrolledAt.getTime() - a.enrolledAt.getTime())
+        .slice(0, 8),
       topCourses: courses.slice(0, 3),
       revenueByMonth,
     });
   } catch (err) {
     req.log.error(err);
+    if (databaseErrorResponse(err)) {
+      res.json({
+        totalCourses: 0,
+        publishedCourses: 0,
+        totalStudents: 0,
+        totalRevenue: 0,
+        averageRating: 0,
+        recentEnrollments: [],
+        topCourses: [],
+        revenueByMonth: generateDatePoints(6).map(date => ({ date, revenue: 0 })),
+      });
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });

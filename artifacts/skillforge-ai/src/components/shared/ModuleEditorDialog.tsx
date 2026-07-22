@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/toast";
 
-const API_BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
+const API_BASE = (import.meta.env.VITE_API_URL || import.meta.env.BASE_URL || "").replace(/\/$/, "");
 
 interface ModuleEditorDialogProps {
   courseId: number;
@@ -33,22 +33,24 @@ export function ModuleEditorDialog({ courseId, module, onClose, onSaved }: Modul
 
     try {
       if (isEditing) {
-        await fetch(`${API_BASE}/api/modules/${module.id}`, {
+        const response = await fetch(`${API_BASE}/api/modules/${module.id}`, {
           method: "PATCH",
           headers,
           body: JSON.stringify({ title: title.trim(), description: description || null }),
         });
+        if (!response.ok) throw new Error(await getErrorMessage(response));
       } else {
-        await fetch(`${API_BASE}/api/courses/${courseId}/modules`, {
+        const response = await fetch(`${API_BASE}/api/courses/${courseId}/modules`, {
           method: "POST",
           headers,
           body: JSON.stringify({ title: title.trim(), description: description || null }),
         });
+        if (!response.ok) throw new Error(await getErrorMessage(response));
       }
       toast({ title: isEditing ? "Module updated!" : "Module created!" });
       onSaved();
-    } catch (e) {
-      toast({ title: "Failed to save module", variant: "destructive" });
+    } catch (e: any) {
+      toast({ title: "Failed to save module", description: e.message, variant: "destructive" });
     } finally {
       setSaving(false);
     }
@@ -87,10 +89,15 @@ export function ModuleEditorDialog({ courseId, module, onClose, onSaved }: Modul
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancel</Button>
           <Button onClick={handleSave} disabled={saving}>
-            {saving ? "Saving…" : isEditing ? "Update" : "Create Module"}
+            {saving ? "Saving..." : isEditing ? "Update" : "Create Module"}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
+}
+
+async function getErrorMessage(response: Response) {
+  const data = await response.json().catch(() => ({}));
+  return data.message || data.error || "Server rejected the module";
 }

@@ -27,7 +27,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
-const API_BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
+const API_BASE = (import.meta.env.VITE_API_URL || import.meta.env.BASE_URL || "").replace(/\/$/, "");
 
 // ── Quiz Player (inline) ────────────────────────────────────────────────────
 function InlineQuizPlayer({ lesson, courseId, onComplete }: { lesson: any; courseId: number; onComplete: () => void }) {
@@ -198,14 +198,19 @@ function InlineAssignmentPlayer({ lesson, onComplete }: { lesson: any; onComplet
     const file = e.target.files?.[0];
     if (!file) return;
     const token = localStorage.getItem("sf_token");
-    const urlRes = await fetch(`${API_BASE}/api/storage/uploads/request-url`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-      body: JSON.stringify({ name: file.name, size: file.size, contentType: file.type }),
+    const uploadRes = await fetch(`${API_BASE}/api/storage/uploads`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": file.type || "application/octet-stream",
+        "x-file-name": encodeURIComponent(file.name),
+        "x-folder": "assignment-submissions",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: file,
     });
-    const { uploadURL, objectPath } = await urlRes.json();
-    await fetch(uploadURL, { method: "PUT", headers: { "Content-Type": file.type }, body: file });
-    setFileUrl(`${API_BASE}/api/storage${objectPath}`);
+    if (!uploadRes.ok) throw new Error("Upload failed");
+    const { publicUrl, objectPath } = await uploadRes.json();
+    setFileUrl(publicUrl || objectPath);
     toast({ title: "File uploaded!" });
   };
 

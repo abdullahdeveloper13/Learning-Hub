@@ -6,11 +6,100 @@ import {
 } from "@workspace/db";
 import { eq, ilike, and, sql, desc, asc } from "drizzle-orm";
 import { requireAuth, requireRole } from "../middlewares/auth";
+import { databaseErrorResponse } from "../lib/httpErrors";
+import { supabaseRest } from "../lib/supabaseRest";
 
 const router = Router();
+const fallbackCourses = new Map<number, any>();
+let fallbackCourseId = 10_000;
+
+export function getFallbackCourse(courseId: number) {
+  return fallbackCourses.get(courseId);
+}
+
+export function setFallbackCourse(courseId: number, course: any) {
+  fallbackCourses.set(courseId, course);
+}
+
+export function getAllFallbackCourses() {
+  return Array.from(fallbackCourses.values());
+}
 
 function slugify(title: string) {
   return title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "") + "-" + Date.now();
+}
+
+function courseFromRest(row: any) {
+  return {
+    id: row.id,
+    title: row.title,
+    slug: row.slug,
+    description: row.description,
+    shortDescription: row.short_description,
+    thumbnailUrl: row.thumbnail_url,
+    bannerUrl: row.banner_url,
+    previewVideoUrl: row.preview_video_url,
+    instructorId: row.instructor_id,
+    categoryId: row.category_id,
+    level: row.level,
+    isPublished: row.is_published,
+    price: row.price,
+    discountPrice: row.discount_price,
+    tags: row.tags ?? [],
+    requirements: row.requirements ?? [],
+    outcomes: row.outcomes ?? [],
+    prerequisites: row.prerequisites ?? [],
+    faqs: row.faqs ?? [],
+    hasCertificate: row.has_certificate,
+    certificateTemplate: row.certificate_template,
+    createdAt: new Date(row.created_at),
+    updatedAt: new Date(row.updated_at),
+    modules: [],
+    enrollmentCount: 0,
+    reviewCount: 0,
+    rating: null,
+    totalLessons: 0,
+    totalDuration: 0,
+    instructorName: "Instructor",
+    categoryName: null,
+  };
+}
+
+function moduleFromRest(row: any) {
+  return {
+    id: row.id,
+    courseId: row.course_id,
+    title: row.title,
+    description: row.description,
+    position: row.position,
+    createdAt: new Date(row.created_at),
+    lessons: [],
+  };
+}
+
+function courseToRestValues(values: any, instructorId: number, slug: string) {
+  return {
+    title: values.title,
+    slug,
+    description: values.description ?? null,
+    short_description: values.shortDescription ?? null,
+    thumbnail_url: values.thumbnailUrl ?? null,
+    banner_url: values.bannerUrl ?? null,
+    preview_video_url: values.previewVideoUrl ?? null,
+    instructor_id: instructorId,
+    category_id: values.categoryId,
+    level: values.level ?? "beginner",
+    is_published: values.isPublished ?? false,
+    price: values.price ?? 0,
+    discount_price: values.discountPrice ?? null,
+    tags: values.tags ?? [],
+    requirements: values.requirements ?? [],
+    outcomes: values.outcomes ?? [],
+    prerequisites: values.prerequisites ?? [],
+    faqs: values.faqs ?? [],
+    has_certificate: values.hasCertificate ?? true,
+    certificate_template: values.certificateTemplate ?? null,
+  };
 }
 
 async function enrichCourse(course: typeof coursesTable.$inferSelect) {
@@ -69,11 +158,26 @@ router.get("/courses", async (req, res) => {
     res.json({ courses: enriched, total: enriched.length, page: pageNum, limit: limitNum });
   } catch (err) {
     req.log.error(err);
+    if (databaseErrorResponse(err)) {
+      const restRows = await supabaseRest().selectMany("courses");
+      const restCourses = restRows.map(courseFromRest);
+      for (const course of restCourses) fallbackCourses.set(course.id, { ...fallbackCourses.get(course.id), ...course });
+      const courses = restCourses.length ? restCourses : Array.from(fallbackCourses.values());
+      const published = req.query["published"];
+      const visible = published === "true" ? courses.filter((course) => course.isPublished) : courses;
+      res.json({ courses: visible, total: visible.length, page: 1, limit: visible.length || 12 });
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
 router.post("/courses", requireAuth, requireRole("instructor", "admin"), async (req, res) => {
+  if (req.user!.id < 0) {
+    res.status(401).json({ error: "Your session was created before database writes were enabled. Please sign out and sign up or log in again." });
+    return;
+  }
+
   try {
     const { title, categoryId, level, price = 0, ...rest } = req.body;
     const slug = slugify(title);
@@ -84,6 +188,18 @@ router.post("/courses", requireAuth, requireRole("instructor", "admin"), async (
     res.status(201).json(enriched);
   } catch (err) {
     req.log.error(err);
+    if (databaseErrorResponse(err)) {
+      const { title, categoryId, level = "beginner", price = 0, ...rest } = req.body;
+      const slug = slugify(title);
+      const inserted = await supabaseRest().insertOne(
+        "courses",
+        courseToRestValues({ title, categoryId, level, price, ...rest }, req.user!.id, slug),
+      );
+      const course = courseFromRest(inserted);
+      fallbackCourses.set(course.id, course);
+      res.status(201).json(course);
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -103,6 +219,20 @@ router.get("/courses/:courseId", async (req, res) => {
     res.json({ ...enriched, modules: modulesWithLessons });
   } catch (err) {
     req.log.error(err);
+    if (databaseErrorResponse(err)) {
+      const courseId = parseInt(req.params["courseId"]!);
+      const row = await supabaseRest().selectOne("courses", { id: courseId });
+      const restCourse = row ? courseFromRest(row) : null;
+      const existingFallback = fallbackCourses.get(courseId);
+      const restModules = restCourse
+        ? (await supabaseRest().selectMany("modules", { course_id: courseId })).map(moduleFromRest).sort((a, b) => a.position - b.position)
+        : [];
+      const course = restCourse ? { ...restCourse, modules: restModules.length ? restModules : existingFallback?.modules ?? [] } : existingFallback;
+      if (course) fallbackCourses.set(courseId, course);
+      if (!course) { res.status(404).json({ error: "Not found" }); return; }
+      res.json(course);
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -123,6 +253,15 @@ router.patch("/courses/:courseId", requireAuth, async (req, res) => {
     res.json(enriched);
   } catch (err) {
     req.log.error(err);
+    if (databaseErrorResponse(err)) {
+      const courseId = parseInt(req.params["courseId"]!);
+      const existing = fallbackCourses.get(courseId);
+      if (!existing) { res.status(404).json({ error: "Not found" }); return; }
+      const updated = { ...existing, ...req.body, updatedAt: new Date().toISOString() };
+      fallbackCourses.set(courseId, updated);
+      res.json(updated);
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -139,6 +278,11 @@ router.delete("/courses/:courseId", requireAuth, async (req, res) => {
     res.status(204).send();
   } catch (err) {
     req.log.error(err);
+    if (databaseErrorResponse(err)) {
+      fallbackCourses.delete(parseInt(req.params["courseId"]!));
+      res.status(204).send();
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -154,6 +298,15 @@ router.patch("/courses/:courseId/publish", requireAuth, async (req, res) => {
     res.json(enriched);
   } catch (err) {
     req.log.error(err);
+    if (databaseErrorResponse(err)) {
+      const courseId = parseInt(req.params["courseId"]!);
+      const existing = fallbackCourses.get(courseId);
+      if (!existing) { res.status(404).json({ error: "Not found" }); return; }
+      const updated = { ...existing, isPublished: req.body.isPublished, updatedAt: new Date().toISOString() };
+      fallbackCourses.set(courseId, updated);
+      res.json(updated);
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });

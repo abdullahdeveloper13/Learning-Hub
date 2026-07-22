@@ -15,7 +15,7 @@ interface MediaUploadProps {
   className?: string;
 }
 
-const API_BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
+const API_BASE = (import.meta.env.VITE_API_URL || import.meta.env.BASE_URL || "").replace(/\/$/, "");
 
 function getIcon(type: MediaUploadProps["type"]) {
   switch (type) {
@@ -64,46 +64,54 @@ export function MediaUpload({
 
     try {
       const token = localStorage.getItem("sf_token");
-      // Step 1: Request presigned URL
-      const urlRes = await fetch(`${API_BASE}/api/storage/uploads/request-url`, {
-        method: "POST",
+      const uploadRes = await fetch(`${API_BASE}/api/storage/uploads`, {
+        method: "PUT",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": file.type || "application/octet-stream",
+          "x-file-name": encodeURIComponent(file.name),
+          "x-folder": type,
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ name: file.name, size: file.size, contentType: file.type }),
-      });
-
-      if (!urlRes.ok) throw new Error("Failed to get upload URL");
-      const { uploadURL, objectPath } = await urlRes.json();
-      setProgress(30);
-
-      // Step 2: Upload directly to GCS
-      const uploadRes = await fetch(uploadURL, {
-        method: "PUT",
-        headers: { "Content-Type": file.type },
         body: file,
       });
 
       if (!uploadRes.ok) throw new Error("Upload failed");
-      setProgress(90);
+      const { publicUrl, objectPath } = await uploadRes.json();
 
-      // Serving URL
-      const serveUrl = `${API_BASE}/api/storage${objectPath}`;
+      const serveUrl = publicUrl || objectPath;
       if (type === "image") {
         setPreview(serveUrl);
       }
       setProgress(100);
       onUploaded(serveUrl);
     } catch (err: any) {
-      setError(err.message || "Upload failed");
+      if (type === "image") {
+        const localUrl = await readAsDataUrl(file);
+        setPreview(localUrl);
+        setProgress(100);
+        onUploaded(localUrl);
+        setError("Using local preview because cloud storage is not reachable.");
+      } else {
+        setError(err.message || "Upload failed");
+      }
     } finally {
       setUploading(false);
       if (inputRef.current) inputRef.current.value = "";
     }
   };
 
-  const handleRemove = () => {
+  const handleRemove = async () => {
+    if (preview) {
+      const token = localStorage.getItem("sf_token");
+      fetch(`${API_BASE}/api/storage/assets`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ url: preview }),
+      }).catch(() => undefined);
+    }
     setPreview(null);
     onRemove?.();
   };
@@ -153,7 +161,7 @@ export function MediaUpload({
         <div className="space-y-2 p-4 border rounded-lg bg-muted/30">
           <div className="flex items-center gap-2 text-sm font-medium">
             <Upload className="w-4 h-4 animate-bounce" />
-            Uploading…
+            Uploading...
           </div>
           <Progress value={progress} className="h-2" />
         </div>
@@ -172,4 +180,13 @@ export function MediaUpload({
       />
     </div>
   );
+}
+
+function readAsDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
 }

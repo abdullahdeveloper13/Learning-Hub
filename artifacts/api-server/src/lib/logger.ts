@@ -8,6 +8,9 @@ export const logger = pino({
     "req.headers.authorization",
     "req.headers.cookie",
     "res.headers['set-cookie']",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_ANON_KEY",
+    "*.serviceRoleKey",
   ],
   ...(isProduction
     ? {}

@@ -1,0 +1,32 @@
+[2m2:55:18 am[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/auth/register[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1122:18)
+    at afterConnectMultiple (node:net:1689:7)
+[2m3:02:37 am[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/auth/register[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1122:18)
+    at afterConnectMultiple (node:net:1689:7)
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1784671936849,"name":"Error","message":"useAuth must be used within an AuthProvider","stack":"    at useAuth C:/learning-hub/artifacts/skillforge-ai/src/hooks/use-auth.tsx:98:11\n    at Register C:/learning-hub/artifacts/skillforge-ai/src/pages/auth/Register.tsx:18:52\n\n\n\n\n\n\n\n","loc":{"line":98,"column":11,"file":"C:/learning-hub/artifacts/skillforge-ai/src/hooks/use-auth.tsx"},"frame":"96 |    const context = useContext(AuthContext);\n97 |    if (context === undefined) {\n98 |      throw new Error(\"useAuth must be used within an AuthProvider\");\n   |            ^\n99 |    }\n100|    return context;"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1784671936863,"name":"Error","message":"useAuth must be used within an AuthProvider","stack":"    at useAuth C:/learning-hub/artifacts/skillforge-ai/src/hooks/use-auth.tsx:98:11\n    at Register C:/learning-hub/artifacts/skillforge-ai/src/pages/auth/Register.tsx:18:52\n\n\n\n\n\n\n\n","loc":{"line":98,"column":11,"file":"C:/learning-hub/artifacts/skillforge-ai/src/hooks/use-auth.tsx"},"frame":"96 |    const context = useContext(AuthContext);\n97 |    if (context === undefined) {\n98 |      throw new Error(\"useAuth must be used within an AuthProvider\");\n   |            ^\n99 |    }\n100|    return context;"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1784671936880,"name":"Error","message":"useAuth must be used within an AuthProvider","stack":"    at useAuth C:/learning-hub/artifacts/skillforge-ai/src/hooks/use-auth.tsx:98:11\n    at Register C:/learning-hub/artifacts/skillforge-ai/src/pages/auth/Register.tsx:18:52\n\n\n\n\n\n\n\n","loc":{"line":98,"column":11,"file":"C:/learning-hub/artifacts/skillforge-ai/src/hooks/use-auth.tsx"},"frame":"96 |    const context = useContext(AuthContext);\n97 |    if (context === undefined) {\n98 |      throw new Error(\"useAuth must be used within an AuthProvider\");\n   |            ^\n99 |    }\n100|    return context;"}
+[2m3:25:19 am[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/auth/register[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1122:18)
+    at afterConnectMultiple (node:net:1689:7)
+X [ERROR] "await" can only be used inside an "async" function
+
+    vite.config.ts:27:10:
+      27 │           await import('@replit/vite-plugin-cartographer').then((m...
+         ╵           ~~~~~
+
+  Consider adding the "async" keyword here:
+
+    vite.config.ts:8:28:
+      8 │ export default defineConfig(({ command }) => {
+        │                             ^
+        ╵                             async
+
+[31mfailed to load config from C:\learning-hub\artifacts\skillforge-ai\vite.config.ts[39m
+[2m4:29:02 am[22m [31m[1m[vite][22m[39m Build failed with 1 error:
+vite.config.ts:27:10: ERROR: "await" can only be used inside an "async" function
+[2m4:29:02 am[22m [31m[1m[vite][22m[39m server restart failed

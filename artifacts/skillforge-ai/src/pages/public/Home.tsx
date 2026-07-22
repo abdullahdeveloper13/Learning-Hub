@@ -9,6 +9,7 @@ import { ArrowRight, BookOpen, Brain, Trophy, Users } from "lucide-react";
 
 export default function Home() {
   const { data: popularCourses, isLoading } = useGetCourses({ sortBy: 'popular', limit: 6, published: true });
+  const heroImage = popularCourses?.courses?.find((course) => course.bannerUrl || course.thumbnailUrl);
   
   return (
     <PublicLayout>
@@ -57,11 +58,17 @@ export default function Home() {
             <div className="hidden lg:block relative">
               <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-accent rounded-3xl transform rotate-3 scale-105 opacity-50 blur-xl"></div>
               <div className="relative bg-card border rounded-3xl p-2 shadow-2xl">
-                <img 
-                  src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
-                  alt="Students learning" 
-                  className="rounded-2xl w-full h-[600px] object-cover"
-                />
+                {heroImage ? (
+                  <img
+                    src={heroImage.bannerUrl || heroImage.thumbnailUrl || ""}
+                    alt={heroImage.title}
+                    className="rounded-2xl w-full h-[600px] object-cover"
+                  />
+                ) : (
+                  <div className="rounded-2xl w-full h-[600px] bg-muted flex items-center justify-center">
+                    <BookOpen className="w-16 h-16 text-muted-foreground/40" />
+                  </div>
+                )}
               </div>
             </div>
           </div>
