@@ -26,7 +26,7 @@ async function getAuthToken() {
 export const customFetch = async <T,>(url: string, options?: RequestInit): Promise<T> => {
   const token = await getAuthToken();
   const envBaseUrl = ((import.meta as any).env?.VITE_API_URL || "").replace(/\/$/, "");
-  const baseUrl = baseUrlOverride || envBaseUrl;
+  const baseUrl = baseUrlOverride || getUsableBaseUrl(envBaseUrl);
   
   const headers = new Headers(options?.headers);
   if (token) {
@@ -55,3 +55,25 @@ export const customFetch = async <T,>(url: string, options?: RequestInit): Promi
 
 export type ErrorType<ErrorData> = Error;
 export type BodyType<BodyData> = BodyData;
+
+function getUsableBaseUrl(envBaseUrl: string) {
+  if (!envBaseUrl || typeof window === "undefined") return envBaseUrl;
+
+  try {
+    const configured = new URL(envBaseUrl);
+    const pageHost = window.location.hostname;
+    const configuredHost = configured.hostname;
+    const configuredIsLocal =
+      configuredHost === "localhost" ||
+      configuredHost === "127.0.0.1" ||
+      configuredHost === "::1";
+    const pageIsLocal =
+      pageHost === "localhost" ||
+      pageHost === "127.0.0.1" ||
+      pageHost === "::1";
+
+    return configuredIsLocal && !pageIsLocal ? "" : envBaseUrl;
+  } catch {
+    return envBaseUrl;
+  }
+}

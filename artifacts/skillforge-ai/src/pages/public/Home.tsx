@@ -1,15 +1,14 @@
 import React from "react";
 import { Link } from "wouter";
-import { useGetCourses } from "@workspace/api-client-react/api";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import { CourseCard } from "@/components/shared/CourseCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowRight, BookOpen, Brain, Trophy, Users } from "lucide-react";
+import { usePublicCourses } from "@/hooks/use-public-catalog";
+import { ArrowRight, BookOpen, Brain, Trophy } from "lucide-react";
 
 export default function Home() {
-  const { data: popularCourses, isLoading } = useGetCourses({ sortBy: 'popular', limit: 6, published: true });
-  const heroImage = popularCourses?.courses?.find((course) => course.thumbnailUrl);
+  const { data: courses = [], isLoading, isError } = usePublicCourses({ sortBy: "popular", limit: 6, published: true });
   
   return (
     <PublicLayout>
@@ -58,17 +57,11 @@ export default function Home() {
             <div className="hidden lg:block relative">
               <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-accent rounded-3xl transform rotate-3 scale-105 opacity-50 blur-xl"></div>
               <div className="relative bg-card border rounded-3xl p-2 shadow-2xl">
-                {heroImage ? (
-                  <img
-                    src={heroImage.thumbnailUrl || "/images/branding/skillforge-hero.jpg"}
-                    alt={heroImage.title}
-                    className="rounded-2xl w-full h-[600px] object-cover"
-                  />
-                ) : (
-                  <div className="rounded-2xl w-full h-[600px] bg-muted flex items-center justify-center">
-                    <BookOpen className="w-16 h-16 text-muted-foreground/40" />
-                  </div>
-                )}
+                <img
+                  src="/images/branding/ChatGPT Image Aug 15, 2026, 03_27_38 AM.png"
+                  alt="SkillForge AI learners studying with an interactive education dashboard"
+                  className="rounded-2xl w-full h-[600px] object-cover"
+                />
               </div>
             </div>
           </div>
@@ -126,11 +119,15 @@ export default function Home() {
                 </div>
               ))}
             </div>
-          ) : popularCourses?.courses && popularCourses.courses.length > 0 ? (
+          ) : courses.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {popularCourses.courses.map((course) => (
+              {courses.map((course) => (
                 <CourseCard key={course.id} course={course} />
               ))}
+            </div>
+          ) : isError ? (
+            <div className="text-center py-12 text-destructive">
+              Courses could not be loaded. Please refresh the page.
             </div>
           ) : (
             <div className="text-center py-12 text-muted-foreground">

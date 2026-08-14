@@ -1,13 +1,8 @@
 import React, { useState } from "react";
-import { Link } from "wouter";
-import { 
-  useGetCourses, 
-  useGetCategories,
-  getGetCoursesQueryKey
-} from "@workspace/api-client-react/api";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import { CourseCard } from "@/components/shared/CourseCard";
 import { LoadingState } from "@/components/shared/LoadingState";
+import { usePublicCategories, usePublicCourses } from "@/hooks/use-public-catalog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { 
@@ -17,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Filter, SlidersHorizontal } from "lucide-react";
+import { Search, Filter } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export default function CourseList() {
@@ -33,13 +28,12 @@ export default function CourseList() {
     return () => clearTimeout(timer);
   }, [search]);
 
-  const { data: categories } = useGetCategories();
-  
-  const { data: coursesData, isLoading } = useGetCourses({
+  const { data: categoryList = [] } = usePublicCategories();
+  const { data: courseList = [], isLoading, isError } = usePublicCourses({
     search: debouncedSearch || undefined,
     categoryId,
-    level: level as any,
-    sortBy: sortBy as any,
+    level,
+    sortBy,
     published: true,
     limit: 20
   });
@@ -85,7 +79,7 @@ export default function CourseList() {
                   >
                     All Categories
                   </div>
-                  {categories?.map(cat => (
+                  {categoryList.map(cat => (
                     <div 
                       key={cat.id}
                       className={`text-sm cursor-pointer hover:text-primary ${categoryId === cat.id ? 'font-bold text-primary' : 'text-muted-foreground'}`}
@@ -135,7 +129,7 @@ export default function CourseList() {
           <main className="flex-1">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
               <div className="text-sm text-muted-foreground">
-                Showing <span className="font-bold text-foreground">{coursesData?.courses.length || 0}</span> courses
+                Showing <span className="font-bold text-foreground">{courseList.length}</span> courses
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground whitespace-nowrap">Sort by:</span>
@@ -157,9 +151,9 @@ export default function CourseList() {
             {/* Active Filters display */}
             {(categoryId || level) && (
               <div className="flex flex-wrap gap-2 mb-6">
-                {categoryId && categories?.find(c => c.id === categoryId) && (
+                {categoryId && categoryList.find(c => c.id === categoryId) && (
                   <Badge variant="secondary" className="px-3 py-1">
-                    Category: {categories.find(c => c.id === categoryId)?.name}
+                    Category: {categoryList.find(c => c.id === categoryId)?.name}
                     <button className="ml-2 hover:text-destructive" onClick={() => setCategoryId(undefined)}>×</button>
                   </Badge>
                 )}
@@ -174,11 +168,24 @@ export default function CourseList() {
 
             {isLoading ? (
               <LoadingState count={6} />
-            ) : coursesData?.courses && coursesData.courses.length > 0 ? (
+            ) : courseList.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {coursesData.courses.map(course => (
+                {courseList.map(course => (
                   <CourseCard key={course.id} course={course} />
                 ))}
+              </div>
+            ) : isError ? (
+              <div className="py-20 text-center border rounded-2xl bg-card border-dashed">
+                <div className="mx-auto w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mb-4">
+                  <Search className="w-8 h-8 text-destructive" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Courses could not be loaded</h3>
+                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                  Refresh the page or check that the API server is running.
+                </p>
+                <Button onClick={() => window.location.reload()}>
+                  Refresh
+                </Button>
               </div>
             ) : (
               <div className="py-20 text-center border rounded-2xl bg-card border-dashed">

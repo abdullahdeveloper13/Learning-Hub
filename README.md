@@ -23,6 +23,7 @@ cp .env.example .env
 ```
 
 Set `DATABASE_URL` and a strong `JWT_SECRET` in `.env`.
+`DATABASE_URL` must be a PostgreSQL URL that starts with `postgresql://` or `postgres://`; the Supabase HTTPS project URL belongs in `SUPABASE_URL`, not `DATABASE_URL`.
 
 ## Development
 
@@ -59,10 +60,16 @@ The seed is idempotent for the included categories, instructors, students, cours
 For Supabase production databases, prefer the Supabase connection pooler when direct database DNS or IPv6 routing is unavailable:
 
 ```text
-postgresql://postgres.<project-ref>:<password>@aws-0-<region>.pooler.supabase.com:6543/postgres?sslmode=require
+postgresql://postgres.<project-ref>:<url-encoded-password>@<pooler-host-from-dashboard>:5432/postgres
 ```
 
-Do not commit this value. Put it in `DATABASE_URL`.
+Copy the exact pooler or direct connection string from Supabase Dashboard > Project Settings > Database. If the password contains special characters such as `@`, `!`, `$`, `%`, or spaces, URL-encode the password before placing it in `DATABASE_URL`. Do not commit this value.
+
+Check the active database configuration without printing secrets:
+
+```bash
+pnpm run db:diagnose
+```
 
 ## Environment Variables
 
@@ -75,6 +82,8 @@ Do not commit this value. Put it in `DATABASE_URL`.
 - `DATABASE_URL`: PostgreSQL connection string.
 - `SUPABASE_URL`: Supabase project URL for REST/storage fallback.
 - `SUPABASE_ANON_KEY`: public Supabase anon key.
+- `VITE_SUPABASE_URL`: public Supabase project URL used by browser OAuth.
+- `VITE_SUPABASE_ANON_KEY`: public Supabase anon key used by browser OAuth.
 - `SUPABASE_SERVICE_ROLE_KEY`: server-only Supabase service key.
 - `SUPABASE_STORAGE_BUCKET`: storage bucket for uploaded LMS assets.
 - `OPENAI_API_KEY`: server-only OpenAI API key.
@@ -92,6 +101,30 @@ Do not commit this value. Put it in `DATABASE_URL`.
 - `RATE_LIMIT_STORE`: `memory` for development or `redis` for production distributed rate limiting.
 - `UPSTASH_REDIS_REST_URL`: Upstash Redis REST URL for production rate limiting.
 - `UPSTASH_REDIS_REST_TOKEN`: Upstash Redis REST token for production rate limiting.
+
+## Supabase Google/GitHub OAuth
+
+SkillForge uses Supabase Auth for Google and GitHub signup/signin, then exchanges the verified Supabase session for the app's own JWT session at `/api/auth/supabase/exchange`.
+
+In Supabase Dashboard:
+
+1. Go to Authentication > URL Configuration.
+2. Set the Site URL to your frontend URL.
+3. Add redirect URLs:
+   - `http://localhost:5173/auth/callback`
+   - `http://localhost:3000/auth/callback`
+   - your deployed app URL plus `/auth/callback`
+4. Go to Authentication > Sign In / Providers.
+5. Enable Google and GitHub.
+6. Add each provider's client ID and client secret.
+
+OAuth provider callback URLs should use Supabase's callback URL:
+
+```text
+https://<project-ref>.supabase.co/auth/v1/callback
+```
+
+Do not put Google or GitHub client secrets in frontend variables.
 
 ## Production
 

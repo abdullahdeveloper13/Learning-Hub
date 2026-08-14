@@ -10,7 +10,9 @@
   "scripts": {
     "push": "drizzle-kit push --config ./drizzle.config.ts",
     "push-force": "drizzle-kit push --force --config ./drizzle.config.ts",
+    "diagnose:postgres": "node ./scripts/diagnose-postgres-url.mjs",
     "seed:skillforge": "node ./scripts/seed-skillforge-content.mjs",
+    "seed:skillforge:rest": "node ./scripts/seed-skillforge-rest.mjs",
     "setup:supabase": "node ./scripts/setup-supabase.mjs"
   },
   "dependencies": {

@@ -10,8 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/components/ui/toast";
 import { PublicLayout } from "@/components/layout/PublicLayout";
-
-const API_BASE = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+import { signInWithSupabaseProvider } from "@/lib/supabase-auth";
 
 export default function Login() {
   const { login, isAuthenticated, isLoading } = useAuth();
@@ -55,6 +54,18 @@ export default function Login() {
         variant: "destructive",
         title: "Login failed",
         description: error.message || "Please check your credentials and try again.",
+      });
+    }
+  };
+
+  const onOAuthSignIn = async (provider: "google" | "github") => {
+    try {
+      await signInWithSupabaseProvider(provider);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: `${provider === "google" ? "Google" : "GitHub"} sign-in unavailable`,
+        description: error.message || "Supabase OAuth is not configured yet.",
       });
     }
   };
@@ -111,10 +122,10 @@ export default function Login() {
           </Form>
 
           <div className="grid grid-cols-2 gap-3">
-            <Button type="button" variant="outline" onClick={() => { window.location.href = `${API_BASE}/api/auth/oauth/google/start`; }}>
+            <Button type="button" variant="outline" onClick={() => onOAuthSignIn("google")}>
               Google
             </Button>
-            <Button type="button" variant="outline" onClick={() => { window.location.href = `${API_BASE}/api/auth/oauth/github/start`; }}>
+            <Button type="button" variant="outline" onClick={() => onOAuthSignIn("github")}>
               GitHub
             </Button>
           </div>

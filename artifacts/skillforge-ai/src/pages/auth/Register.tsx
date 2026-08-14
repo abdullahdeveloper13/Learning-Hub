@@ -11,6 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/components/ui/toast";
 import { PublicLayout } from "@/components/layout/PublicLayout";
+import { signInWithSupabaseProvider } from "@/lib/supabase-auth";
 
 export default function Register() {
   const { register, isAuthenticated, isLoading } = useAuth();
@@ -47,6 +48,18 @@ export default function Register() {
         variant: "destructive",
         title: "Registration failed",
         description: error.message || "An error occurred during registration.",
+      });
+    }
+  };
+
+  const onOAuthSignUp = async (provider: "google" | "github") => {
+    try {
+      await signInWithSupabaseProvider(provider, form.getValues("role"));
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: `${provider === "google" ? "Google" : "GitHub"} sign-up unavailable`,
+        description: error.message || "Supabase OAuth is not configured yet.",
       });
     }
   };
@@ -144,6 +157,15 @@ export default function Register() {
               </Button>
             </form>
           </Form>
+
+          <div className="grid grid-cols-2 gap-3">
+            <Button type="button" variant="outline" onClick={() => onOAuthSignUp("google")}>
+              Google
+            </Button>
+            <Button type="button" variant="outline" onClick={() => onOAuthSignUp("github")}>
+              GitHub
+            </Button>
+          </div>
 
           <p className="text-center text-sm text-muted-foreground">
             Already have an account?{" "}

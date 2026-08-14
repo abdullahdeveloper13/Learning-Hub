@@ -97,6 +97,36 @@ function lessonFromRest(row: any) {
   };
 }
 
+async function enrichRestCourse(course: ReturnType<typeof courseFromRest>) {
+  const [instructor, category, enrollments, reviews, modules] = await Promise.all([
+    supabaseRest().selectOne("users", { id: course.instructorId }).catch(() => null),
+    supabaseRest().selectOne("categories", { id: course.categoryId }).catch(() => null),
+    supabaseRest().selectMany("enrollments", { course_id: course.id }).catch((): any[] => []),
+    supabaseRest().selectMany("reviews", { course_id: course.id }).catch((): any[] => []),
+    supabaseRest().selectMany("modules", { course_id: course.id }).catch((): any[] => []),
+  ]);
+  const lessonGroups = await Promise.all(modules.map((mod: any) => supabaseRest().selectMany("lessons", { module_id: mod.id }).catch((): any[] => [])));
+  const totalLessons = lessonGroups.reduce((sum, lessons) => sum + lessons.length, 0);
+  let totalDuration = 0;
+  for (const lessons of lessonGroups) {
+    for (const lesson of lessons) totalDuration += Number(lesson.duration || 0);
+  }
+  let ratingTotal = 0;
+  for (const review of reviews) ratingTotal += Number(review.rating || 0);
+  const rating = reviews.length ? ratingTotal / reviews.length : null;
+  return {
+    ...course,
+    instructorName: instructor?.name ?? "Instructor",
+    instructorAvatar: instructor?.avatar_url ?? null,
+    categoryName: category?.name ?? null,
+    enrollmentCount: enrollments.length,
+    reviewCount: reviews.length,
+    rating,
+    totalLessons,
+    totalDuration,
+  };
+}
+
 function courseToRestValues(values: any, instructorId: number, slug: string) {
   return {
     title: values.title,
@@ -201,11 +231,15 @@ router.get("/courses", async (req, res) => {
     req.log.error(err);
     if (databaseErrorResponse(err)) {
       const restRows = await supabaseRest().selectMany("courses");
-      const restCourses = restRows.map(courseFromRest);
+      const restCourses = await Promise.all(restRows.map((row) => enrichRestCourse(courseFromRest(row))));
       for (const course of restCourses) fallbackCourses.set(course.id, { ...fallbackCourses.get(course.id), ...course });
       const courses = restCourses.length ? restCourses : Array.from(fallbackCourses.values());
       const published = req.query["published"];
-      const visible = published === "true" ? courses.filter((course) => course.isPublished) : courses;
+      const visible = published === undefined || published === "true"
+        ? courses.filter((course) => course.isPublished)
+        : published === "false"
+          ? courses.filter((course) => !course.isPublished)
+          : courses;
       res.json({ courses: visible, total: visible.length, page: 1, limit: visible.length || 12 });
       return;
     }
@@ -243,7 +277,11 @@ router.get("/courses/slug/:slug", async (req, res) => {
               .sort((a, b) => a.position - b.position),
           })))
         : [];
-      const course = restCourse ? { ...restCourse, modules: restModules.length ? restModules : existingFallback?.modules ?? [] } : undefined;
+      const enrichedCourse = restCourse ? await enrichRestCourse(restCourse) : null;
+      const course = enrichedCourse ? {
+        ...enrichedCourse,
+        modules: restModules.length ? restModules : existingFallback?.modules ?? [],
+      } : undefined;
       if (course) fallbackCourses.set(course.id, course);
       if (!course) { res.status(404).json({ error: "Not found" }); return; }
       res.json(course);

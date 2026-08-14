@@ -12,6 +12,7 @@ import Register from '@/pages/auth/Register';
 import ForgotPassword from '@/pages/auth/ForgotPassword';
 import ResetPassword from '@/pages/auth/ResetPassword';
 import VerifyEmail from '@/pages/auth/VerifyEmail';
+import OAuthCallback from '@/pages/auth/OAuthCallback';
 import Home from '@/pages/public/Home';
 import CourseList from '@/pages/public/CourseList';
 import CourseDetail from '@/pages/public/CourseDetail';
@@ -56,6 +57,7 @@ function Router() {
       <Route path="/forgot-password" component={ForgotPassword} />
       <Route path="/reset-password" component={ResetPassword} />
       <Route path="/verify-email" component={VerifyEmail} />
+      <Route path="/auth/callback" component={OAuthCallback} />
       <Route path="/courses" component={CourseList} />
       <Route path="/courses/:id" component={CourseDetail} />
       <Route path="/certificates/:credentialId" component={CertificateVerify} />

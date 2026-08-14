@@ -256,6 +256,153 @@ router.post("/auth/resend-verification", requireAuth, rateLimit({ keyPrefix: "au
   }
 });
 
+router.get("/auth/supabase/config", (_req, res) => {
+  const supabaseUrl = process.env["SUPABASE_URL"];
+  const supabaseAnonKey = process.env["SUPABASE_ANON_KEY"];
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    res.status(503).json({
+      error: "Supabase Auth is not configured",
+      requiredEnv: ["SUPABASE_URL", "SUPABASE_ANON_KEY"],
+    });
+    return;
+  }
+
+  res.json({ supabaseUrl, supabaseAnonKey });
+});
+
+router.post("/auth/supabase/exchange", rateLimit({ keyPrefix: "auth-supabase-exchange", windowMs: 15 * 60_000, max: 20 }), async (req, res) => {
+  try {
+    const supabaseUrl = process.env["SUPABASE_URL"]?.replace(/\/$/, "");
+    const supabaseAnonKey = process.env["SUPABASE_ANON_KEY"];
+    const accessToken = String(req.body.accessToken || "");
+    const requestedRole = req.body.role === "instructor" ? "instructor" : "student";
+
+    if (!supabaseUrl || !supabaseAnonKey) {
+      res.status(503).json({
+        error: "Supabase Auth is not configured",
+        requiredEnv: ["SUPABASE_URL", "SUPABASE_ANON_KEY"],
+      });
+      return;
+    }
+
+    if (!accessToken) {
+      res.status(400).json({ error: "accessToken is required" });
+      return;
+    }
+
+    const authResponse = await fetch(`${supabaseUrl}/auth/v1/user`, {
+      headers: {
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!authResponse.ok) {
+      res.status(401).json({ error: "Invalid Supabase session" });
+      return;
+    }
+
+    const supabaseUser = await authResponse.json() as {
+      email?: string;
+      email_confirmed_at?: string | null;
+      user_metadata?: {
+        avatar_url?: string;
+        full_name?: string;
+        name?: string;
+        user_name?: string;
+      };
+    };
+    const email = supabaseUser.email?.toLowerCase();
+    if (!email) {
+      res.status(400).json({ error: "Supabase account does not include an email address" });
+      return;
+    }
+
+    const metadata = supabaseUser.user_metadata ?? {};
+    const name = metadata.full_name || metadata.name || metadata.user_name || email.split("@")[0] || email;
+    const avatarUrl = metadata.avatar_url ?? null;
+
+    const [existing] = await db.select().from(usersTable).where(eq(usersTable.email, email)).limit(1);
+    const user = existing ?? (await db.insert(usersTable).values({
+      email,
+      name,
+      passwordHash: await bcrypt.hash(randomBytes(24).toString("hex"), 10),
+      role: requestedRole,
+      avatarUrl,
+      emailVerifiedAt: supabaseUser.email_confirmed_at ? new Date(supabaseUser.email_confirmed_at) : new Date(),
+      isActive: true,
+    }).returning())[0];
+
+    if (!user.isActive) {
+      res.status(403).json({ error: "Account is inactive" });
+      return;
+    }
+
+    const token = signToken({ id: user.id, email: user.email, role: user.role });
+    res.json({ user: safeUser(user), token });
+  } catch (err) {
+    req.log.error(err);
+    const dbError = databaseErrorResponse(err);
+    if (dbError) {
+      try {
+        const supabaseUrl = process.env["SUPABASE_URL"]?.replace(/\/$/, "");
+        const supabaseAnonKey = process.env["SUPABASE_ANON_KEY"];
+        const accessToken = String(req.body.accessToken || "");
+        const requestedRole = req.body.role === "instructor" ? "instructor" : "student";
+        if (!supabaseUrl || !supabaseAnonKey || !accessToken) throw err;
+
+        const authResponse = await fetch(`${supabaseUrl}/auth/v1/user`, {
+          headers: {
+            apikey: supabaseAnonKey,
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        if (!authResponse.ok) {
+          res.status(401).json({ error: "Invalid Supabase session" });
+          return;
+        }
+        const supabaseUser = await authResponse.json() as {
+          email?: string;
+          email_confirmed_at?: string | null;
+          user_metadata?: { avatar_url?: string; full_name?: string; name?: string; user_name?: string };
+        };
+        const email = supabaseUser.email?.toLowerCase();
+        if (!email) {
+          res.status(400).json({ error: "Supabase account does not include an email address" });
+          return;
+        }
+        const metadata = supabaseUser.user_metadata ?? {};
+        const name = metadata.full_name || metadata.name || metadata.user_name || email.split("@")[0] || email;
+        const rest = supabaseRest();
+        const existingRow = await rest.selectOne("users", { email });
+        const row = existingRow ?? await rest.insertOne("users", {
+          email,
+          name,
+          password_hash: await bcrypt.hash(randomBytes(24).toString("hex"), 10),
+          role: requestedRole,
+          avatar_url: metadata.avatar_url ?? null,
+          email_verified_at: supabaseUser.email_confirmed_at ?? new Date().toISOString(),
+          is_active: true,
+        });
+        const user = userFromRest(row);
+        if (!user.isActive) {
+          res.status(403).json({ error: "Account is inactive" });
+          return;
+        }
+        const token = signToken({ id: user.id, email: user.email, role: user.role });
+        res.json({ user: safeUser(user), token });
+        return;
+      } catch (fallbackError) {
+        req.log.error(fallbackError);
+        res.status(dbError.status).json(dbError.body);
+        return;
+      }
+    }
+    res.status(500).json({ error: "Supabase OAuth login failed" });
+  }
+});
+
 router.get("/auth/oauth/:provider/start", rateLimit({ keyPrefix: "auth-oauth-start", windowMs: 15 * 60_000, max: 20 }), (req, res) => {
   const provider = String(req.params["provider"]);
   const config = getOAuthConfig(provider);
