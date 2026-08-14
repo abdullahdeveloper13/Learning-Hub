@@ -77,13 +77,12 @@ export default function InstructorCourses() {
             {courses.map((course) => (
               <Card key={course.id} className="overflow-hidden flex flex-col md:flex-row group border-border hover:border-primary/50 transition-colors">
                 <div className="w-full md:w-64 h-48 md:h-auto bg-muted relative shrink-0">
-                  {course.thumbnailUrl ? (
-                    <img src={course.thumbnailUrl} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <BookOpen className="w-12 h-12 text-muted-foreground/30" />
-                    </div>
-                  )}
+                  <img
+                    src={course.thumbnailUrl || "/images/courses/default-course.jpg"}
+                    alt={`${course.title} course thumbnail`}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
                   <div className="absolute top-3 right-3 flex gap-2">
                     <Badge variant={course.isPublished ? "default" : "secondary"} className="shadow-sm">
                       {course.isPublished ? "Published" : "Draft"}
@@ -100,7 +99,7 @@ export default function InstructorCourses() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem asChild>
-                          <Link href={`/courses/${course.id}`} className="cursor-pointer">
+                          <Link href={`/courses/${course.slug || course.id}`} className="cursor-pointer">
                             <Eye className="w-4 h-4 mr-2" /> View Public Page
                           </Link>
                         </DropdownMenuItem>

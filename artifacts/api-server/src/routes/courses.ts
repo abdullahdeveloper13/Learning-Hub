@@ -11,7 +11,6 @@ import { supabaseRest } from "../lib/supabaseRest";
 
 const router = Router();
 const fallbackCourses = new Map<number, any>();
-let fallbackCourseId = 10_000;
 
 export function getFallbackCourse(courseId: number) {
   return fallbackCourses.get(courseId);
@@ -77,6 +76,27 @@ function moduleFromRest(row: any) {
   };
 }
 
+function lessonFromRest(row: any) {
+  return {
+    id: row.id,
+    moduleId: row.module_id,
+    title: row.title,
+    type: row.type,
+    content: row.content,
+    videoUrl: row.video_url,
+    pdfUrl: row.pdf_url,
+    resourceUrl: row.resource_url,
+    downloadableFiles: row.downloadable_files ?? [],
+    thumbnailUrl: row.thumbnail_url,
+    duration: row.duration,
+    position: row.position,
+    isFree: row.is_free,
+    isExam: row.is_exam,
+    createdAt: new Date(row.created_at),
+    isCompleted: false,
+  };
+}
+
 function courseToRestValues(values: any, instructorId: number, slug: string) {
   return {
     title: values.title,
@@ -100,6 +120,27 @@ function courseToRestValues(values: any, instructorId: number, slug: string) {
     has_certificate: values.hasCertificate ?? true,
     certificate_template: values.certificateTemplate ?? null,
   };
+}
+
+function coursePatchToRestValues(values: any) {
+  const restValues: Record<string, unknown> = {};
+  const mappings: Record<string, string> = {
+    shortDescription: "short_description",
+    thumbnailUrl: "thumbnail_url",
+    bannerUrl: "banner_url",
+    previewVideoUrl: "preview_video_url",
+    categoryId: "category_id",
+    isPublished: "is_published",
+    discountPrice: "discount_price",
+    hasCertificate: "has_certificate",
+    certificateTemplate: "certificate_template",
+  };
+
+  for (const [key, value] of Object.entries(values)) {
+    restValues[mappings[key] ?? key] = value;
+  }
+  restValues["updated_at"] = new Date().toISOString();
+  return restValues;
 }
 
 async function enrichCourse(course: typeof coursesTable.$inferSelect) {
@@ -149,7 +190,7 @@ router.get("/courses", async (req, res) => {
     const limitNum = parseInt(limit);
     const offset = (pageNum - 1) * limitNum;
 
-    let query = db.select().from(coursesTable);
+    const query = db.select().from(coursesTable);
     const courses = conditions.length > 0
       ? await query.where(and(...conditions)).orderBy(desc(coursesTable.createdAt)).limit(limitNum).offset(offset)
       : await query.orderBy(desc(coursesTable.createdAt)).limit(limitNum).offset(offset);
@@ -166,6 +207,46 @@ router.get("/courses", async (req, res) => {
       const published = req.query["published"];
       const visible = published === "true" ? courses.filter((course) => course.isPublished) : courses;
       res.json({ courses: visible, total: visible.length, page: 1, limit: visible.length || 12 });
+      return;
+    }
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/courses/slug/:slug", async (req, res) => {
+  try {
+    const slug = String(req.params["slug"] ?? "");
+    const [course] = await db.select().from(coursesTable).where(eq(coursesTable.slug, slug)).limit(1);
+    if (!course) { res.status(404).json({ error: "Not found" }); return; }
+    const enriched = await enrichCourse(course);
+    const modules = await db.select().from(modulesTable).where(eq(modulesTable.courseId, course.id)).orderBy(asc(modulesTable.position));
+    const modulesWithLessons = await Promise.all(modules.map(async (m) => {
+      const lessons = await db.select().from(lessonsTable).where(eq(lessonsTable.moduleId, m.id)).orderBy(asc(lessonsTable.position));
+      return { ...m, lessons: lessons.map(l => ({ ...l, isCompleted: false })) };
+    }));
+    res.json({ ...enriched, modules: modulesWithLessons });
+  } catch (err) {
+    req.log.error(err);
+    if (databaseErrorResponse(err)) {
+      const slug = String(req.params["slug"] ?? "");
+      const row = await supabaseRest().selectOne("courses", { slug });
+      const restCourse = row ? courseFromRest(row) : null;
+      const existingFallback = restCourse ? fallbackCourses.get(restCourse.id) : undefined;
+      const restModules = restCourse
+        ? await Promise.all((await supabaseRest().selectMany("modules", { course_id: restCourse.id }))
+          .map(moduleFromRest)
+          .sort((a, b) => a.position - b.position)
+          .map(async (mod) => ({
+            ...mod,
+            lessons: (await supabaseRest().selectMany("lessons", { module_id: mod.id }))
+              .map(lessonFromRest)
+              .sort((a, b) => a.position - b.position),
+          })))
+        : [];
+      const course = restCourse ? { ...restCourse, modules: restModules.length ? restModules : existingFallback?.modules ?? [] } : undefined;
+      if (course) fallbackCourses.set(course.id, course);
+      if (!course) { res.status(404).json({ error: "Not found" }); return; }
+      res.json(course);
       return;
     }
     res.status(500).json({ error: "Internal server error" });
@@ -206,7 +287,7 @@ router.post("/courses", requireAuth, requireRole("instructor", "admin"), async (
 
 router.get("/courses/:courseId", async (req, res) => {
   try {
-    const courseId = parseInt(req.params["courseId"]!);
+    const courseId = Number(req.params["courseId"]);
     const [course] = await db.select().from(coursesTable).where(eq(coursesTable.id, courseId)).limit(1);
     if (!course) { res.status(404).json({ error: "Not found" }); return; }
     const enriched = await enrichCourse(course);
@@ -220,12 +301,20 @@ router.get("/courses/:courseId", async (req, res) => {
   } catch (err) {
     req.log.error(err);
     if (databaseErrorResponse(err)) {
-      const courseId = parseInt(req.params["courseId"]!);
+      const courseId = Number(req.params["courseId"]);
       const row = await supabaseRest().selectOne("courses", { id: courseId });
       const restCourse = row ? courseFromRest(row) : null;
       const existingFallback = fallbackCourses.get(courseId);
       const restModules = restCourse
-        ? (await supabaseRest().selectMany("modules", { course_id: courseId })).map(moduleFromRest).sort((a, b) => a.position - b.position)
+        ? await Promise.all((await supabaseRest().selectMany("modules", { course_id: courseId }))
+          .map(moduleFromRest)
+          .sort((a, b) => a.position - b.position)
+          .map(async (mod) => ({
+            ...mod,
+            lessons: (await supabaseRest().selectMany("lessons", { module_id: mod.id }))
+              .map(lessonFromRest)
+              .sort((a, b) => a.position - b.position),
+          })))
         : [];
       const course = restCourse ? { ...restCourse, modules: restModules.length ? restModules : existingFallback?.modules ?? [] } : existingFallback;
       if (course) fallbackCourses.set(courseId, course);
@@ -239,7 +328,7 @@ router.get("/courses/:courseId", async (req, res) => {
 
 router.patch("/courses/:courseId", requireAuth, async (req, res) => {
   try {
-    const courseId = parseInt(req.params["courseId"]!);
+    const courseId = Number(req.params["courseId"]);
     const [existing] = await db.select().from(coursesTable).where(eq(coursesTable.id, courseId)).limit(1);
     if (!existing) { res.status(404).json({ error: "Not found" }); return; }
     if (existing.instructorId !== req.user!.id && req.user!.role !== "admin") {
@@ -254,11 +343,24 @@ router.patch("/courses/:courseId", requireAuth, async (req, res) => {
   } catch (err) {
     req.log.error(err);
     if (databaseErrorResponse(err)) {
-      const courseId = parseInt(req.params["courseId"]!);
-      const existing = fallbackCourses.get(courseId);
+      const courseId = Number(req.params["courseId"]);
+      const existingRow = await supabaseRest().selectOne("courses", { id: courseId });
+      const existing = existingRow ? courseFromRest(existingRow) : fallbackCourses.get(courseId);
       if (!existing) { res.status(404).json({ error: "Not found" }); return; }
-      const updated = { ...existing, ...req.body, updatedAt: new Date().toISOString() };
-      fallbackCourses.set(courseId, updated);
+      if (existing.instructorId !== req.user!.id && req.user!.role !== "admin") {
+        res.status(403).json({ error: "Forbidden" }); return;
+      }
+
+      const { title, ...rest } = req.body;
+      const updates = coursePatchToRestValues(rest);
+      if (title) {
+        updates["title"] = title;
+        updates["slug"] = slugify(title);
+      }
+      const updatedRow = await supabaseRest().updateOne("courses", { id: courseId }, updates);
+      if (!updatedRow) { res.status(404).json({ error: "Not found" }); return; }
+      const updated = courseFromRest(updatedRow);
+      fallbackCourses.set(courseId, { ...fallbackCourses.get(courseId), ...updated });
       res.json(updated);
       return;
     }
@@ -268,7 +370,7 @@ router.patch("/courses/:courseId", requireAuth, async (req, res) => {
 
 router.delete("/courses/:courseId", requireAuth, async (req, res) => {
   try {
-    const courseId = parseInt(req.params["courseId"]!);
+    const courseId = Number(req.params["courseId"]);
     const [existing] = await db.select().from(coursesTable).where(eq(coursesTable.id, courseId)).limit(1);
     if (!existing) { res.status(404).json({ error: "Not found" }); return; }
     if (existing.instructorId !== req.user!.id && req.user!.role !== "admin") {
@@ -279,7 +381,9 @@ router.delete("/courses/:courseId", requireAuth, async (req, res) => {
   } catch (err) {
     req.log.error(err);
     if (databaseErrorResponse(err)) {
-      fallbackCourses.delete(parseInt(req.params["courseId"]!));
+      const courseId = Number(req.params["courseId"]);
+      await supabaseRest().deleteOne("courses", { id: courseId });
+      fallbackCourses.delete(courseId);
       res.status(204).send();
       return;
     }
@@ -289,8 +393,13 @@ router.delete("/courses/:courseId", requireAuth, async (req, res) => {
 
 router.patch("/courses/:courseId/publish", requireAuth, async (req, res) => {
   try {
-    const courseId = parseInt(req.params["courseId"]!);
+    const courseId = Number(req.params["courseId"]);
     const { isPublished } = req.body;
+    const [existing] = await db.select().from(coursesTable).where(eq(coursesTable.id, courseId)).limit(1);
+    if (!existing) { res.status(404).json({ error: "Not found" }); return; }
+    if (existing.instructorId !== req.user!.id && req.user!.role !== "admin") {
+      res.status(403).json({ error: "Forbidden" }); return;
+    }
     const [updated] = await db.update(coursesTable).set({ isPublished, updatedAt: new Date() })
       .where(eq(coursesTable.id, courseId)).returning();
     if (!updated) { res.status(404).json({ error: "Not found" }); return; }
@@ -299,10 +408,19 @@ router.patch("/courses/:courseId/publish", requireAuth, async (req, res) => {
   } catch (err) {
     req.log.error(err);
     if (databaseErrorResponse(err)) {
-      const courseId = parseInt(req.params["courseId"]!);
-      const existing = fallbackCourses.get(courseId);
+      const courseId = Number(req.params["courseId"]);
+      const existingRow = await supabaseRest().selectOne("courses", { id: courseId });
+      const existing = existingRow ? courseFromRest(existingRow) : fallbackCourses.get(courseId);
       if (!existing) { res.status(404).json({ error: "Not found" }); return; }
-      const updated = { ...existing, isPublished: req.body.isPublished, updatedAt: new Date().toISOString() };
+      if (existing.instructorId !== req.user!.id && req.user!.role !== "admin") {
+        res.status(403).json({ error: "Forbidden" }); return;
+      }
+      const updatedRow = await supabaseRest().updateOne("courses", { id: courseId }, {
+        is_published: req.body.isPublished,
+        updated_at: new Date().toISOString(),
+      });
+      if (!updatedRow) { res.status(404).json({ error: "Not found" }); return; }
+      const updated = courseFromRest(updatedRow);
       fallbackCourses.set(courseId, updated);
       res.json(updated);
       return;
@@ -313,7 +431,7 @@ router.patch("/courses/:courseId/publish", requireAuth, async (req, res) => {
 
 router.get("/courses/:courseId/stats", requireAuth, async (req, res) => {
   try {
-    const courseId = parseInt(req.params["courseId"]!);
+    const courseId = Number(req.params["courseId"]);
     const [enrollCount] = await db.select({ count: sql<number>`count(*)::int` })
       .from(enrollmentsTable).where(eq(enrollmentsTable.courseId, courseId));
     const [completedCount] = await db.select({ count: sql<number>`count(*)::int` })
@@ -339,7 +457,7 @@ router.get("/courses/:courseId/stats", requireAuth, async (req, res) => {
 
 router.get("/courses/:courseId/enrollments", requireAuth, async (req, res) => {
   try {
-    const courseId = parseInt(req.params["courseId"]!);
+    const courseId = Number(req.params["courseId"]);
     const enrollments = await db.select().from(enrollmentsTable).where(eq(enrollmentsTable.courseId, courseId));
     res.json(enrollments.map(e => ({ ...e, course: null, progressPercent: 0 })));
   } catch (err) {

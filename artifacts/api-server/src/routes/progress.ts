@@ -4,8 +4,14 @@ import { lessonProgressTable, enrollmentsTable, modulesTable, lessonsTable, cert
 import { eq, and, sql } from "drizzle-orm";
 import { requireAuth } from "../middlewares/auth";
 import { randomUUID } from "crypto";
+import { databaseErrorResponse } from "../lib/httpErrors";
+import { supabaseRest } from "../lib/supabaseRest";
 
 const router = Router();
+
+export function isCourseComplete(completedLessons: number, totalLessons: number, requiredAssessmentsPassed = true) {
+  return totalLessons > 0 && completedLessons >= totalLessons && requiredAssessmentsPassed;
+}
 
 async function getCourseProgress(userId: number, courseId: number) {
   const modules = await db.select().from(modulesTable).where(eq(modulesTable.courseId, courseId));
@@ -38,7 +44,7 @@ router.get("/progress", requireAuth, async (req, res) => {
 
 router.get("/progress/:courseId", requireAuth, async (req, res) => {
   try {
-    const courseId = parseInt(req.params["courseId"]!);
+    const courseId = Number(req.params["courseId"]);
     const progress = await getCourseProgress(req.user!.id, courseId);
     res.json(progress);
   } catch (err) {
@@ -49,7 +55,7 @@ router.get("/progress/:courseId", requireAuth, async (req, res) => {
 
 router.post("/progress/lessons/:lessonId/complete", requireAuth, async (req, res) => {
   try {
-    const lessonId = parseInt(req.params["lessonId"]!);
+    const lessonId = Number(req.params["lessonId"]);
     const existing = await db.select().from(lessonProgressTable)
       .where(and(eq(lessonProgressTable.userId, req.user!.id), eq(lessonProgressTable.lessonId, lessonId))).limit(1);
     if (existing.length === 0) {
@@ -63,8 +69,8 @@ router.post("/progress/lessons/:lessonId/complete", requireAuth, async (req, res
     if (lesson) {
       const [mod] = await db.select({ courseId: modulesTable.courseId }).from(modulesTable).where(eq(modulesTable.id, lesson.moduleId)).limit(1);
       if (mod) {
-        const { progressPercent } = await getCourseProgress(req.user!.id, mod.courseId);
-        if (progressPercent >= 100) {
+        const { completedLessons, totalLessons } = await getCourseProgress(req.user!.id, mod.courseId);
+        if (isCourseComplete(completedLessons, totalLessons)) {
           // Issue certificate
           const existing = await db.select().from(certificatesTable)
             .where(and(eq(certificatesTable.userId, req.user!.id), eq(certificatesTable.courseId, mod.courseId))).limit(1);
@@ -85,6 +91,19 @@ router.post("/progress/lessons/:lessonId/complete", requireAuth, async (req, res
     res.json({ lessonId, userId: req.user!.id, completedAt: prog!.completedAt.toISOString() });
   } catch (err) {
     req.log.error(err);
+    if (databaseErrorResponse(err)) {
+      const lessonId = Number(req.params["lessonId"]);
+      const existing = await supabaseRest().selectMany("lesson_progress", {
+        user_id: req.user!.id,
+        lesson_id: lessonId,
+      });
+      const prog = existing[0] ?? await supabaseRest().insertOne("lesson_progress", {
+        user_id: req.user!.id,
+        lesson_id: lessonId,
+      });
+      res.json({ lessonId, userId: req.user!.id, completedAt: prog.completed_at });
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });

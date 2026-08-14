@@ -24,7 +24,7 @@ import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 
 function lessonIcon(type: string) {
@@ -40,15 +40,30 @@ function lessonIcon(type: string) {
 
 export default function CourseDetail() {
   const { id } = useParams<{ id: string }>();
-  const courseId = parseInt(id || "0", 10);
+  const courseParam = id || "";
+  const numericCourseId = /^\d+$/.test(courseParam) ? parseInt(courseParam, 10) : 0;
   const [, setLocation] = useLocation();
   const { isAuthenticated, user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: course, isLoading: courseLoading } = useGetCourse(courseId, {
-    query: { enabled: !!courseId, queryKey: getGetCourseQueryKey(courseId) },
+  const { data: numericCourse, isLoading: numericCourseLoading } = useGetCourse(numericCourseId, {
+    query: { enabled: !!numericCourseId, queryKey: getGetCourseQueryKey(numericCourseId) },
   });
+
+  const { data: slugCourse, isLoading: slugCourseLoading } = useQuery({
+    enabled: !!courseParam && !numericCourseId,
+    queryKey: ["course-by-slug", courseParam],
+    queryFn: async () => {
+      const apiBase = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+      const response = await fetch(`${apiBase}/api/courses/slug/${encodeURIComponent(courseParam)}`);
+      if (!response.ok) throw new Error("Course not found");
+      return response.json();
+    },
+  });
+
+  const course = numericCourse || slugCourse;
+  const courseId = Number((course as any)?.id || numericCourseId || 0);
 
   const { data: progress } = useGetCourseProgress(courseId, {
     query: { enabled: !!courseId && isAuthenticated, queryKey: getGetCourseProgressQueryKey(courseId) },
@@ -66,9 +81,11 @@ export default function CourseDetail() {
   });
 
   const handleEnroll = () => {
-    if (!isAuthenticated) { setLocation(`/login?redirect=/courses/${courseId}`); return; }
+    if (!isAuthenticated) { setLocation(`/login?redirect=/courses/${courseParam}`); return; }
     enrollMutation.mutate({ data: { courseId } });
   };
+
+  const courseLoading = numericCourseLoading || slugCourseLoading;
 
   if (courseLoading) {
     return (
@@ -106,9 +123,13 @@ export default function CourseDetail() {
   return (
     <PublicLayout>
       {/* Banner / Hero */}
-      {c.bannerUrl ? (
+      {c.bannerUrl || c.thumbnailUrl ? (
         <div className="relative h-56 md:h-72 overflow-hidden">
-          <img src={c.bannerUrl} alt="" className="w-full h-full object-cover" />
+          <img
+            src={c.bannerUrl || c.thumbnailUrl || "/images/courses/default-course.jpg"}
+            alt={`${c.title} course banner`}
+            className="w-full h-full object-cover"
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/70 to-transparent" />
           <div className="absolute inset-0 flex items-end">
             <div className="container mx-auto px-4 md:px-6 pb-8">
@@ -200,7 +221,7 @@ export default function CourseDetail() {
               ) : (
                 <div className="border-2 border-dashed rounded-xl p-8 text-center text-muted-foreground">
                   <BookOpen className="w-10 h-10 mx-auto mb-2 opacity-20" />
-                  <p className="text-sm">Curriculum coming soon</p>
+                  <p className="text-sm">No curriculum modules have been added yet.</p>
                 </div>
               )}
             </section>
@@ -265,12 +286,12 @@ export default function CourseDetail() {
                   </div>
                   <div className="absolute bottom-3 text-white font-semibold text-center w-full text-xs">Preview this course</div>
                 </div>
-              ) : c.thumbnailUrl ? (
-                <img src={c.thumbnailUrl} alt={c.title} className="w-full aspect-video object-cover" />
               ) : (
-                <div className="aspect-video bg-muted flex items-center justify-center">
-                  <BookOpen className="w-12 h-12 text-muted-foreground/20" />
-                </div>
+                <img
+                  src={c.thumbnailUrl || "/images/courses/default-course.jpg"}
+                  alt={`${c.title} course thumbnail`}
+                  className="w-full aspect-video object-cover"
+                />
               )}
 
               <div className="p-6 space-y-5">
@@ -400,7 +421,7 @@ function HeroContent({ c }: { c: any }) {
 
         <div className="flex items-center gap-3 pt-2">
           <Avatar className="h-10 w-10 border-2 border-slate-700">
-            <AvatarImage src={c.instructorAvatar || undefined} />
+            <AvatarImage src={c.instructorAvatar || "/images/avatars/default-avatar.jpg"} />
             <AvatarFallback className="bg-slate-700 text-slate-300 text-xs">
               {c.instructorName?.slice(0, 2).toUpperCase()}
             </AvatarFallback>

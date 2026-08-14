@@ -1,0 +1,42 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: skillforge
+      POSTGRES_USER: skillforge
+      POSTGRES_PASSWORD: skillforge
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U skillforge -d skillforge"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://skillforge:skillforge@postgres:5432/skillforge
+      JWT_SECRET: change-this-local-compose-secret
+      PUBLIC_APP_URL: http://localhost:3000
+      API_PUBLIC_URL: http://localhost:3000
+      EMAIL_PROVIDER: console
+      PAYMENT_PROVIDER: manual
+      SUPABASE_STORAGE_BUCKET: course-assets
+      RATE_LIMIT_STORE: memory
+    ports:
+      - "3000:3000"
+    command: >
+      sh -c "pnpm --filter @workspace/db run push &&
+             pnpm run seed:skillforge &&
+             pnpm --filter @workspace/api-server run start"
+
+volumes:
+  postgres-data:

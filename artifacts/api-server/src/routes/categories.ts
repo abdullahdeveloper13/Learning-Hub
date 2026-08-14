@@ -9,11 +9,11 @@ import { supabaseRest } from "../lib/supabaseRest";
 const router = Router();
 
 const fallbackCategories = [
-  { id: 1, name: "Web Development", slug: "web-development", description: "Frontend, backend, and full-stack engineering.", iconUrl: null, createdAt: new Date(), courseCount: 0 },
-  { id: 2, name: "Artificial Intelligence", slug: "artificial-intelligence", description: "AI tools, automation, and applied machine learning.", iconUrl: null, createdAt: new Date(), courseCount: 0 },
-  { id: 3, name: "Data Analytics", slug: "data-analytics", description: "SQL, dashboards, metrics, and reporting.", iconUrl: null, createdAt: new Date(), courseCount: 0 },
-  { id: 4, name: "Design", slug: "design", description: "UX, UI, product design, and visual systems.", iconUrl: null, createdAt: new Date(), courseCount: 0 },
-  { id: 5, name: "Business", slug: "business", description: "Operations, marketing, finance, and strategy.", iconUrl: null, createdAt: new Date(), courseCount: 0 },
+  { id: 1, name: "Web Development", slug: "web-development", description: "Frontend, backend, and full-stack engineering.", iconUrl: "/images/categories/web-development.jpg", createdAt: new Date(), courseCount: 0 },
+  { id: 2, name: "Programming", slug: "programming", description: "Programming languages, software craft, automation, and testing.", iconUrl: "/images/categories/programming.jpg", createdAt: new Date(), courseCount: 0 },
+  { id: 3, name: "Artificial Intelligence", slug: "artificial-intelligence", description: "AI tools, automation, and applied machine learning.", iconUrl: "/images/categories/ai.jpg", createdAt: new Date(), courseCount: 0 },
+  { id: 4, name: "Design", slug: "design", description: "UX, UI, product design, and visual systems.", iconUrl: "/images/categories/design.jpg", createdAt: new Date(), courseCount: 0 },
+  { id: 5, name: "Business", slug: "business", description: "Operations, marketing, finance, and strategy.", iconUrl: "/images/categories/business.jpg", createdAt: new Date(), courseCount: 0 },
 ];
 
 const seedCategories = fallbackCategories.map(({ name, slug, description, iconUrl }) => ({
@@ -82,7 +82,7 @@ router.post("/categories", requireAuth, requireRole("admin"), async (req, res) =
 
 router.patch("/categories/:categoryId", requireAuth, requireRole("admin"), async (req, res) => {
   try {
-    const id = parseInt(req.params["categoryId"]!);
+    const id = Number(req.params["categoryId"]);
     const { name, description, iconUrl } = req.body;
     const updates: Record<string, unknown> = {};
     if (name) { updates["name"] = name; updates["slug"] = name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""); }
@@ -99,7 +99,7 @@ router.patch("/categories/:categoryId", requireAuth, requireRole("admin"), async
 
 router.delete("/categories/:categoryId", requireAuth, requireRole("admin"), async (req, res) => {
   try {
-    const id = parseInt(req.params["categoryId"]!);
+    const id = Number(req.params["categoryId"]);
     await db.delete(categoriesTable).where(eq(categoriesTable.id, id));
     res.status(204).send();
   } catch (err) {

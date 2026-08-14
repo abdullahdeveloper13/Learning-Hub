@@ -9,7 +9,7 @@ import { ArrowRight, BookOpen, Brain, Trophy, Users } from "lucide-react";
 
 export default function Home() {
   const { data: popularCourses, isLoading } = useGetCourses({ sortBy: 'popular', limit: 6, published: true });
-  const heroImage = popularCourses?.courses?.find((course) => course.bannerUrl || course.thumbnailUrl);
+  const heroImage = popularCourses?.courses?.find((course) => course.thumbnailUrl);
   
   return (
     <PublicLayout>
@@ -60,7 +60,7 @@ export default function Home() {
               <div className="relative bg-card border rounded-3xl p-2 shadow-2xl">
                 {heroImage ? (
                   <img
-                    src={heroImage.bannerUrl || heroImage.thumbnailUrl || ""}
+                    src={heroImage.thumbnailUrl || "/images/branding/skillforge-hero.jpg"}
                     alt={heroImage.title}
                     className="rounded-2xl w-full h-[600px] object-cover"
                   />

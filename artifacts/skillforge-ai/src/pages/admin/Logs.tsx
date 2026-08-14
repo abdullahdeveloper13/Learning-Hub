@@ -39,9 +39,9 @@ export default function AdminLogs() {
               <div className="p-6 space-y-4">
                 {[1,2,3,4,5].map(i => <div key={i} className="h-12 bg-muted animate-pulse rounded" />)}
               </div>
-            ) : logsData?.logs && logsData.logs.length > 0 ? (
+            ) : logsData && logsData.length > 0 ? (
               <div className="divide-y">
-                {logsData.logs.map((log) => (
+                {logsData.map((log) => (
                   <div key={log.id} className="p-4 flex items-start sm:items-center gap-4 hover:bg-muted/30 transition-colors">
                     <div className="hidden sm:flex w-10 h-10 rounded-full bg-muted items-center justify-center shrink-0">
                       {getEntityIcon(log.entityType || '')}

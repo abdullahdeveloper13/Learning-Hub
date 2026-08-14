@@ -47,7 +47,7 @@ router.post("/messages/conversations", requireAuth, async (req, res) => {
 
 router.get("/messages/conversations/:conversationId", requireAuth, async (req, res) => {
   try {
-    const convId = parseInt(req.params["conversationId"]!);
+    const convId = Number(req.params["conversationId"]);
     const msgs = await db.select().from(messagesTable).where(eq(messagesTable.conversationId, convId)).orderBy(sql`created_at asc`);
     const enriched = await Promise.all(msgs.map(async m => {
       const [u] = await db.select({ name: usersTable.name, avatarUrl: usersTable.avatarUrl }).from(usersTable).where(eq(usersTable.id, m.senderId)).limit(1);
@@ -62,7 +62,7 @@ router.get("/messages/conversations/:conversationId", requireAuth, async (req, r
 
 router.post("/messages/conversations/:conversationId", requireAuth, async (req, res) => {
   try {
-    const convId = parseInt(req.params["conversationId"]!);
+    const convId = Number(req.params["conversationId"]);
     const { content } = req.body;
     const [msg] = await db.insert(messagesTable).values({ conversationId: convId, senderId: req.user!.id, content }).returning();
     const [u] = await db.select({ name: usersTable.name, avatarUrl: usersTable.avatarUrl }).from(usersTable).where(eq(usersTable.id, req.user!.id)).limit(1);
@@ -75,7 +75,7 @@ router.post("/messages/conversations/:conversationId", requireAuth, async (req, 
 
 router.get("/courses/:courseId/discussions", async (req, res) => {
   try {
-    const courseId = parseInt(req.params["courseId"]!);
+    const courseId = Number(req.params["courseId"]);
     const discussions = await db.select().from(discussionsTable).where(eq(discussionsTable.courseId, courseId)).orderBy(sql`created_at desc`);
     const enriched = await Promise.all(discussions.map(async d => {
       const [u] = await db.select({ name: usersTable.name, avatarUrl: usersTable.avatarUrl, role: usersTable.role }).from(usersTable).where(eq(usersTable.id, d.userId)).limit(1);
@@ -91,7 +91,7 @@ router.get("/courses/:courseId/discussions", async (req, res) => {
 
 router.post("/courses/:courseId/discussions", requireAuth, async (req, res) => {
   try {
-    const courseId = parseInt(req.params["courseId"]!);
+    const courseId = Number(req.params["courseId"]);
     const { content, parentId } = req.body;
     const [discussion] = await db.insert(discussionsTable).values({ courseId, userId: req.user!.id, content, parentId }).returning();
     const [u] = await db.select({ name: usersTable.name, avatarUrl: usersTable.avatarUrl, role: usersTable.role }).from(usersTable).where(eq(usersTable.id, req.user!.id)).limit(1);

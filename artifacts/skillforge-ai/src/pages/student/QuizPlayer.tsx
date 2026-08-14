@@ -64,6 +64,7 @@ export default function QuizPlayer() {
     if (timeLeft === 0 && !isSubmitted) {
       handleSubmit(); // Auto-submit when time is up
     }
+    return undefined;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quiz, timeLeft, isSubmitted]);
 

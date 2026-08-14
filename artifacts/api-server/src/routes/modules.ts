@@ -8,7 +8,10 @@ import { getAllFallbackCourses, getFallbackCourse, setFallbackCourse } from "./c
 import { supabaseRest } from "../lib/supabaseRest";
 
 const router = Router();
-let fallbackModuleId = 20_000;
+
+function hasSupabaseRestEnv() {
+  return !!process.env["SUPABASE_URL"] && !!process.env["SUPABASE_SERVICE_ROLE_KEY"];
+}
 
 function getFallbackModules(courseId: number) {
   const course = getFallbackCourse(courseId);
@@ -40,6 +43,27 @@ function moduleFromRest(row: any) {
   };
 }
 
+function lessonFromRest(row: any) {
+  return {
+    id: row.id,
+    moduleId: row.module_id,
+    title: row.title,
+    type: row.type,
+    content: row.content,
+    videoUrl: row.video_url,
+    pdfUrl: row.pdf_url,
+    resourceUrl: row.resource_url,
+    downloadableFiles: row.downloadable_files ?? [],
+    thumbnailUrl: row.thumbnail_url,
+    duration: row.duration,
+    position: row.position,
+    isFree: row.is_free,
+    isExam: row.is_exam,
+    createdAt: new Date(row.created_at),
+    isCompleted: false,
+  };
+}
+
 function updateFallbackModule(moduleId: number, updates: Record<string, unknown>) {
   for (const course of getAllFallbackCourses()) {
     const modules = Array.isArray(course.modules) ? course.modules : [];
@@ -67,7 +91,20 @@ function deleteFallbackModule(moduleId: number) {
 
 router.get("/courses/:courseId/modules", async (req, res) => {
   try {
-    const courseId = parseInt(req.params["courseId"]!);
+    const courseId = Number(req.params["courseId"]);
+    if (hasSupabaseRestEnv()) {
+      const restModules = await Promise.all((await supabaseRest().selectMany("modules", { course_id: courseId }))
+        .map(moduleFromRest)
+        .sort((a, b) => a.position - b.position)
+        .map(async (mod) => ({
+          ...mod,
+          lessons: (await supabaseRest().selectMany("lessons", { module_id: mod.id }))
+            .map(lessonFromRest)
+            .sort((a, b) => a.position - b.position),
+        })));
+      res.json(restModules);
+      return;
+    }
     const modules = await db.select().from(modulesTable).where(eq(modulesTable.courseId, courseId)).orderBy(asc(modulesTable.position));
     const withLessons = await Promise.all(modules.map(async (m) => {
       const lessons = await db.select().from(lessonsTable).where(eq(lessonsTable.moduleId, m.id)).orderBy(asc(lessonsTable.position));
@@ -77,10 +114,16 @@ router.get("/courses/:courseId/modules", async (req, res) => {
   } catch (err) {
     req.log.error(err);
     if (databaseErrorResponse(err)) {
-      const courseId = parseInt(req.params["courseId"]!);
-      const restModules = (await supabaseRest().selectMany("modules", { course_id: courseId }))
+      const courseId = Number(req.params["courseId"]);
+      const restModules = await Promise.all((await supabaseRest().selectMany("modules", { course_id: courseId }))
         .map(moduleFromRest)
-        .sort((a, b) => a.position - b.position);
+        .sort((a, b) => a.position - b.position)
+        .map(async (mod) => ({
+          ...mod,
+          lessons: (await supabaseRest().selectMany("lessons", { module_id: mod.id }))
+            .map(lessonFromRest)
+            .sort((a, b) => a.position - b.position),
+        })));
       if (restModules.length) setFallbackModules(courseId, restModules);
       res.json(restModules.length ? restModules : getFallbackModules(courseId));
       return;
@@ -91,14 +134,24 @@ router.get("/courses/:courseId/modules", async (req, res) => {
 
 router.post("/courses/:courseId/modules", requireAuth, async (req, res) => {
   try {
-    const courseId = parseInt(req.params["courseId"]!);
+    const courseId = Number(req.params["courseId"]);
     const { title, description, position = 0 } = req.body;
+    if (hasSupabaseRestEnv()) {
+      const inserted = await supabaseRest().insertOne("modules", {
+        course_id: courseId,
+        title,
+        description: description ?? null,
+        position,
+      });
+      res.status(201).json(moduleFromRest(inserted));
+      return;
+    }
     const [mod] = await db.insert(modulesTable).values({ courseId, title, description, position }).returning();
     res.status(201).json({ ...mod, lessons: [] });
   } catch (err) {
     req.log.error(err);
     if (databaseErrorResponse(err)) {
-      const courseId = parseInt(req.params["courseId"]!);
+      const courseId = Number(req.params["courseId"]);
       const { title, description, position } = req.body;
       const modules = getFallbackModules(courseId);
       const inserted = await supabaseRest().insertOne("modules", {
@@ -108,10 +161,7 @@ router.post("/courses/:courseId/modules", requireAuth, async (req, res) => {
         position: position ?? modules.length,
       });
       const mod = moduleFromRest(inserted);
-      if (!setFallbackModules(courseId, [...modules, mod])) {
-        res.status(404).json({ error: "Course not found" });
-        return;
-      }
+      setFallbackModules(courseId, [...modules, mod]);
       res.status(201).json(mod);
       return;
     }
@@ -121,19 +171,25 @@ router.post("/courses/:courseId/modules", requireAuth, async (req, res) => {
 
 router.patch("/modules/:moduleId", requireAuth, async (req, res) => {
   try {
-    const moduleId = parseInt(req.params["moduleId"]!);
+    const moduleId = Number(req.params["moduleId"]);
     const { title, description, position } = req.body;
     const updates: Record<string, unknown> = {};
     if (title !== undefined) updates["title"] = title;
     if (description !== undefined) updates["description"] = description;
     if (position !== undefined) updates["position"] = position;
+    if (hasSupabaseRestEnv()) {
+      const updated = await supabaseRest().updateOne("modules", { id: moduleId }, updates);
+      if (!updated) { res.status(404).json({ error: "Not found" }); return; }
+      res.json(moduleFromRest(updated));
+      return;
+    }
     const [mod] = await db.update(modulesTable).set(updates).where(eq(modulesTable.id, moduleId)).returning();
     if (!mod) { res.status(404).json({ error: "Not found" }); return; }
     res.json({ ...mod, lessons: [] });
   } catch (err) {
     req.log.error(err);
     if (databaseErrorResponse(err)) {
-      const moduleId = parseInt(req.params["moduleId"]!);
+      const moduleId = Number(req.params["moduleId"]);
       const { title, description, position } = req.body;
       const updates: Record<string, unknown> = {};
       if (title !== undefined) updates["title"] = title;
@@ -150,13 +206,18 @@ router.patch("/modules/:moduleId", requireAuth, async (req, res) => {
 
 router.delete("/modules/:moduleId", requireAuth, async (req, res) => {
   try {
-    const moduleId = parseInt(req.params["moduleId"]!);
+    const moduleId = Number(req.params["moduleId"]);
+    if (hasSupabaseRestEnv()) {
+      await supabaseRest().deleteOne("modules", { id: moduleId });
+      res.status(204).send();
+      return;
+    }
     await db.delete(modulesTable).where(eq(modulesTable.id, moduleId));
     res.status(204).send();
   } catch (err) {
     req.log.error(err);
     if (databaseErrorResponse(err)) {
-      const moduleId = parseInt(req.params["moduleId"]!);
+      const moduleId = Number(req.params["moduleId"]);
       if (!deleteFallbackModule(moduleId)) {
         res.status(404).json({ error: "Not found" });
         return;

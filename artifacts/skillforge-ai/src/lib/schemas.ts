@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+const assetUrlSchema = z
+  .string()
+  .refine((value) => value === "" || value.startsWith("/") || z.string().url().safeParse(value).success, {
+    message: "Must be a valid URL or local asset path",
+  });
+
 export const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
@@ -13,7 +19,7 @@ export const registerSchema = loginSchema.extend({
 export const profileSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").optional(),
   bio: z.string().optional(),
-  avatarUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
+  avatarUrl: assetUrlSchema.optional(),
   password: z.string().min(8, "Password must be at least 8 characters").optional().or(z.literal("")),
 });
 
@@ -21,7 +27,7 @@ export const courseSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),
   description: z.string().optional(),
   shortDescription: z.string().optional(),
-  thumbnailUrl: z.string().url().optional().or(z.literal("")),
+  thumbnailUrl: assetUrlSchema.optional(),
   previewVideoUrl: z.string().url().optional().or(z.literal("")),
   categoryId: z.coerce.number().min(1, "Please select a category"),
   level: z.enum(["beginner", "intermediate", "advanced"]),

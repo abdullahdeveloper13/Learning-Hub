@@ -18,6 +18,7 @@ import messagesRouter from "./messages";
 import dashboardRouter from "./dashboard";
 import aiRouter from "./ai";
 import adminRouter from "./admin";
+import paymentsRouter from "./payments";
 
 const router: IRouter = Router();
 
@@ -39,6 +40,7 @@ router.use(notificationsRouter);
 router.use(messagesRouter);
 router.use(dashboardRouter);
 router.use(aiRouter);
+router.use(paymentsRouter);
 router.use(adminRouter);
 
 export default router;

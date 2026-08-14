@@ -204,7 +204,7 @@ function safeExtension(name: string, contentType: string) {
 }
 
 async function throwStorageError(response: Response, fallback: string): Promise<never> {
-  let detail = "";
+  let detail: string | undefined;
   try {
     detail = JSON.stringify(await response.json());
   } catch {

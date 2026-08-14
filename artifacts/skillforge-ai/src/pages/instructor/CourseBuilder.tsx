@@ -39,8 +39,8 @@ const API_BASE = (import.meta.env.VITE_API_URL || import.meta.env.BASE_URL || ""
 
 const FALLBACK_CATEGORIES = [
   { id: 1, name: "Web Development" },
-  { id: 2, name: "Artificial Intelligence" },
-  { id: 3, name: "Data Analytics" },
+  { id: 2, name: "Programming" },
+  { id: 3, name: "Artificial Intelligence" },
   { id: 4, name: "Design" },
   { id: 5, name: "Business" },
 ];
@@ -496,7 +496,11 @@ export default function CourseBuilder() {
                             className="flex items-center gap-2 flex-1 text-left font-semibold hover:text-primary transition-colors"
                             onClick={() => setExpandedModules(prev => {
                               const next = new Set(prev);
-                              next.has(mod.id) ? next.delete(mod.id) : next.add(mod.id);
+                              if (next.has(mod.id)) {
+                                next.delete(mod.id);
+                              } else {
+                                next.add(mod.id);
+                              }
                               return next;
                             })}
                           >

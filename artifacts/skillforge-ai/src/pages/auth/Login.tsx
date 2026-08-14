@@ -11,12 +11,21 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useToast } from "@/components/ui/toast";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 
+const API_BASE = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+
 export default function Login() {
   const { login, isAuthenticated, isLoading } = useAuth();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
   React.useEffect(() => {
+    const token = new URLSearchParams(window.location.search).get("token");
+    if (token) {
+      localStorage.setItem("sf_token", token);
+      setLocation("/dashboard");
+      window.location.reload();
+      return;
+    }
     if (!isLoading && isAuthenticated) {
       setLocation("/dashboard");
     }
@@ -84,7 +93,7 @@ export default function Login() {
                   <FormItem>
                     <div className="flex justify-between items-center">
                       <FormLabel>Password</FormLabel>
-                      <Link href="#" className="text-sm font-medium text-primary hover:underline">
+                      <Link href="/forgot-password" className="text-sm font-medium text-primary hover:underline">
                         Forgot password?
                       </Link>
                     </div>
@@ -100,6 +109,15 @@ export default function Login() {
               </Button>
             </form>
           </Form>
+
+          <div className="grid grid-cols-2 gap-3">
+            <Button type="button" variant="outline" onClick={() => { window.location.href = `${API_BASE}/api/auth/oauth/google/start`; }}>
+              Google
+            </Button>
+            <Button type="button" variant="outline" onClick={() => { window.location.href = `${API_BASE}/api/auth/oauth/github/start`; }}>
+              GitHub
+            </Button>
+          </div>
 
           <p className="text-center text-sm text-muted-foreground">
             Don't have an account?{" "}

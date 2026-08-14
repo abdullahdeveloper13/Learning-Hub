@@ -18,6 +18,14 @@ const requestUploadUrlBody = z.object({
   folder: z.string().optional(),
 });
 
+const MAX_UPLOAD_BYTES = 2 * 1024 * 1024 * 1024;
+const ALLOWED_UPLOADS = [
+  { extensions: [".jpg", ".jpeg", ".png", ".webp"], mimePrefixes: ["image/"], maxBytes: 10 * 1024 * 1024 },
+  { extensions: [".mp4", ".webm", ".mov"], mimePrefixes: ["video/"], maxBytes: MAX_UPLOAD_BYTES },
+  { extensions: [".pdf"], mimeTypes: ["application/pdf"], maxBytes: 50 * 1024 * 1024 },
+  { extensions: [".zip"], mimeTypes: ["application/zip", "application/x-zip-compressed"], maxBytes: 200 * 1024 * 1024 },
+];
+
 const requestUploadUrlResponse = z.object({
   uploadURL: z.string(),
   objectPath: z.string(),
@@ -36,6 +44,11 @@ router.put("/storage/uploads", requireAuth, async (req: Request, res: Response) 
   if (!body.length) {
     req.log.warn({ fileName }, "Empty storage upload request");
     res.status(400).json({ error: "Missing file body" });
+    return;
+  }
+  const validationError = validateUpload({ name: fileName, size: body.length, contentType: String(contentType), folder, role: req.user!.role });
+  if (validationError) {
+    res.status(400).json({ error: validationError });
     return;
   }
 
@@ -68,6 +81,11 @@ router.post("/storage/uploads/request-url", requireAuth, async (req: Request, re
 
   try {
     const { name, size, contentType, folder } = parsed.data;
+    const validationError = validateUpload({ name, size, contentType, folder, role: req.user!.role });
+    if (validationError) {
+      res.status(400).json({ error: validationError });
+      return;
+    }
     const upload = await getStorageService().createSignedUpload({ name, contentType, folder });
 
     res.json(
@@ -108,3 +126,25 @@ router.delete("/storage/assets", requireAuth, async (req: Request, res: Response
 });
 
 export default router;
+
+export function validateUpload(input: { name: string; size: number; contentType: string; folder?: string; role: string }) {
+  if (input.size > MAX_UPLOAD_BYTES) return "File exceeds maximum upload size";
+  const extension = (input.name.toLowerCase().match(/\.[a-z0-9]{1,12}$/)?.[0]) || "";
+  const rule = ALLOWED_UPLOADS.find((candidate) =>
+    candidate.extensions.includes(extension) &&
+    ((candidate.mimeTypes ?? []).includes(input.contentType) || (candidate.mimePrefixes ?? []).some(prefix => input.contentType.startsWith(prefix)))
+  );
+  if (!rule) return "File type is not allowed";
+  if (input.size > rule.maxBytes) return "File exceeds the size limit for this file type";
+  const folder = input.folder || "course-media";
+  if (!/^(course-thumbnails|course-videos|lesson-resources|assignment-submissions|avatars|course-media)(\/[a-z0-9_-]+)*$/i.test(folder)) {
+    return "Upload folder is not allowed";
+  }
+  if (folder.startsWith("course-videos") || folder.startsWith("lesson-resources") || folder.startsWith("course-thumbnails")) {
+    if (!["instructor", "admin"].includes(input.role)) return "Only instructors and admins can upload course assets";
+  }
+  if (folder.startsWith("assignment-submissions") && !["student", "instructor", "admin"].includes(input.role)) {
+    return "Assignment upload is not authorized";
+  }
+  return null;
+}

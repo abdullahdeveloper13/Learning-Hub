@@ -38,7 +38,7 @@ router.get("/users", requireAuth, requireRole("admin"), async (req, res) => {
 
 router.get("/users/:userId", requireAuth, async (req, res) => {
   try {
-    const userId = parseInt(req.params["userId"]!);
+    const userId = Number(req.params["userId"]);
     const [user] = await db.select({
       id: usersTable.id, email: usersTable.email, name: usersTable.name,
       role: usersTable.role, avatarUrl: usersTable.avatarUrl, bio: usersTable.bio,
@@ -54,7 +54,7 @@ router.get("/users/:userId", requireAuth, async (req, res) => {
 
 router.patch("/users/:userId", requireAuth, async (req, res) => {
   try {
-    const userId = parseInt(req.params["userId"]!);
+    const userId = Number(req.params["userId"]);
     if (req.user!.id !== userId && req.user!.role !== "admin") {
       res.status(403).json({ error: "Forbidden" }); return;
     }
@@ -80,7 +80,7 @@ router.patch("/users/:userId", requireAuth, async (req, res) => {
 
 router.delete("/users/:userId", requireAuth, requireRole("admin"), async (req, res) => {
   try {
-    const userId = parseInt(req.params["userId"]!);
+    const userId = Number(req.params["userId"]);
     await db.delete(usersTable).where(eq(usersTable.id, userId));
     res.status(204).send();
   } catch (err) {
@@ -91,7 +91,7 @@ router.delete("/users/:userId", requireAuth, requireRole("admin"), async (req, r
 
 router.patch("/users/:userId/role", requireAuth, requireRole("admin"), async (req, res) => {
   try {
-    const userId = parseInt(req.params["userId"]!);
+    const userId = Number(req.params["userId"]);
     const { role } = req.body;
     const [updated] = await db.update(usersTable).set({ role }).where(eq(usersTable.id, userId)).returning({
       id: usersTable.id, email: usersTable.email, name: usersTable.name,

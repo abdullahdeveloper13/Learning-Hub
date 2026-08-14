@@ -2,6 +2,8 @@ import express, { type Express } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
 import { randomUUID } from "crypto";
+import fs from "node:fs";
+import path from "node:path";
 import router from "./routes";
 import { logger } from "./lib/logger";
 
@@ -29,10 +31,21 @@ app.use(
 );
 app.use(cors());
 app.use("/api/storage/uploads", express.raw({ type: "*/*", limit: "2gb" }));
+app.use("/api/payments/webhook/stripe", express.raw({ type: "application/json", limit: "2mb" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);
+
+const frontendDistPath = path.resolve(import.meta.dirname, "../../skillforge-ai/dist/public");
+const frontendIndexPath = path.join(frontendDistPath, "index.html");
+
+if (fs.existsSync(frontendIndexPath)) {
+  app.use(express.static(frontendDistPath));
+  app.get(/.*/, (_req, res) => {
+    res.sendFile(frontendIndexPath);
+  });
+}
 
 app.use((err: unknown, req: express.Request, res: express.Response, _next: express.NextFunction) => {
   req.log.error({ err, route: req.originalUrl, method: req.method }, "Unhandled API error");

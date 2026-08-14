@@ -12,3 +12,6 @@ export * from "./certificates";
 export * from "./notifications";
 export * from "./messages";
 export * from "./admin";
+export * from "./auth";
+export * from "./commerce";
+export * from "./platform";

@@ -157,11 +157,12 @@ export default function InstructorDashboard() {
                     {dashboard.topCourses.map((course) => (
                       <div key={course.id} className="flex items-center justify-between p-4 rounded-xl border bg-card hover:bg-muted/50 transition-colors">
                         <div className="flex items-center gap-4 flex-1 min-w-0">
-                          {course.thumbnailUrl ? (
-                            <img src={course.thumbnailUrl} className="w-16 h-12 object-cover rounded-md" />
-                          ) : (
-                            <div className="w-16 h-12 bg-muted rounded-md flex items-center justify-center"><FileText className="w-4 h-4 text-muted-foreground"/></div>
-                          )}
+                          <img
+                            src={course.thumbnailUrl || "/images/courses/default-course.jpg"}
+                            alt={`${course.title} course thumbnail`}
+                            className="w-16 h-12 object-cover rounded-md"
+                            loading="lazy"
+                          />
                           <div className="min-w-0">
                             <h4 className="font-semibold truncate">{course.title}</h4>
                             <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">

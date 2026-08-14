@@ -2,9 +2,10 @@ import { Router } from "express";
 import { db } from "@workspace/db";
 import {
   enrollmentsTable, coursesTable, certificatesTable, assignmentsTable,
-  usersTable, activityLogsTable, reviewsTable, categoriesTable
+  usersTable, activityLogsTable, reviewsTable, categoriesTable,
+  modulesTable, lessonsTable, lessonProgressTable
 } from "@workspace/db";
-import { eq, sql, and, gte } from "drizzle-orm";
+import { eq, sql, gte } from "drizzle-orm";
 import { requireAuth } from "../middlewares/auth";
 import { databaseErrorResponse } from "../lib/httpErrors";
 
@@ -26,6 +27,17 @@ function generateDatePoints(days: number) {
   return points;
 }
 
+function countRowsByDate<T>(dates: string[], rows: T[], getDate: (row: T) => Date | null | undefined) {
+  const counts = new Map(dates.map(date => [date, 0]));
+  for (const row of rows) {
+    const value = getDate(row);
+    if (!value) continue;
+    const date = value.toISOString().slice(0, 10);
+    if (counts.has(date)) counts.set(date, (counts.get(date) ?? 0) + 1);
+  }
+  return counts;
+}
+
 router.get("/dashboard/student", requireAuth, async (req, res) => {
   try {
     const userId = req.user!.id;
@@ -37,22 +49,49 @@ router.get("/dashboard/student", requireAuth, async (req, res) => {
     const upcomingDeadlines = await db.select().from(assignmentsTable)
       .where(gte(assignmentsTable.dueDate, new Date())).limit(5);
 
-    const courseProgress = await Promise.all(enrollments.slice(0, 5).map(async e => {
+    const courseProgress = await Promise.all(enrollments.slice(0, 5).map(async (e) => {
       const [course] = await db.select().from(coursesTable).where(eq(coursesTable.id, e.courseId)).limit(1);
-      return { courseId: e.courseId, userId, progressPercent: Math.floor(Math.random() * 80) + 10, completedLessons: 3, totalLessons: 10, lastLessonId: null, completedAt: null };
+      const modules = await db.select({ id: modulesTable.id }).from(modulesTable).where(eq(modulesTable.courseId, e.courseId));
+      let totalLessons = 0;
+      let completedLessons = 0;
+      for (const module of modules) {
+        const lessons = await db.select({ id: lessonsTable.id }).from(lessonsTable).where(eq(lessonsTable.moduleId, module.id));
+        totalLessons += lessons.length;
+        for (const lesson of lessons) {
+          const [progress] = await db.select({ id: lessonProgressTable.id })
+            .from(lessonProgressTable)
+            .where(sql`${lessonProgressTable.userId} = ${userId} and ${lessonProgressTable.lessonId} = ${lesson.id}`)
+            .limit(1);
+          if (progress) completedLessons += 1;
+        }
+      }
+      const progressPercent = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+      return {
+        courseId: e.courseId,
+        userId,
+        progressPercent,
+        completedLessons,
+        totalLessons,
+        lastLessonId: null,
+        completedAt: e.completedAt,
+        course,
+      };
     }));
 
-    const weeklyProgress = generateDatePoints(7).map(date => ({
-      date, minutes: Math.floor(Math.random() * 90) + 10
-    }));
+    const weekDates = generateDatePoints(7);
+    const recentLessonProgress = await db.select().from(lessonProgressTable)
+      .where(sql`${lessonProgressTable.userId} = ${userId} and ${lessonProgressTable.completedAt} >= ${daysAgo(7)}`);
+    const completedByDate = countRowsByDate(weekDates, recentLessonProgress, row => row.completedAt);
+    const weeklyProgress = weekDates.map(date => ({ date, minutes: (completedByDate.get(date) ?? 0) * 15 }));
 
-    const deadlines = upcomingDeadlines.map(a => {
+    const deadlines = await Promise.all(upcomingDeadlines.map(async a => {
       const enroll = enrollments.find(e => e.courseId === a.courseId);
+      const [course] = await db.select({ title: coursesTable.title }).from(coursesTable).where(eq(coursesTable.id, a.courseId)).limit(1);
       return {
         id: a.id, type: "assignment" as const, title: a.title,
-        dueDate: a.dueDate.toISOString(), courseId: a.courseId, courseTitle: "Course"
+        dueDate: a.dueDate.toISOString(), courseId: a.courseId, courseTitle: enroll ? course?.title ?? "Enrolled course" : course?.title ?? "Available course"
       };
-    });
+    }));
 
     res.json({
       enrolledCourses: enrollments.length,
@@ -84,12 +123,20 @@ router.get("/dashboard/instructor", requireAuth, async (req, res) => {
       const reviews = await db.select({ rating: reviewsTable.rating }).from(reviewsTable).where(eq(reviewsTable.courseId, c.id));
       reviews.forEach(r => { totalRating += r.rating; reviewCount++; });
     }
-    const revenueByMonth = generateDatePoints(6).map((date, i) => ({ date, revenue: Math.floor(Math.random() * 2000) + 500 }));
     const recentEnrollments = [];
     for (const c of courses.slice(0, 5)) {
       const rows = await db.select().from(enrollmentsTable).where(eq(enrollmentsTable.courseId, c.id)).limit(3);
       recentEnrollments.push(...rows.map((enrollment) => ({ ...enrollment, course: c, progressPercent: 0 })));
     }
+    const revenueDates = generateDatePoints(30);
+    const revenueByDay = new Map(revenueDates.map(date => [date, 0]));
+    for (const enrollment of recentEnrollments) {
+      const date = enrollment.enrolledAt.toISOString().slice(0, 10);
+      if (revenueByDay.has(date)) {
+        revenueByDay.set(date, (revenueByDay.get(date) ?? 0) + (enrollment.course?.price ?? 0));
+      }
+    }
+    const revenueByMonth = revenueDates.map(date => ({ date, revenue: revenueByDay.get(date) ?? 0 }));
 
     res.json({
       totalCourses: courses.length,
@@ -130,18 +177,28 @@ router.get("/dashboard/admin", requireAuth, async (req, res) => {
     const [publishedCount] = await db.select({ count: sql<number>`count(*)::int` }).from(coursesTable).where(eq(coursesTable.isPublished, true));
     const [newToday] = await db.select({ count: sql<number>`count(*)::int` }).from(usersTable).where(gte(usersTable.createdAt, daysAgo(1)));
 
-    const platformGrowth = generateDatePoints(7).map(date => ({
+    const dates = generateDatePoints(7);
+    const recentUsers = await db.select({ createdAt: usersTable.createdAt }).from(usersTable).where(gte(usersTable.createdAt, daysAgo(7)));
+    const recentCourses = await db.select({ createdAt: coursesTable.createdAt }).from(coursesTable).where(gte(coursesTable.createdAt, daysAgo(7)));
+    const recentEnrollments = await db.select({ enrolledAt: enrollmentsTable.enrolledAt }).from(enrollmentsTable).where(gte(enrollmentsTable.enrolledAt, daysAgo(7)));
+    const usersByDate = countRowsByDate(dates, recentUsers, row => row.createdAt);
+    const coursesByDate = countRowsByDate(dates, recentCourses, row => row.createdAt);
+    const enrollmentsByDate = countRowsByDate(dates, recentEnrollments, row => row.enrolledAt);
+    const platformGrowth = dates.map(date => ({
       date,
-      users: Math.floor(Math.random() * 50) + 10,
-      courses: Math.floor(Math.random() * 10) + 1,
-      enrollments: Math.floor(Math.random() * 100) + 20,
+      users: usersByDate.get(date) ?? 0,
+      courses: coursesByDate.get(date) ?? 0,
+      enrollments: enrollmentsByDate.get(date) ?? 0,
     }));
 
     const cats = await db.select().from(categoriesTable);
     const categoryBreakdown = await Promise.all(cats.map(async cat => {
       const [cc] = await db.select({ count: sql<number>`count(*)::int` }).from(coursesTable).where(eq(coursesTable.categoryId, cat.id));
-      const [ec] = await db.select({ count: sql<number>`count(*)::int` }).from(enrollmentsTable);
-      return { categoryId: cat.id, name: cat.name, courseCount: cc?.count ?? 0, enrollmentCount: Math.floor(Math.random() * 100) };
+      const [ec] = await db.select({ count: sql<number>`count(*)::int` })
+        .from(enrollmentsTable)
+        .innerJoin(coursesTable, eq(enrollmentsTable.courseId, coursesTable.id))
+        .where(eq(coursesTable.categoryId, cat.id));
+      return { categoryId: cat.id, name: cat.name, courseCount: cc?.count ?? 0, enrollmentCount: ec?.count ?? 0 };
     }));
 
     res.json({
@@ -164,7 +221,20 @@ router.get("/dashboard/revenue", requireAuth, async (req, res) => {
   try {
     const { period = "30d" } = req.query as Record<string, string>;
     const days = period === "7d" ? 7 : period === "90d" ? 90 : period === "1y" ? 365 : 30;
-    const points = generateDatePoints(days).map(date => ({ date, revenue: Math.floor(Math.random() * 5000) + 500 }));
+    const dates = generateDatePoints(days);
+    const enrollments = await db.select({
+      enrolledAt: enrollmentsTable.enrolledAt,
+      price: coursesTable.price,
+    })
+      .from(enrollmentsTable)
+      .innerJoin(coursesTable, eq(enrollmentsTable.courseId, coursesTable.id))
+      .where(gte(enrollmentsTable.enrolledAt, daysAgo(days)));
+    const revenueByDate = new Map(dates.map(date => [date, 0]));
+    for (const enrollment of enrollments) {
+      const date = enrollment.enrolledAt.toISOString().slice(0, 10);
+      if (revenueByDate.has(date)) revenueByDate.set(date, (revenueByDate.get(date) ?? 0) + (enrollment.price ?? 0));
+    }
+    const points = dates.map(date => ({ date, revenue: revenueByDate.get(date) ?? 0 }));
     res.json(points);
   } catch (err) {
     req.log.error(err);
@@ -195,7 +265,12 @@ router.get("/dashboard/enrollment-stats", requireAuth, async (req, res) => {
   try {
     const { period = "30d" } = req.query as Record<string, string>;
     const days = period === "7d" ? 7 : period === "90d" ? 90 : period === "1y" ? 365 : 30;
-    const points = generateDatePoints(days).map(date => ({ date, count: Math.floor(Math.random() * 30) + 1 }));
+    const dates = generateDatePoints(days);
+    const enrollments = await db.select({ enrolledAt: enrollmentsTable.enrolledAt })
+      .from(enrollmentsTable)
+      .where(gte(enrollmentsTable.enrolledAt, daysAgo(days)));
+    const counts = countRowsByDate(dates, enrollments, row => row.enrolledAt);
+    const points = dates.map(date => ({ date, count: counts.get(date) ?? 0 }));
     res.json(points);
   } catch (err) {
     req.log.error(err);

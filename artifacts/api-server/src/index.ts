@@ -26,7 +26,7 @@ function loadEnv(envPath: string) {
       value = value.slice(1, -1);
     }
 
-    process.env[key] = value;
+    process.env[key] ??= value;
   }
 }
 

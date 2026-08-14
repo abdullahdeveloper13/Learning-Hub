@@ -9,9 +9,13 @@ import { ThemeProvider } from '@/components/shared/ThemeProvider';
 // Pages
 import Login from '@/pages/auth/Login';
 import Register from '@/pages/auth/Register';
+import ForgotPassword from '@/pages/auth/ForgotPassword';
+import ResetPassword from '@/pages/auth/ResetPassword';
+import VerifyEmail from '@/pages/auth/VerifyEmail';
 import Home from '@/pages/public/Home';
 import CourseList from '@/pages/public/CourseList';
 import CourseDetail from '@/pages/public/CourseDetail';
+import CertificateVerify from '@/pages/public/CertificateVerify';
 
 // Shared Pages
 import Messages from '@/pages/shared/Messages';
@@ -36,6 +40,9 @@ import AdminUsers from '@/pages/admin/Users';
 import AdminCourses from '@/pages/admin/Courses';
 import AdminCategories from '@/pages/admin/Categories';
 import AdminLogs from '@/pages/admin/Logs';
+import AdminPayments from '@/pages/admin/Payments';
+import AdminReports from '@/pages/admin/Reports';
+import AdminSettings from '@/pages/admin/Settings';
 
 const queryClient = new QueryClient();
 
@@ -46,8 +53,12 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
+      <Route path="/forgot-password" component={ForgotPassword} />
+      <Route path="/reset-password" component={ResetPassword} />
+      <Route path="/verify-email" component={VerifyEmail} />
       <Route path="/courses" component={CourseList} />
       <Route path="/courses/:id" component={CourseDetail} />
+      <Route path="/certificates/:credentialId" component={CertificateVerify} />
 
       {/* Shared Authenticated Routes */}
       <Route path="/messages" component={Messages} />
@@ -73,6 +84,9 @@ function Router() {
       <Route path="/admin/users" component={AdminUsers} />
       <Route path="/admin/courses" component={AdminCourses} />
       <Route path="/admin/categories" component={AdminCategories} />
+      <Route path="/admin/payments" component={AdminPayments} />
+      <Route path="/admin/reports" component={AdminReports} />
+      <Route path="/admin/settings" component={AdminSettings} />
       <Route path="/admin/logs" component={AdminLogs} />
 
       <Route component={NotFound} />

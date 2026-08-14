@@ -124,13 +124,17 @@ export default function Dashboard() {
               ) : dashboard?.currentCourses && dashboard.currentCourses.length > 0 ? (
                 <div className="grid sm:grid-cols-2 gap-6">
                   {dashboard.currentCourses.map((progress) => (
-                    // In a real app we'd map this to full course objects returned from the dashboard endpoint.
-                    // For now we'll simulate the card since the dashboard API normally returns hydrated course data.
                     <Card key={progress.courseId} className="flex flex-col h-full hover-elevate overflow-hidden border-border/50">
+                      <img
+                        src={(progress as any).course?.thumbnailUrl || "/images/courses/default-course.jpg"}
+                        alt={`${(progress as any).course?.title || `Course ${progress.courseId}`} course thumbnail`}
+                        className="aspect-video w-full object-cover"
+                        loading="lazy"
+                      />
                       <div className="p-5 flex-1">
                         <div className="flex justify-between items-start mb-4">
                           <h3 className="font-bold font-serif text-lg leading-tight line-clamp-2">
-                            Course #{progress.courseId} {/* Mock title since API type doesn't have it inline */}
+                            {(progress as any).course?.title || `Course ${progress.courseId}`}
                           </h3>
                         </div>
                         <div className="flex items-center text-sm text-muted-foreground gap-4 mb-4">

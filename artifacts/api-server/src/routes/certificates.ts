@@ -27,9 +27,28 @@ router.get("/certificates", requireAuth, async (req, res) => {
   }
 });
 
+router.get("/certificates/verify/:credentialId", async (req, res) => {
+  try {
+    const credentialId = String(req.params["credentialId"] ?? "");
+    const [cert] = await db.select().from(certificatesTable).where(eq(certificatesTable.credentialId, credentialId)).limit(1);
+    if (!cert) { res.status(404).json({ error: "Certificate not found" }); return; }
+    const enriched = await enrichCert(cert);
+    res.json({
+      credentialId: enriched.credentialId,
+      courseTitle: enriched.courseTitle,
+      instructorName: enriched.instructorName,
+      issuedAt: enriched.issuedAt,
+      verified: true,
+    });
+  } catch (err) {
+    req.log.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 router.get("/certificates/:certificateId", requireAuth, async (req, res) => {
   try {
-    const id = parseInt(req.params["certificateId"]!);
+    const id = Number(req.params["certificateId"]);
     const [cert] = await db.select().from(certificatesTable).where(eq(certificatesTable.id, id)).limit(1);
     if (!cert) { res.status(404).json({ error: "Not found" }); return; }
     const enriched = await enrichCert(cert);

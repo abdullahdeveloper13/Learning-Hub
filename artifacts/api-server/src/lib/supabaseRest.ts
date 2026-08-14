@@ -55,6 +55,49 @@ export class SupabaseRestClient {
     return rows[0];
   }
 
+  async updateOne<T extends SupabaseRow>(
+    table: string,
+    query: Record<string, string | number>,
+    values: SupabaseRow,
+  ) {
+    const params = new URLSearchParams({ limit: "1" });
+    for (const [key, value] of Object.entries(query)) {
+      params.set(key, `eq.${value}`);
+    }
+
+    const response = await this.request(`/rest/v1/${table}?${params.toString()}`, {
+      method: "PATCH",
+      headers: { Prefer: "return=representation" },
+      body: JSON.stringify(values),
+    });
+    const rows = await parseRows<T>(response);
+    return rows[0] ?? null;
+  }
+
+  async deleteOne(table: string, query: Record<string, string | number>) {
+    const params = new URLSearchParams({ limit: "1" });
+    for (const [key, value] of Object.entries(query)) {
+      params.set(key, `eq.${value}`);
+    }
+
+    const response = await this.request(`/rest/v1/${table}?${params.toString()}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) await parseRows(response);
+  }
+
+  async deleteMany(table: string, query: Record<string, string | number>) {
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(query)) {
+      params.set(key, `eq.${value}`);
+    }
+
+    const response = await this.request(`/rest/v1/${table}?${params.toString()}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) await parseRows(response);
+  }
+
   private request(path: string, init: RequestInit) {
     return fetch(`${this.supabaseUrl}${path}`, {
       ...init,
@@ -84,10 +127,10 @@ function requireEnv(name: string) {
 
 async function parseRows<T>(response: Response): Promise<T[]> {
   if (response.ok) {
-    return await response.json();
+    return (await response.json()) as T[];
   }
 
-  let detail = "";
+  let detail: string | undefined;
   try {
     detail = JSON.stringify(await response.json());
   } catch {

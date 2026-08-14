@@ -14,22 +14,22 @@ interface CourseCardProps {
 
 export function CourseCard({ course, progressPercent, showInstructor = true }: CourseCardProps) {
   const isEnrolled = progressPercent !== undefined;
+  const courseHref = isEnrolled ? `/learn/${course.id}` : `/courses/${course.slug || course.id}`;
+  const thumbnailUrl = course.thumbnailUrl || "/images/courses/default-course.jpg";
 
   return (
-    <Link href={isEnrolled ? `/learn/${course.id}` : `/courses/${course.id}`}>
+    <Link href={courseHref}>
       <Card className="h-full overflow-hidden hover-elevate transition-all border-border/50 cursor-pointer flex flex-col group">
         <div className="relative aspect-video w-full overflow-hidden bg-muted">
-          {course.thumbnailUrl ? (
-            <img 
-              src={course.thumbnailUrl} 
-              alt={course.title} 
-              className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-secondary">
-              <PlayCircle className="w-12 h-12 text-muted-foreground opacity-50" />
-            </div>
-          )}
+          <img
+            src={thumbnailUrl}
+            alt={`${course.title} course thumbnail`}
+            className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
+            loading="lazy"
+          />
+          <div className="absolute left-2 top-2">
+            <PlayCircle className="w-8 h-8 text-white drop-shadow-md opacity-90" aria-hidden="true" />
+          </div>
           <div className="absolute top-2 right-2 flex gap-2">
             <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm shadow-sm font-semibold border-none">
               {course.level}

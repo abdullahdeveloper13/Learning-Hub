@@ -30,6 +30,16 @@ router.patch("/notifications/mark-read", requireAuth, async (req, res) => {
   }
 });
 
+router.patch("/notifications/mark-all-read", requireAuth, async (req, res) => {
+  try {
+    await db.update(notificationsTable).set({ isRead: true }).where(eq(notificationsTable.userId, req.user!.id));
+    res.json({ success: true });
+  } catch (err) {
+    req.log.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 router.get("/notifications/unread-count", requireAuth, async (req, res) => {
   try {
     const [result] = await db.select({ count: sql<number>`count(*)::int` })

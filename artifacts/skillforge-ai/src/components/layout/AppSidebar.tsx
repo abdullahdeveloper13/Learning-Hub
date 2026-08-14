@@ -14,7 +14,10 @@ import {
   Bell, 
   Activity,
   PlusCircle,
-  MessageCircle
+  MessageCircle,
+  CreditCard,
+  Flag,
+  Settings
 } from "lucide-react";
 
 export function AppSidebar() {
@@ -45,6 +48,9 @@ export function AppSidebar() {
     { name: "Manage Users", href: "/admin/users", icon: Users },
     { name: "Manage Courses", href: "/admin/courses", icon: BookOpen },
     { name: "Categories", href: "/admin/categories", icon: Layers },
+    { name: "Payments", href: "/admin/payments", icon: CreditCard },
+    { name: "Reports", href: "/admin/reports", icon: Flag },
+    { name: "Settings", href: "/admin/settings", icon: Settings },
     { name: "Activity Logs", href: "/admin/logs", icon: Activity },
   ];
 
