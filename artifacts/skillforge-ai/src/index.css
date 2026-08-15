@@ -153,3 +153,50 @@
     @apply font-serif tracking-tight;
   }
 }
+
+@layer utilities {
+  .hover-elevate {
+    transition-property: transform, box-shadow, border-color, background-color, color, opacity;
+    transition-duration: 180ms;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+
+  .hover-elevate:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 12px 28px -18px hsl(var(--foreground) / 0.35),
+      0 8px 18px -20px hsl(var(--primary) / 0.45);
+  }
+
+  .active-elevate-2:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow:
+      0 6px 14px -14px hsl(var(--foreground) / 0.35),
+      0 4px 10px -16px hsl(var(--primary) / 0.45);
+  }
+
+  .pressable {
+    transition-property: transform, box-shadow, border-color, background-color, color, opacity;
+    transition-duration: 150ms;
+    transition-timing-function: ease-out;
+  }
+
+  .pressable:active {
+    transform: scale(0.98);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hover-elevate,
+    .pressable {
+      transition-duration: 1ms;
+      will-change: auto;
+    }
+
+    .hover-elevate:hover,
+    .active-elevate-2:active,
+    .pressable:active {
+      transform: none;
+    }
+  }
+}

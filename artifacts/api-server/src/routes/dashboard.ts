@@ -105,6 +105,20 @@ router.get("/dashboard/student", requireAuth, async (req, res) => {
     });
   } catch (err) {
     req.log.error(err);
+    if (databaseErrorResponse(err)) {
+      res.json({
+        enrolledCourses: 0,
+        completedCourses: 0,
+        inProgressCourses: 0,
+        totalCertificates: 0,
+        upcomingDeadlines: [],
+        recentActivity: [],
+        weeklyProgress: generateDatePoints(7).map(date => ({ date, minutes: 0 })),
+        currentCourses: [],
+        databaseStatus: "unavailable",
+      });
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });

@@ -57,7 +57,10 @@ export type ErrorType<ErrorData> = Error;
 export type BodyType<BodyData> = BodyData;
 
 function getUsableBaseUrl(envBaseUrl: string) {
-  if (!envBaseUrl || typeof window === "undefined") return envBaseUrl;
+  if (typeof window === "undefined") return envBaseUrl;
+  if (!envBaseUrl) {
+    return window.location.port === "5173" ? "http://localhost:3000" : "";
+  }
 
   try {
     const configured = new URL(envBaseUrl);

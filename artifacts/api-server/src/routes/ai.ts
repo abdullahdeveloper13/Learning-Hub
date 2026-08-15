@@ -4,7 +4,7 @@ import { requireAuth } from "../middlewares/auth";
 import { rateLimit } from "../middlewares/rateLimit";
 
 const router = Router();
-const aiLimiter = rateLimit({ keyPrefix: "ai", windowMs: 60_000, max: 20 });
+const aiLimiter = (feature: string) => rateLimit({ keyPrefix: `ai-${feature}`, windowMs: 60_000, max: 20 });
 
 type JsonObject = Record<string, unknown>;
 
@@ -19,6 +19,64 @@ interface AIProvider {
   generateJson(request: AIRequest): Promise<JsonObject>;
 }
 
+type ProviderConfig = {
+  name: string;
+  displayName: string;
+  baseUrl: string;
+  apiKeyEnv: string;
+  modelEnv: string;
+  defaultModel: string;
+  setupUrl: string;
+};
+
+const PROVIDERS: readonly ProviderConfig[] = [
+  {
+    name: "gemini",
+    displayName: "Google Gemini",
+    baseUrl: "https://generativelanguage.googleapis.com/v1beta/openai",
+    apiKeyEnv: "GEMINI_API_KEY",
+    modelEnv: "GEMINI_MODEL",
+    defaultModel: "gemini-2.5-flash",
+    setupUrl: "https://aistudio.google.com/apikey",
+  },
+  {
+    name: "groq",
+    displayName: "Groq",
+    baseUrl: "https://api.groq.com/openai/v1",
+    apiKeyEnv: "GROQ_API_KEY",
+    modelEnv: "GROQ_MODEL",
+    defaultModel: "llama-3.3-70b-versatile",
+    setupUrl: "https://console.groq.com/keys",
+  },
+  {
+    name: "openrouter",
+    displayName: "OpenRouter",
+    baseUrl: "https://openrouter.ai/api/v1",
+    apiKeyEnv: "OPENROUTER_API_KEY",
+    modelEnv: "OPENROUTER_MODEL",
+    defaultModel: "openrouter/free",
+    setupUrl: "https://openrouter.ai/keys",
+  },
+  {
+    name: "mistral",
+    displayName: "Mistral",
+    baseUrl: "https://api.mistral.ai/v1",
+    apiKeyEnv: "MISTRAL_API_KEY",
+    modelEnv: "MISTRAL_MODEL",
+    defaultModel: "mistral-small-latest",
+    setupUrl: "https://console.mistral.ai/api-keys",
+  },
+  {
+    name: "openai",
+    displayName: "OpenAI",
+    baseUrl: "https://api.openai.com/v1",
+    apiKeyEnv: "OPENAI_API_KEY",
+    modelEnv: "OPENAI_MODEL",
+    defaultModel: "gpt-5-mini",
+    setupUrl: "https://platform.openai.com/api-keys",
+  },
+] as const;
+
 class MissingAIProvider implements AIProvider {
   readonly name = "not-configured";
 
@@ -27,15 +85,23 @@ class MissingAIProvider implements AIProvider {
   }
 }
 
-class OpenAIProvider implements AIProvider {
-  readonly name = "openai";
-  private readonly apiKey = process.env["OPENAI_API_KEY"];
-  private readonly model = process.env["OPENAI_MODEL"] || "gpt-5-mini";
+class ChatCompletionsProvider implements AIProvider {
+  readonly name: string;
+  private readonly config: ProviderConfig;
+  private readonly apiKey: string;
+  private readonly model: string;
+
+  constructor(config: ProviderConfig) {
+    this.config = config;
+    this.name = config.name;
+    this.apiKey = process.env[config.apiKeyEnv]?.trim() ?? "";
+    this.model = process.env[config.modelEnv]?.trim() || config.defaultModel;
+  }
 
   async generateJson(request: AIRequest) {
     if (!this.apiKey) throw new AIProviderConfigurationError();
 
-    const response = await fetch("https://api.openai.com/v1/responses", {
+    const response = await fetch(`${this.config.baseUrl}/chat/completions`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${this.apiKey}`,
@@ -43,31 +109,36 @@ class OpenAIProvider implements AIProvider {
       },
       body: JSON.stringify({
         model: this.model,
-        input: [
+        messages: [
           {
             role: "system",
-            content: `${request.system}\nReturn only valid JSON. Do not wrap the JSON in markdown.`,
+            content: `${request.system}\nReturn only valid JSON. Do not wrap the JSON in markdown code fences.`,
           },
           { role: "user", content: request.user },
         ],
-        max_output_tokens: 1800,
+        max_tokens: 1800,
+        temperature: 0.4,
       }),
-      signal: AbortSignal.timeout(45_000),
+      signal: AbortSignal.timeout(60_000),
     });
 
     if (!response.ok) {
       const detail = await response.text().catch(() => response.statusText);
-      throw new AIProviderRequestError(`OpenAI request failed: ${detail || response.statusText}`, response.status);
+      throw new AIProviderRequestError(
+        `${this.config.displayName} request failed: ${detail || response.statusText}`,
+        response.status,
+        this.config.displayName,
+      );
     }
 
-    const payload = await response.json() as { output_text?: string; output?: unknown[] };
-    const text = payload.output_text ?? extractResponsesText(payload.output);
-    if (!text) throw new AIProviderRequestError("OpenAI response did not include text output", 502);
+    const payload = await response.json() as { choices?: Array<{ message?: { content?: string } }> };
+    const text = payload.choices?.[0]?.message?.content;
+    if (!text) throw new AIProviderRequestError(`${this.config.displayName} response did not include text output`, 502, this.config.displayName);
 
     try {
-      return JSON.parse(text) as JsonObject;
+      return extractJson(text);
     } catch {
-      throw new AIProviderRequestError("OpenAI response was not valid JSON", 502);
+      throw new AIProviderRequestError(`${this.config.displayName} response was not valid JSON`, 502, this.config.displayName);
     }
   }
 }
@@ -80,9 +151,12 @@ class AIProviderConfigurationError extends Error {
 }
 
 class AIProviderRequestError extends Error {
-  constructor(message: string, readonly status = 502) {
+  readonly safeMessage: string;
+
+  constructor(message: string, readonly status = 502, readonly provider = "AI provider") {
     super(message);
     this.name = "AIProviderRequestError";
+    this.safeMessage = safeAIProviderMessage(status, provider);
   }
 }
 
@@ -167,7 +241,15 @@ const chatOutput = z.object({
 });
 
 function getProvider(): AIProvider {
-  return process.env["OPENAI_API_KEY"] ? new OpenAIProvider() : new MissingAIProvider();
+  const explicit = process.env["AI_PROVIDER"]?.trim().toLowerCase();
+  if (explicit) {
+    const match = PROVIDERS.find((provider) => provider.name === explicit);
+    if (match && process.env[match.apiKeyEnv]?.trim()) return new ChatCompletionsProvider(match);
+  }
+  for (const config of PROVIDERS) {
+    if (process.env[config.apiKeyEnv]?.trim()) return new ChatCompletionsProvider(config);
+  }
+  return new MissingAIProvider();
 }
 
 async function runAI<T extends z.ZodTypeAny>(
@@ -181,7 +263,7 @@ async function runAI<T extends z.ZodTypeAny>(
   return outputSchema.parse(result);
 }
 
-router.post("/ai/generate-course-outline", requireAuth, aiLimiter, async (req, res) => {
+router.post("/ai/generate-course-outline", requireAuth, aiLimiter("course-outline"), async (req, res) => {
   const parsed = courseOutlineInput.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Invalid AI course outline request", issues: parsed.error.issues }); return; }
   const { topic, level, targetAudience } = parsed.data;
@@ -199,7 +281,7 @@ router.post("/ai/generate-course-outline", requireAuth, aiLimiter, async (req, r
   }
 });
 
-router.post("/ai/generate-quiz", requireAuth, aiLimiter, async (req, res) => {
+router.post("/ai/generate-quiz", requireAuth, aiLimiter("quiz"), async (req, res) => {
   const parsed = quizInput.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Invalid AI quiz request", issues: parsed.error.issues }); return; }
   const { topic, questionCount } = parsed.data;
@@ -217,7 +299,7 @@ router.post("/ai/generate-quiz", requireAuth, aiLimiter, async (req, res) => {
   }
 });
 
-router.post("/ai/generate-flashcards", requireAuth, aiLimiter, async (req, res) => {
+router.post("/ai/generate-flashcards", requireAuth, aiLimiter("flashcards"), async (req, res) => {
   const parsed = flashcardsInput.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Invalid AI flashcards request", issues: parsed.error.issues }); return; }
   const { topic, count } = parsed.data;
@@ -235,7 +317,7 @@ router.post("/ai/generate-flashcards", requireAuth, aiLimiter, async (req, res) 
   }
 });
 
-router.post("/ai/summarize-lesson", requireAuth, aiLimiter, async (req, res) => {
+router.post("/ai/summarize-lesson", requireAuth, aiLimiter("summary"), async (req, res) => {
   const parsed = summaryInput.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Invalid AI summary request", issues: parsed.error.issues }); return; }
 
@@ -252,7 +334,7 @@ router.post("/ai/summarize-lesson", requireAuth, aiLimiter, async (req, res) => 
   }
 });
 
-router.post("/ai/study-plan", requireAuth, aiLimiter, async (req, res) => {
+router.post("/ai/study-plan", requireAuth, aiLimiter("study-plan"), async (req, res) => {
   const parsed = studyPlanInput.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Invalid AI study plan request", issues: parsed.error.issues }); return; }
   const { goal, availableHoursPerWeek, durationWeeks } = parsed.data;
@@ -270,7 +352,7 @@ router.post("/ai/study-plan", requireAuth, aiLimiter, async (req, res) => {
   }
 });
 
-router.post("/ai/chat", requireAuth, aiLimiter, async (req, res) => {
+router.post("/ai/chat", requireAuth, aiLimiter("chat"), async (req, res) => {
   const parsed = chatInput.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Invalid AI chat request", issues: parsed.error.issues }); return; }
 
@@ -293,32 +375,71 @@ function handleAIError(req: Request, res: Response, error: unknown, feature: str
       error: "AI provider is not configured",
       code: "AI_PROVIDER_NOT_CONFIGURED",
       feature,
-      requiredEnv: ["OPENAI_API_KEY"],
+      requiredEnv: PROVIDERS.map((provider) => provider.apiKeyEnv),
+      providers: PROVIDERS.map((provider) => ({ name: provider.name, setupUrl: provider.setupUrl })),
     });
     return;
   }
 
   req.log.error({ err: error, feature }, "AI provider request failed");
   if (error instanceof AIProviderRequestError) {
-    res.status(error.status).json({ error: "AI provider request failed", feature });
+    res.status(error.status).json({
+      error: error.safeMessage,
+      code: "AI_PROVIDER_REQUEST_FAILED",
+      feature,
+    });
     return;
   }
   if (error instanceof z.ZodError) {
     res.status(502).json({ error: "AI provider returned an unexpected response shape", feature });
     return;
   }
-  res.status(500).json({ error: "Internal server error", feature });
+  if (error instanceof Error) {
+    req.log.error({ err: error, feature }, "Unexpected AI provider failure");
+    res.status(502).json({
+      error: safeUnexpectedAIMessage(error),
+      code: "AI_PROVIDER_UNAVAILABLE",
+      feature,
+    });
+    return;
+  }
+  res.status(502).json({ error: "AI provider is unavailable. Please try again later.", feature });
 }
 
-function extractResponsesText(output: unknown) {
-  if (!Array.isArray(output)) return "";
-  const chunks: string[] = [];
-  for (const item of output as Array<{ content?: Array<{ text?: string }> }>) {
-    for (const content of item.content ?? []) {
-      if (typeof content.text === "string") chunks.push(content.text);
-    }
+function safeAIProviderMessage(status: number, provider: string) {
+  if (status === 401) return `${provider} rejected the API key. Check the provider key on the server.`;
+  if (status === 403) return `${provider} rejected this request. Check project permissions and model access.`;
+  if (status === 404) return `The configured ${provider} model was not found. Check the model name on the server.`;
+  if (status === 429) return `${provider} rate-limited the request or the project has no available quota. Wait a minute and try again.`;
+  if (status >= 500) return `${provider} is temporarily unavailable. Please try again soon.`;
+  return "AI provider request failed. Check the server logs for provider details.";
+}
+
+function safeUnexpectedAIMessage(error: Error) {
+  if (/fetch failed|ENOTFOUND|ECONNRESET|ETIMEDOUT|network/i.test(error.message)) {
+    return "The API server could not reach the AI provider. Check network access and the provider key.";
   }
-  return chunks.join("\n").trim();
+  if (/aborted|timeout/i.test(error.message)) {
+    return "The AI request timed out. Please try again.";
+  }
+  return "AI provider is unavailable. Check the API server logs for details.";
+}
+
+function extractJson(text: string): JsonObject {
+  const trimmed = text.trim();
+  try {
+    return JSON.parse(trimmed) as JsonObject;
+  } catch {
+    const fenced = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (fenced) {
+      try {
+        return JSON.parse(fenced[1].trim()) as JsonObject;
+      } catch {
+        // fall through to throw
+      }
+    }
+    throw new Error("AI provider returned non-JSON output");
+  }
 }
 
 export default router;

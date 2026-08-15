@@ -41,6 +41,13 @@ export async function signInWithSupabaseProvider(provider: Extract<Provider, "go
 
 export async function completeSupabaseOAuth() {
   const supabase = await getSupabaseAuthClient();
+  const code = new URLSearchParams(window.location.search).get("code");
+
+  if (code) {
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    if (error) throw error;
+  }
+
   const { data, error } = await supabase.auth.getSession();
 
   if (error) throw error;
@@ -105,7 +112,10 @@ async function loadSupabaseConfig(): Promise<SupabaseConfig> {
 
 function getApiBase() {
   const envBaseUrl = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
-  if (!envBaseUrl || typeof window === "undefined") return envBaseUrl;
+  if (typeof window === "undefined") return envBaseUrl;
+  if (!envBaseUrl) {
+    return window.location.port === "5173" ? "http://localhost:3000" : "";
+  }
 
   try {
     const configured = new URL(envBaseUrl);

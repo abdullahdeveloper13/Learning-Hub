@@ -3,6 +3,7 @@ import { db } from "@workspace/db";
 import { notificationsTable } from "@workspace/db";
 import { eq, and, inArray, sql } from "drizzle-orm";
 import { requireAuth } from "../middlewares/auth";
+import { databaseErrorResponse } from "../lib/httpErrors";
 
 const router = Router();
 
@@ -14,6 +15,10 @@ router.get("/notifications", requireAuth, async (req, res) => {
     res.json(notifs);
   } catch (err) {
     req.log.error(err);
+    if (databaseErrorResponse(err)) {
+      res.json([]);
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -26,6 +31,10 @@ router.patch("/notifications/mark-read", requireAuth, async (req, res) => {
     res.json({ updated: notificationIds.length });
   } catch (err) {
     req.log.error(err);
+    if (databaseErrorResponse(err)) {
+      res.json({ updated: 0, databaseStatus: "unavailable" });
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -36,6 +45,10 @@ router.patch("/notifications/mark-all-read", requireAuth, async (req, res) => {
     res.json({ success: true });
   } catch (err) {
     req.log.error(err);
+    if (databaseErrorResponse(err)) {
+      res.json({ success: true, databaseStatus: "unavailable" });
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -47,6 +60,10 @@ router.get("/notifications/unread-count", requireAuth, async (req, res) => {
     res.json({ count: result?.count ?? 0 });
   } catch (err) {
     req.log.error(err);
+    if (databaseErrorResponse(err)) {
+      res.json({ count: 0, databaseStatus: "unavailable" });
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });

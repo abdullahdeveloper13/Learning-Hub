@@ -11,6 +11,7 @@ import { emailService } from "../lib/email";
 import { rateLimit } from "../middlewares/rateLimit";
 
 const router = Router();
+let devAuthUserId = -1;
 const devAuthUsers = new Map<string, {
   id: number;
   email: string;
@@ -24,6 +25,43 @@ const devAuthUsers = new Map<string, {
   createdAt: Date;
   updatedAt: Date;
 }>();
+
+async function createDevAuthUser(input: {
+  email: string;
+  password: string;
+  name: string;
+  role: "student" | "instructor";
+}) {
+  const passwordHash = await bcrypt.hash(input.password, 10);
+  const now = new Date();
+  const user = {
+    id: devAuthUserId--,
+    email: input.email,
+    name: input.name,
+    passwordHash,
+    role: input.role,
+    avatarUrl: null,
+    bio: null,
+    emailVerifiedAt: null,
+    isActive: true,
+    createdAt: now,
+    updatedAt: now,
+  };
+  devAuthUsers.set(input.email, user);
+  return user;
+}
+
+async function findFallbackUserByEmail(email: string) {
+  try {
+    const existingRow = await supabaseRest().selectOne("users", { email });
+    if (existingRow) return userFromRest(existingRow);
+  } catch {
+    // Local development can continue with the in-memory auth fallback when
+    // direct Postgres and Supabase REST are both unavailable.
+  }
+
+  return devAuthUsers.get(email) ?? null;
+}
 
 function safeUser(user: {
   id: number;
@@ -125,23 +163,31 @@ router.post("/auth/register", rateLimit({ keyPrefix: "auth-register", windowMs: 
     if (dbError) {
       const { email, password, name, role = "student" } = req.body;
       const normalizedEmail = String(email).toLowerCase();
-      const rest = supabaseRest();
-      const existingRow = await rest.selectOne("users", { email: normalizedEmail });
-      const existing = existingRow ? userFromRest(existingRow) : devAuthUsers.get(normalizedEmail);
+      const existing = await findFallbackUserByEmail(normalizedEmail);
       if (existing) {
         res.status(400).json({ error: "Email already in use" });
         return;
       }
-      const passwordHash = await bcrypt.hash(password, 10);
-      const inserted = await rest.insertOne("users", {
-        email: normalizedEmail,
-        name,
-        password_hash: passwordHash,
-        role,
-        is_active: true,
-      });
-      const user = userFromRest(inserted);
-      devAuthUsers.set(normalizedEmail, user);
+      let user;
+      try {
+        const passwordHash = await bcrypt.hash(password, 10);
+        const inserted = await supabaseRest().insertOne("users", {
+          email: normalizedEmail,
+          name,
+          password_hash: passwordHash,
+          role,
+          is_active: true,
+        });
+        user = userFromRest(inserted);
+        devAuthUsers.set(normalizedEmail, user);
+      } catch {
+        user = await createDevAuthUser({
+          email: normalizedEmail,
+          password,
+          name,
+          role: role === "instructor" ? "instructor" : "student",
+        });
+      }
       const token = signToken({ id: user.id, email: user.email, role: user.role });
       res.status(201).json({ user: safeUser(user), token });
       return;
@@ -176,8 +222,7 @@ router.post("/auth/login", rateLimit({ keyPrefix: "auth-login", windowMs: 15 * 6
     if (dbError) {
       const { email, password } = req.body;
       const normalizedEmail = String(email).toLowerCase();
-      const existingRow = await supabaseRest().selectOne("users", { email: normalizedEmail });
-      const user = existingRow ? userFromRest(existingRow) : devAuthUsers.get(normalizedEmail);
+      const user = await findFallbackUserByEmail(normalizedEmail);
       if (!user || !user.isActive || !(await bcrypt.compare(password, user.passwordHash))) {
         res.status(401).json({ error: "Invalid credentials" });
         return;
@@ -374,18 +419,29 @@ router.post("/auth/supabase/exchange", rateLimit({ keyPrefix: "auth-supabase-exc
         }
         const metadata = supabaseUser.user_metadata ?? {};
         const name = metadata.full_name || metadata.name || metadata.user_name || email.split("@")[0] || email;
-        const rest = supabaseRest();
-        const existingRow = await rest.selectOne("users", { email });
-        const row = existingRow ?? await rest.insertOne("users", {
-          email,
-          name,
-          password_hash: await bcrypt.hash(randomBytes(24).toString("hex"), 10),
-          role: requestedRole,
-          avatar_url: metadata.avatar_url ?? null,
-          email_verified_at: supabaseUser.email_confirmed_at ?? new Date().toISOString(),
-          is_active: true,
-        });
-        const user = userFromRest(row);
+        let user = await findFallbackUserByEmail(email);
+        if (!user) {
+          try {
+            const row = await supabaseRest().insertOne("users", {
+              email,
+              name,
+              password_hash: await bcrypt.hash(randomBytes(24).toString("hex"), 10),
+              role: requestedRole,
+              avatar_url: metadata.avatar_url ?? null,
+              email_verified_at: supabaseUser.email_confirmed_at ?? new Date().toISOString(),
+              is_active: true,
+            });
+            user = userFromRest(row);
+            devAuthUsers.set(email, user);
+          } catch {
+            user = await createDevAuthUser({
+              email,
+              name,
+              password: randomBytes(24).toString("hex"),
+              role: requestedRole,
+            });
+          }
+        }
         if (!user.isActive) {
           res.status(403).json({ error: "Account is inactive" });
           return;

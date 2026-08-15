@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Brain, FileText, LayoutList, MessageSquare, Sparkles, Wand2 } from "lucide-react";
+import { useToast } from "@/components/ui/toast";
+import { BookOpen, Brain, FileText, LayoutList, Sparkles, Wand2 } from "lucide-react";
 import { 
   useGenerateCourseOutline, 
   useGenerateQuiz, 
@@ -60,10 +61,12 @@ export default function AITools() {
 function FlashcardGenerator() {
   const [topic, setTopic] = useState("");
   const [result, setResult] = useState<any>(null);
+  const { toast } = useToast();
   
   const generateMutation = useGenerateFlashcards({
     mutation: {
-      onSuccess: (data) => setResult(data)
+      onSuccess: (data) => setResult(data),
+      onError: (error) => toast({ title: aiErrorMessage(error), variant: "destructive" }),
     }
   });
 
@@ -147,16 +150,29 @@ function FlashcardGenerator() {
   );
 }
 
-// Placeholder icons missing from lucide import
-import { BookOpen } from "lucide-react";
+function aiErrorMessage(error: unknown) {
+  const message = error instanceof Error ? error.message : "AI request failed";
+  if (/too many requests/i.test(message)) {
+    return "You have reached the AI rate limit. Please wait a minute and try again.";
+  }
+  if (/invalid ai summary request/i.test(message)) {
+    return "Paste at least 30 characters before summarizing a lesson.";
+  }
+  if (/not configured/i.test(message)) {
+    return "AI is not configured yet. Add a free AI provider key (GEMINI_API_KEY, GROQ_API_KEY, or OPENROUTER_API_KEY) to the server .env to enable this tool.";
+  }
+  return message;
+}
 
 function LessonSummarizer() {
   const [content, setContent] = useState("");
   const [result, setResult] = useState<any>(null);
+  const { toast } = useToast();
   
   const generateMutation = useSummarizeLesson({
     mutation: {
-      onSuccess: (data) => setResult(data)
+      onSuccess: (data) => setResult(data),
+      onError: (error) => toast({ title: aiErrorMessage(error), variant: "destructive" }),
     }
   });
 
@@ -177,7 +193,7 @@ function LessonSummarizer() {
           <Button 
             className="w-full" 
             onClick={() => generateMutation.mutate({ data: { content } })} 
-            disabled={!content || generateMutation.isPending}
+            disabled={content.trim().length < 30 || generateMutation.isPending}
           >
             {generateMutation.isPending ? "Summarizing..." : "Summarize"}
             {!generateMutation.isPending && <Wand2 className="w-4 h-4 ml-2" />}
@@ -227,9 +243,13 @@ function LessonSummarizer() {
 function QuizGenerator() {
   const [topic, setTopic] = useState("");
   const [result, setResult] = useState<any>(null);
+  const { toast } = useToast();
   
   const generateMutation = useGenerateQuiz({
-    mutation: { onSuccess: (data) => setResult(data) }
+    mutation: {
+      onSuccess: (data) => setResult(data),
+      onError: (error) => toast({ title: aiErrorMessage(error), variant: "destructive" }),
+    }
   });
 
   return (
@@ -290,9 +310,13 @@ function QuizGenerator() {
 function OutlineGenerator() {
   const [topic, setTopic] = useState("");
   const [result, setResult] = useState<any>(null);
+  const { toast } = useToast();
   
   const generateMutation = useGenerateCourseOutline({
-    mutation: { onSuccess: (data) => setResult(data) }
+    mutation: {
+      onSuccess: (data) => setResult(data),
+      onError: (error) => toast({ title: aiErrorMessage(error), variant: "destructive" }),
+    }
   });
 
   return (

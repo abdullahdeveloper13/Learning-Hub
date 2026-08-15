@@ -38,18 +38,56 @@ router.get("/progress", requireAuth, async (req, res) => {
     res.json(progress);
   } catch (err) {
     req.log.error(err);
+    if (databaseErrorResponse(err)) {
+      res.json([]);
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
 router.get("/progress/:courseId", requireAuth, async (req, res) => {
+  const courseId = Number(req.params["courseId"]);
+  const emptyProgress = {
+    courseId,
+    userId: req.user!.id,
+    isEnrolled: false,
+    progressPercent: 0,
+    completedLessons: 0,
+    totalLessons: 0,
+    lastLessonId: null,
+    completedAt: null,
+  };
+
   try {
-    const courseId = Number(req.params["courseId"]);
+    if (!Number.isInteger(courseId) || courseId <= 0) {
+      res.status(400).json({ error: "Invalid course id" });
+      return;
+    }
+
+    const [enrollment] = await db.select({ id: enrollmentsTable.id, completedAt: enrollmentsTable.completedAt })
+      .from(enrollmentsTable)
+      .where(and(eq(enrollmentsTable.userId, req.user!.id), eq(enrollmentsTable.courseId, courseId)))
+      .limit(1);
+    if (!enrollment) {
+      res.json(emptyProgress);
+      return;
+    }
     const progress = await getCourseProgress(req.user!.id, courseId);
-    res.json(progress);
+    res.json({ ...progress, isEnrolled: true, completedAt: enrollment.completedAt });
   } catch (err) {
     req.log.error(err);
-    res.status(500).json({ error: "Internal server error" });
+    if (databaseErrorResponse(err)) {
+      res.json({
+        ...emptyProgress,
+        databaseStatus: "unavailable",
+      });
+      return;
+    }
+    res.json({
+      ...emptyProgress,
+      progressStatus: "unavailable",
+    });
   }
 });
 

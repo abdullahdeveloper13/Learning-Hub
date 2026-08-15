@@ -95,6 +95,8 @@ pnpm run db:diagnose
 - `GITHUB_CLIENT_SECRET`: GitHub OAuth client secret.
 - `PAYMENT_PROVIDER`: payment provider label, currently `manual` or Stripe-backed checkout.
 - `STRIPE_SECRET_KEY`: Stripe secret key for checkout sessions.
+- `STRIPE_PUBLISHABLE_KEY`: Stripe publishable key for server-side display/configuration checks.
+- `VITE_STRIPE_PUBLISHABLE_KEY`: optional browser-safe Stripe publishable key if Stripe.js UI is added later.
 - `STRIPE_WEBHOOK_SECRET`: Stripe webhook signing secret.
 - `EMAIL_PROVIDER`: `console` for development or `resend` for transactional email.
 - `EMAIL_FROM`: default transactional email sender.
@@ -125,7 +127,45 @@ OAuth provider callback URLs should use Supabase's callback URL:
 https://<project-ref>.supabase.co/auth/v1/callback
 ```
 
+For this project ref, that provider callback URL is:
+
+```text
+https://vqpdlagmeatubprlfgkz.supabase.co/auth/v1/callback
+```
+
+Do not add an extra suffix such as `/callback1` unless Supabase Dashboard explicitly shows that exact URL on the provider page. Google and GitHub should use the same Supabase Auth callback URL. The SkillForge frontend redirect remains `/auth/callback`.
+
 Do not put Google or GitHub client secrets in frontend variables.
+
+## Stripe Checkout
+
+Paid courses use server-created Stripe Checkout sessions. The frontend calls `POST /api/payments/checkout`, receives a Stripe Checkout URL, and redirects the learner to Stripe. Paid enrollment is granted only after the API receives a signed Stripe webhook and updates the order to `paid`.
+
+Required server-side environment variables:
+
+```bash
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+VITE_STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+PUBLIC_APP_URL=http://localhost:5173
+```
+
+The webhook endpoint is:
+
+```text
+http://localhost:3000/api/payments/webhook/stripe
+```
+
+In Stripe Dashboard or the Stripe CLI, send at least these events to the webhook:
+
+```text
+checkout.session.completed
+checkout.session.expired
+payment_intent.payment_failed
+```
+
+Do not expose `STRIPE_SECRET_KEY` or `STRIPE_WEBHOOK_SECRET` in Vite/browser environment variables. Only the publishable key may use a `VITE_` prefix.
 
 ## Production
 

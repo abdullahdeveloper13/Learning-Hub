@@ -3,6 +3,7 @@ import { db } from "@workspace/db";
 import { conversationsTable, conversationParticipantsTable, messagesTable, usersTable, discussionsTable } from "@workspace/db";
 import { eq, sql } from "drizzle-orm";
 import { requireAuth } from "../middlewares/auth";
+import { databaseErrorResponse } from "../lib/httpErrors";
 
 const router = Router();
 
@@ -24,6 +25,10 @@ router.get("/messages/conversations", requireAuth, async (req, res) => {
     res.json(convs.filter(Boolean));
   } catch (err) {
     req.log.error(err);
+    if (databaseErrorResponse(err)) {
+      res.json([]);
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });

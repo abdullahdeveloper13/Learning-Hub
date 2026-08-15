@@ -38,14 +38,30 @@ function lessonIcon(type: string) {
   }
 }
 
+function getApiBase() {
+  const envBaseUrl = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+  if (typeof window === "undefined") return envBaseUrl;
+  if (!envBaseUrl) return window.location.port === "5173" ? "http://localhost:3000" : "";
+
+  try {
+    const configured = new URL(envBaseUrl);
+    const pageIsLocal = ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname);
+    const configuredIsLocal = ["localhost", "127.0.0.1", "::1"].includes(configured.hostname);
+    return configuredIsLocal && !pageIsLocal ? "" : envBaseUrl;
+  } catch {
+    return envBaseUrl;
+  }
+}
+
 export default function CourseDetail() {
   const { id } = useParams<{ id: string }>();
   const courseParam = id || "";
   const numericCourseId = /^\d+$/.test(courseParam) ? parseInt(courseParam, 10) : 0;
   const [, setLocation] = useLocation();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, token } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [isCheckingOut, setIsCheckingOut] = React.useState(false);
 
   const { data: numericCourse, isLoading: numericCourseLoading } = useGetCourse(numericCourseId, {
     query: { enabled: !!numericCourseId, queryKey: getGetCourseQueryKey(numericCourseId) },
@@ -76,13 +92,86 @@ export default function CourseDetail() {
         queryClient.invalidateQueries({ queryKey: getGetCourseProgressQueryKey(courseId) });
         setLocation(`/learn/${courseId}`);
       },
-      onError: () => toast({ title: "Enrollment failed", variant: "destructive" }),
+      onError: (error) => toast({ title: error instanceof Error ? error.message : "Enrollment failed", variant: "destructive" }),
     },
   });
 
-  const handleEnroll = () => {
+  const handleEnroll = async () => {
     if (!isAuthenticated) { setLocation(`/login?redirect=/courses/${courseParam}`); return; }
+    if (Number((course as any)?.price || 0) > 0) {
+      await startCheckout();
+      return;
+    }
     enrollMutation.mutate({ data: { courseId } });
+  };
+
+  const startCheckout = async () => {
+    if (!token) {
+      setLocation(`/login?redirect=/courses/${courseParam}`);
+      return;
+    }
+
+    setIsCheckingOut(true);
+    try {
+      const response = await fetch(`${getApiBase()}/api/payments/checkout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ courseId }),
+      });
+      const payload = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        if (payload.code === "PAYMENT_PROVIDER_NOT_CONFIGURED") {
+          toast({
+            title: "Stripe is not configured yet",
+            description: "Add a Stripe secret key and webhook secret, then restart the API server.",
+            variant: "destructive",
+          });
+          return;
+        }
+        if (payload.code === "CHECKOUT_DATABASE_USER_REQUIRED") {
+          toast({
+            title: "Sign in again after database setup",
+            description: "Checkout needs your account saved in the database before Stripe can create a paid order.",
+            variant: "destructive",
+          });
+          return;
+        }
+        if (payload.code === "STRIPE_CHECKOUT_FAILED") {
+          toast({
+            title: "Stripe checkout failed",
+            description: payload.error || "Check Stripe keys and account mode on the API server.",
+            variant: "destructive",
+          });
+          return;
+        }
+        throw new Error(payload.error || "Checkout could not be started.");
+      }
+
+      if (payload.checkoutUrl) {
+        window.location.assign(payload.checkoutUrl);
+        return;
+      }
+
+      if (payload.free || payload.freeWithCoupon || payload.status === "paid") {
+        toast({ title: "Enrolled! Let's start learning." });
+        queryClient.invalidateQueries({ queryKey: getGetCourseProgressQueryKey(courseId) });
+        setLocation(`/learn/${courseId}`);
+        return;
+      }
+
+      throw new Error("Checkout response did not include a redirect URL.");
+    } catch (error) {
+      toast({
+        title: error instanceof Error ? error.message : "Checkout failed",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCheckingOut(false);
+    }
   };
 
   const courseLoading = numericCourseLoading || slugCourseLoading;
@@ -115,7 +204,7 @@ export default function CourseDetail() {
   }
 
   const c = course as any;
-  const isEnrolled = !!progress;
+  const isEnrolled = !!progress && (progress as any).isEnrolled !== false && !(progress as any).databaseStatus;
   const isInstructor = user?.role === "instructor" && c.instructorId === user?.id;
   const isAdmin = user?.role === "admin";
   const totalHours = Math.round((c.totalDuration || 0) / 60);
@@ -326,9 +415,9 @@ export default function CourseDetail() {
                     </div>
                     <Button
                       size="lg" className="w-full h-12 font-bold"
-                      onClick={handleEnroll} disabled={enrollMutation.isPending}
+                      onClick={handleEnroll} disabled={enrollMutation.isPending || isCheckingOut}
                     >
-                      {enrollMutation.isPending ? "Enrolling…" : c.price === 0 ? "Enroll for Free" : "Enroll Now"}
+                      {isCheckingOut ? "Opening checkout..." : enrollMutation.isPending ? "Enrolling..." : c.price === 0 ? "Enroll for Free" : "Buy with Stripe"}
                     </Button>
                     <p className="text-[11px] text-center text-muted-foreground">
                       30-day money-back guarantee · Full lifetime access

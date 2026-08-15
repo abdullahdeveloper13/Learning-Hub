@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, type Request, type Response } from "express";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 import { db } from "@workspace/db";
@@ -16,6 +16,8 @@ import {
 import { and, eq, gt, isNull, or, sql } from "drizzle-orm";
 import { requireAuth, requireRole } from "../middlewares/auth";
 import { rateLimit } from "../middlewares/rateLimit";
+import { databaseErrorResponse } from "../lib/httpErrors";
+import { supabaseRest } from "../lib/supabaseRest";
 
 const router = Router();
 
@@ -64,7 +66,7 @@ router.post("/payments/checkout", requireAuth, rateLimit({ keyPrefix: "payments-
       return;
     }
 
-    if (!process.env["STRIPE_SECRET_KEY"]) {
+    if (!stripeSecretKey()) {
       res.status(503).json({
         error: "Payment provider is not configured",
         code: "PAYMENT_PROVIDER_NOT_CONFIGURED",
@@ -79,48 +81,108 @@ router.post("/payments/checkout", requireAuth, rateLimit({ keyPrefix: "payments-
     res.status(201).json({ orderId: order.id, checkoutUrl: session.url, status: "pending" });
   } catch (err) {
     req.log.error(err);
+    const dbError = databaseErrorResponse(err);
+    if (dbError) {
+      await handleRestCheckout(req, res, dbError);
+      return;
+    }
+    if (err instanceof StripeCheckoutError) {
+      res.status(err.status).json({
+        error: err.safeMessage,
+        code: "STRIPE_CHECKOUT_FAILED",
+      });
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
 router.get("/payments/orders", requireAuth, async (req, res) => {
-  const rows = await db.select().from(ordersTable).where(eq(ordersTable.userId, req.user!.id));
-  res.json(rows);
+  try {
+    const rows = await db.select().from(ordersTable).where(eq(ordersTable.userId, req.user!.id));
+    res.json(rows);
+  } catch (err) {
+    req.log.error(err);
+    const dbError = databaseErrorResponse(err);
+    if (dbError) {
+      res.json([]);
+      return;
+    }
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
-router.get("/admin/payments/orders", requireAuth, requireRole("admin"), async (_req, res) => {
-  const rows = await db.select().from(ordersTable);
-  res.json(rows);
+router.get("/admin/payments/orders", requireAuth, requireRole("admin"), async (req, res) => {
+  try {
+    const rows = await db.select().from(ordersTable);
+    res.json(rows);
+  } catch (err) {
+    req.log.error(err);
+    if (databaseErrorResponse(err)) {
+      res.json([]);
+      return;
+    }
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 router.post("/admin/coupons", requireAuth, requireRole("admin"), async (req, res) => {
-  const parsed = z.object({
-    code: z.string().min(2).max(40),
-    description: z.string().optional(),
-    discountType: z.enum(["percentage", "fixed"]),
-    discountValue: z.coerce.number().positive(),
-    maxRedemptions: z.coerce.number().int().positive().optional(),
-    expiresAt: z.string().datetime().optional(),
-  }).safeParse(req.body);
-  if (!parsed.success) { res.status(400).json({ error: "Invalid coupon", issues: parsed.error.issues }); return; }
-  const values = parsed.data;
-  const [coupon] = await db.insert(couponsTable).values({
-    ...values,
-    code: values.code.toUpperCase(),
-    expiresAt: values.expiresAt ? new Date(values.expiresAt) : null,
-  }).returning();
-  res.status(201).json(coupon);
+  try {
+    const parsed = z.object({
+      code: z.string().min(2).max(40),
+      description: z.string().optional(),
+      discountType: z.enum(["percentage", "fixed"]),
+      discountValue: z.coerce.number().positive(),
+      maxRedemptions: z.coerce.number().int().positive().optional(),
+      expiresAt: z.string().datetime().optional(),
+    }).safeParse(req.body);
+    if (!parsed.success) { res.status(400).json({ error: "Invalid coupon", issues: parsed.error.issues }); return; }
+    const values = parsed.data;
+    const [coupon] = await db.insert(couponsTable).values({
+      ...values,
+      code: values.code.toUpperCase(),
+      expiresAt: values.expiresAt ? new Date(values.expiresAt) : null,
+    }).returning();
+    res.status(201).json(coupon);
+  } catch (err) {
+    req.log.error(err);
+    const dbError = databaseErrorResponse(err);
+    if (dbError) {
+      res.status(dbError.status).json(dbError.body);
+      return;
+    }
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
-router.get("/admin/coupons", requireAuth, requireRole("admin"), async (_req, res) => {
-  res.json(await db.select().from(couponsTable));
+router.get("/admin/coupons", requireAuth, requireRole("admin"), async (req, res) => {
+  try {
+    res.json(await db.select().from(couponsTable));
+  } catch (err) {
+    req.log.error(err);
+    if (databaseErrorResponse(err)) {
+      res.json([]);
+      return;
+    }
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 router.patch("/admin/coupons/:couponId", requireAuth, requireRole("admin"), async (req, res) => {
-  const couponId = Number(req.params["couponId"]);
-  const [coupon] = await db.update(couponsTable).set({ ...req.body, updatedAt: new Date() }).where(eq(couponsTable.id, couponId)).returning();
-  if (!coupon) { res.status(404).json({ error: "Coupon not found" }); return; }
-  res.json(coupon);
+  try {
+    const couponId = Number(req.params["couponId"]);
+    const [coupon] = await db.update(couponsTable).set({ ...req.body, updatedAt: new Date() }).where(eq(couponsTable.id, couponId)).returning();
+    if (!coupon) { res.status(404).json({ error: "Coupon not found" }); return; }
+    res.json(coupon);
+  } catch (err) {
+    req.log.error(err);
+    const dbError = databaseErrorResponse(err);
+    if (dbError) {
+      res.status(dbError.status).json(dbError.body);
+      return;
+    }
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 router.post("/payments/webhook/stripe", rateLimit({ keyPrefix: "stripe-webhook", windowMs: 60_000, max: 120 }), async (req, res) => {
@@ -151,17 +213,32 @@ router.post("/payments/webhook/stripe", rateLimit({ keyPrefix: "stripe-webhook",
     res.json({ received: true });
   } catch (err) {
     req.log.error(err);
+    const dbError = databaseErrorResponse(err);
+    if (dbError) {
+      res.status(dbError.status).json(dbError.body);
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
 router.post("/admin/payments/orders/:orderId/refunds", requireAuth, requireRole("admin"), async (req, res) => {
-  const orderId = Number(req.params["orderId"]);
-  const [order] = await db.select().from(ordersTable).where(eq(ordersTable.id, orderId)).limit(1);
-  if (!order) { res.status(404).json({ error: "Order not found" }); return; }
-  const amount = Math.min(Number(req.body.amount || order.total), order.total);
-  const [refund] = await db.insert(refundsTable).values({ orderId, amount, reason: req.body.reason ?? null, status: "pending" }).returning();
-  res.status(201).json(refund);
+  try {
+    const orderId = Number(req.params["orderId"]);
+    const [order] = await db.select().from(ordersTable).where(eq(ordersTable.id, orderId)).limit(1);
+    if (!order) { res.status(404).json({ error: "Order not found" }); return; }
+    const amount = Math.min(Number(req.body.amount || order.total), order.total);
+    const [refund] = await db.insert(refundsTable).values({ orderId, amount, reason: req.body.reason ?? null, status: "pending" }).returning();
+    res.status(201).json(refund);
+  } catch (err) {
+    req.log.error(err);
+    const dbError = databaseErrorResponse(err);
+    if (dbError) {
+      res.status(dbError.status).json(dbError.body);
+      return;
+    }
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 export async function hasPaidAccess(userId: number, courseId: number) {
@@ -189,6 +266,172 @@ async function resolveCoupon(code: string, userId: number) {
   return used.length ? null : coupon;
 }
 
+async function handleRestCheckout(
+  req: Request,
+  res: Response,
+  dbError: { status: number; body: { error: string } },
+) {
+  try {
+    if (req.user!.id < 0) {
+      res.status(503).json({
+        error: "Checkout requires a persisted database user. Restart the API after fixing DATABASE_URL, then sign in again.",
+        code: "CHECKOUT_DATABASE_USER_REQUIRED",
+      });
+      return;
+    }
+
+    const parsed = checkoutInput.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: "Invalid checkout request", issues: parsed.error.issues });
+      return;
+    }
+
+    const { courseId, couponCode } = parsed.data;
+    const rest = supabaseRest();
+    const courseRow = await rest.selectOne("courses", { id: courseId });
+    const course = courseFromRest(courseRow);
+    if (!course || !course.isPublished) {
+      res.status(404).json({ error: "Course not found" });
+      return;
+    }
+
+    const existingEnrollment = await rest.selectMany("enrollments", {
+      user_id: req.user!.id,
+      course_id: courseId,
+    });
+    if (existingEnrollment.length) {
+      res.status(409).json({ error: "Already enrolled" });
+      return;
+    }
+
+    if (course.price <= 0) {
+      const enrollment = await rest.insertOne("enrollments", {
+        user_id: req.user!.id,
+        course_id: courseId,
+      });
+      res.status(201).json({ free: true, enrollment });
+      return;
+    }
+
+    const coupon = couponCode ? await resolveRestCoupon(rest, couponCode, req.user!.id) : null;
+    if (couponCode && !coupon) {
+      res.status(400).json({ error: "Coupon is invalid, expired, inactive, or already used" });
+      return;
+    }
+
+    const discountTotal = coupon ? calculateDiscount(course.price, coupon.discountType, coupon.discountValue) : 0;
+    const total = Math.max(0, roundMoney(course.price - discountTotal));
+    const order = await rest.insertOne("orders", {
+      user_id: req.user!.id,
+      subtotal: course.price,
+      discount_total: discountTotal,
+      total,
+      coupon_id: coupon?.id ?? null,
+      provider: "stripe",
+      status: total === 0 ? "paid" : "pending",
+    });
+    await rest.insertOne("order_items", {
+      order_id: order.id,
+      course_id: courseId,
+      title: course.title,
+      price: course.price,
+    });
+
+    if (total === 0) {
+      await completePaidRestOrder(rest, order.id, undefined);
+      res.status(201).json({ orderId: order.id, freeWithCoupon: true, status: "paid" });
+      return;
+    }
+
+    if (!stripeSecretKey()) {
+      res.status(503).json({
+        error: "Payment provider is not configured",
+        code: "PAYMENT_PROVIDER_NOT_CONFIGURED",
+        requiredEnv: ["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET", "PUBLIC_APP_URL"],
+        orderId: order.id,
+      });
+      return;
+    }
+
+    const session = await createStripeCheckoutSession(order.id, course.title, total);
+    await rest.updateOne("orders", { id: order.id }, { provider_session_id: session.id, updated_at: new Date().toISOString() });
+    res.status(201).json({ orderId: order.id, checkoutUrl: session.url, status: "pending" });
+  } catch (fallbackError) {
+    req.log.error(fallbackError);
+    if (fallbackError instanceof StripeCheckoutError) {
+      res.status(fallbackError.status).json({
+        error: fallbackError.safeMessage,
+        code: "STRIPE_CHECKOUT_FAILED",
+      });
+      return;
+    }
+    res.status(dbError.status).json(dbError.body);
+  }
+}
+
+function courseFromRest(row: any) {
+  if (!row) return null;
+  return {
+    id: Number(row.id),
+    title: String(row.title),
+    isPublished: Boolean(row.is_published),
+    price: Number(row.price || 0),
+  };
+}
+
+function couponFromRest(row: any) {
+  if (!row) return null;
+  return {
+    id: Number(row.id),
+    code: String(row.code),
+    discountType: row.discount_type as "percentage" | "fixed",
+    discountValue: Number(row.discount_value || 0),
+    maxRedemptions: row.max_redemptions == null ? null : Number(row.max_redemptions),
+    redemptionCount: Number(row.redemption_count || 0),
+    expiresAt: row.expires_at ? new Date(row.expires_at) : null,
+    isActive: Number(row.is_active || 0),
+  };
+}
+
+async function resolveRestCoupon(rest: ReturnType<typeof supabaseRest>, code: string, userId: number) {
+  const coupon = couponFromRest(await rest.selectOne("coupons", { code: code.toUpperCase() }));
+  if (!coupon || coupon.isActive !== 1) return null;
+  if (coupon.expiresAt && coupon.expiresAt <= new Date()) return null;
+  if (coupon.maxRedemptions && coupon.redemptionCount >= coupon.maxRedemptions) return null;
+  const used = await rest.selectMany("coupon_redemptions", { coupon_id: coupon.id, user_id: userId });
+  return used.length ? null : coupon;
+}
+
+async function completePaidRestOrder(rest: ReturnType<typeof supabaseRest>, orderId: number, paymentIntent?: unknown) {
+  const order = await rest.updateOne("orders", { id: orderId }, {
+    status: "paid",
+    provider_payment_intent_id: typeof paymentIntent === "string" ? paymentIntent : null,
+    updated_at: new Date().toISOString(),
+  });
+  if (!order) return;
+
+  await rest.insertOne("payments", {
+    order_id: orderId,
+    provider: order.provider,
+    status: "paid",
+    amount: order.total,
+    currency: order.currency ?? "usd",
+    provider_payment_id: order.provider_payment_intent_id,
+  }).catch(() => {});
+
+  const items = await rest.selectMany("order_items", { order_id: orderId });
+  for (const item of items) {
+    await rest.insertOne("enrollments", { user_id: order.user_id, course_id: item.course_id }).catch(() => {});
+    await rest.insertOne("notifications", {
+      user_id: order.user_id,
+      type: "enrollment",
+      title: `Enrolled in ${item.title}`,
+      body: "Your payment was confirmed server-side.",
+      link: `/learn/${item.course_id}`,
+    }).catch(() => {});
+  }
+}
+
 async function completePaidOrder(orderId: number, paymentIntent?: unknown) {
   const [order] = await db.update(ordersTable)
     .set({ status: "paid", providerPaymentIntentId: typeof paymentIntent === "string" ? paymentIntent : null, updatedAt: new Date() })
@@ -214,6 +457,11 @@ async function completePaidOrder(orderId: number, paymentIntent?: unknown) {
 }
 
 async function createStripeCheckoutSession(orderId: number, courseTitle: string, total: number) {
+  const secretKey = stripeSecretKey();
+  if (!secretKey) {
+    throw new StripeCheckoutError(503, "Stripe secret key is missing or invalid");
+  }
+
   const appUrl = (process.env["PUBLIC_APP_URL"] || "http://localhost:5173").replace(/\/$/, "");
   const params = new URLSearchParams({
     mode: "payment",
@@ -228,13 +476,41 @@ async function createStripeCheckoutSession(orderId: number, courseTitle: string,
   const response = await fetch("https://api.stripe.com/v1/checkout/sessions", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${process.env["STRIPE_SECRET_KEY"]}`,
+      Authorization: `Bearer ${secretKey}`,
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body: params,
   });
-  if (!response.ok) throw new Error(`Stripe checkout failed with ${response.status}`);
+  if (!response.ok) {
+    const detail = await response.text().catch(() => "");
+    throw new StripeCheckoutError(response.status, detail);
+  }
   return await response.json() as { id: string; url: string };
+}
+
+class StripeCheckoutError extends Error {
+  readonly safeMessage: string;
+
+  constructor(readonly status: number, detail: string) {
+    super(`Stripe checkout failed with ${status}`);
+    this.name = "StripeCheckoutError";
+    this.safeMessage = safeStripeMessage(status, detail);
+  }
+}
+
+function safeStripeMessage(status: number, detail: string) {
+  if (status === 503) return "Stripe is not configured correctly. Add a Stripe secret key that starts with sk_test_ or sk_live_, then restart the API server.";
+  if (status === 401) return "Stripe rejected STRIPE_SECRET_KEY. Check that the server is using a valid Stripe secret key.";
+  if (status === 403) return "Stripe rejected this checkout request. Check account permissions and mode.";
+  if (status === 429) return "Stripe rate-limited checkout creation. Please wait and try again.";
+  if (/No such price|No such product|invalid/i.test(detail)) return "Stripe rejected the checkout payload. Check course price and Stripe account mode.";
+  return "Stripe checkout could not be created. Check the API server logs for the Stripe request details.";
+}
+
+function stripeSecretKey() {
+  const value = process.env["STRIPE_SECRET_KEY"]?.trim();
+  if (!value) return "";
+  return /^sk_(test|live)_/.test(value) ? value : "";
 }
 
 export function verifyStripeSignature(rawBody: Buffer, signatureHeader: string, secret: string) {
