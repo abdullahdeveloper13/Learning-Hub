@@ -137,3 +137,338 @@ artifacts/api-server dev:     [35mres[39m: {
 artifacts/api-server dev:       "statusCode": 200
 artifacts/api-server dev:     }
 artifacts/api-server dev:     [35mresponseTime[39m: 8078
+artifacts/api-server dev: [04:09:08.197] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "fa6b7269-9012-4e4d-abd5-0ba2cc2dfe0c",
+artifacts/api-server dev:       "method": "OPTIONS",
+artifacts/api-server dev:       "url": "/api/dashboard/student"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 204
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 3
+artifacts/api-server dev: [04:09:09.310] [32mINFO[39m (3924): [36mrequest aborted[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "e84b9d23-635c-44d2-bad1-76864f1b268a",
+artifacts/api-server dev:       "method": "GET",
+artifacts/api-server dev:       "url": "/api/dashboard/student"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": null
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 1097
+artifacts/api-server dev: [04:09:15.846] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "fa961d78-ff20-44ff-8c8c-490683cda343",
+artifacts/api-server dev:       "method": "OPTIONS",
+artifacts/api-server dev:       "url": "/api/dashboard/student"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 204
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 2
+artifacts/api-server dev: [04:09:27.477] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "84ceed5f-abd6-4a74-8135-bb6357b38549",
+artifacts/api-server dev:       "method": "GET",
+artifacts/api-server dev:       "url": "/api/dashboard/student"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 200
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 11623
+artifacts/api-server dev: [04:09:39.677] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "e5e8442f-de16-4d87-be7e-4ccc66a27461",
+artifacts/api-server dev:       "method": "OPTIONS",
+artifacts/api-server dev:       "url": "/api/courses/11"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 204
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 2
+artifacts/api-server dev: [04:09:39.681] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "5c6f4160-6145-44fa-8350-54739cfb8c60",
+artifacts/api-server dev:       "method": "OPTIONS",
+artifacts/api-server dev:       "url": "/api/progress/11"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 204
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 1
+artifacts/api-server dev: [04:09:49.758] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "e77feba4-eb3e-4ff0-abf5-8850aba2fb66",
+artifacts/api-server dev:       "method": "GET",
+artifacts/api-server dev:       "url": "/api/progress/11"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 200
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 10067
+artifacts/api-server dev: [04:09:51.816] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "65e27f92-ab85-42ea-a427-4d96f9385eb8",
+artifacts/api-server dev:       "method": "GET",
+artifacts/api-server dev:       "url": "/api/courses/11"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 200
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 12132
+artifacts/api-server dev: [04:10:20.225] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "91bbb346-7fbc-4587-907a-49d34383ee15",
+artifacts/api-server dev:       "method": "OPTIONS",
+artifacts/api-server dev:       "url": "/api/courses/11"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 204
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 1
+artifacts/api-server dev: [04:10:20.228] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "a6e3ad15-8b9b-43f6-a4e3-3882dd5c9a25",
+artifacts/api-server dev:       "method": "OPTIONS",
+artifacts/api-server dev:       "url": "/api/progress/11"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 204
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 1
+artifacts/api-server dev: [04:10:31.579] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "f375bc2f-a120-432b-a158-1fff7ada74e0",
+artifacts/api-server dev:       "method": "GET",
+artifacts/api-server dev:       "url": "/api/progress/11"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 304
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 11343
+artifacts/api-server dev: [04:10:33.684] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "8ef57640-7824-47db-9642-1a13657e84f0",
+artifacts/api-server dev:       "method": "GET",
+artifacts/api-server dev:       "url": "/api/courses/11"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 304
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 13454
+artifacts/api-server dev: [04:10:37.657] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "409b8387-94de-49eb-b765-cdb26e7462e3",
+artifacts/api-server dev:       "method": "OPTIONS",
+artifacts/api-server dev:       "url": "/api/courses/11"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 204
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 1
+artifacts/api-server dev: [04:10:37.660] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "e6db1443-c3ab-4538-a119-a1bcbc965368",
+artifacts/api-server dev:       "method": "OPTIONS",
+artifacts/api-server dev:       "url": "/api/progress/11"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 204
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 0
+artifacts/api-server dev: [04:10:44.492] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "4dd0f065-2ace-481c-a8cf-1aa6edbc363e",
+artifacts/api-server dev:       "method": "OPTIONS",
+artifacts/api-server dev:       "url": "/api/dashboard/student"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 204
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 1
+artifacts/api-server dev: [04:10:44.577] [32mINFO[39m (3924): [36mrequest aborted[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "a43bb07a-92bf-49b9-83a3-60251595d515",
+artifacts/api-server dev:       "method": "GET",
+artifacts/api-server dev:       "url": "/api/courses/11"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": null
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 6915
+artifacts/api-server dev: [04:10:44.579] [32mINFO[39m (3924): [36mrequest aborted[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "35ebdcd4-849b-46b6-a612-e4511a23865e",
+artifacts/api-server dev:       "method": "GET",
+artifacts/api-server dev:       "url": "/api/progress/11"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": null
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 6914
+artifacts/api-server dev: [04:10:46.249] [32mINFO[39m (3924): [36mrequest aborted[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "815a9e6a-9dfd-46cc-9c99-6665e3577009",
+artifacts/api-server dev:       "method": "GET",
+artifacts/api-server dev:       "url": "/api/dashboard/student"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": null
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 1754
+artifacts/api-server dev: [04:10:57.438] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "b48e1b1b-b509-4f91-bdff-919e86ffbca4",
+artifacts/api-server dev:       "method": "OPTIONS",
+artifacts/api-server dev:       "url": "/api/ai/summarize-lesson"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 204
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 0
+artifacts/api-server dev: [04:11:00.918] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "d2b8bbac-bed3-470b-9434-bfe402b43410",
+artifacts/api-server dev:       "method": "POST",
+artifacts/api-server dev:       "url": "/api/ai/summarize-lesson"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 200
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 3478
+artifacts/api-server dev: [04:11:12.844] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "8a311688-eb41-49fe-9c09-306a301bba3c",
+artifacts/api-server dev:       "method": "OPTIONS",
+artifacts/api-server dev:       "url": "/api/ai/generate-quiz"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 204
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 2
+artifacts/api-server dev: [04:11:19.249] [31mERROR[39m (3924): [36mAI provider request failed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "53d8a4dc-4c9f-4f6f-aff3-89936ff8f3d1",
+artifacts/api-server dev:       "method": "POST",
+artifacts/api-server dev:       "url": "/api/ai/generate-quiz"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mfeature[39m: "quiz-generator"
+artifacts/api-server dev:     err: {
+artifacts/api-server dev:       "type": "AIProviderRequestError",
+artifacts/api-server dev:       "message": "Mistral response was not valid JSON",
+artifacts/api-server dev:       "stack":
+artifacts/api-server dev:           AIProviderRequestError: Mistral response was not valid JSON
+artifacts/api-server dev:               at ChatCompletionsProvider.generateJson (C:\learning-hub\artifacts\api-server\src\routes\ai.ts:141:13)
+artifacts/api-server dev:               at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+artifacts/api-server dev:               at async runAI (C:\learning-hub\artifacts\api-server\src\routes\ai.ts:439:17)
+artifacts/api-server dev:               at async <anonymous> (C:\learning-hub\artifacts\api-server\src\routes\ai.ts:474:20)
+artifacts/api-server dev:       "safeMessage": "Mistral is temporarily unavailable. Please try again soon.",
+artifacts/api-server dev:       "status": 502,
+artifacts/api-server dev:       "provider": "Mistral",
+artifacts/api-server dev:       "name": "AIProviderRequestError"
+artifacts/api-server dev:     }
+artifacts/api-server dev: [04:11:19.259] [32mINFO[39m (3924): [36mrequest errored[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "53d8a4dc-4c9f-4f6f-aff3-89936ff8f3d1",
+artifacts/api-server dev:       "method": "POST",
+artifacts/api-server dev:       "url": "/api/ai/generate-quiz"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 502
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 6413
+artifacts/api-server dev:     err: {
+artifacts/api-server dev:       "type": "Error",
+artifacts/api-server dev:       "message": "failed with status code 502",
+artifacts/api-server dev:       "stack":
+artifacts/api-server dev:           Error: failed with status code 502
+artifacts/api-server dev:               at onResFinished (C:\learning-hub\node_modules\.pnpm\pino-http@10.5.0\node_modules\pino-http\logger.js:115:39)
+artifacts/api-server dev:               at ServerResponse.onResponseComplete (C:\learning-hub\node_modules\.pnpm\pino-http@10.5.0\node_modules\pino-http\logger.js:178:14)
+artifacts/api-server dev:               at ServerResponse.emit (node:events:536:35)
+artifacts/api-server dev:               at onFinish (node:_http_outgoing:1031:10)
+artifacts/api-server dev:               at callback (node:internal/streams/writable:766:21)
+artifacts/api-server dev:               at afterWrite (node:internal/streams/writable:710:5)
+artifacts/api-server dev:               at afterWriteTick (node:internal/streams/writable:696:10)
+artifacts/api-server dev:               at process.processTicksAndRejections (node:internal/process/task_queues:81:21)
+artifacts/api-server dev:     }
+artifacts/api-server dev: [04:11:37.931] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "d2e979fa-ebd4-42f3-898f-e9b1da345744",
+artifacts/api-server dev:       "method": "OPTIONS",
+artifacts/api-server dev:       "url": "/api/ai/generate-course-outline"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 204
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 0
+artifacts/api-server dev: [04:11:42.907] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "90ee0bae-2e1f-427f-968e-85dce8106e91",
+artifacts/api-server dev:       "method": "POST",
+artifacts/api-server dev:       "url": "/api/ai/generate-course-outline"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 200
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 4971
+artifacts/api-server dev: [04:11:58.109] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "0a6213b5-5c57-46c6-a49a-2ccea51c2f5c",
+artifacts/api-server dev:       "method": "OPTIONS",
+artifacts/api-server dev:       "url": "/api/ai/generate-flashcards"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 204
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 0
+artifacts/api-server dev: [04:12:00.339] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "762a3c09-8b7d-49cd-80a3-55e1555cee59",
+artifacts/api-server dev:       "method": "POST",
+artifacts/api-server dev:       "url": "/api/ai/generate-flashcards"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 200
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 2228
+artifacts/api-server dev: [04:12:15.996] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "8b02d182-8ba4-47d6-be68-f6a68b4fd4cf",
+artifacts/api-server dev:       "method": "OPTIONS",
+artifacts/api-server dev:       "url": "/api/ai/generate-quiz"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 204
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 1
+artifacts/api-server dev: [04:12:18.248] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "274bd4c1-c9a5-493a-ad47-e5a57fd8b8cc",
+artifacts/api-server dev:       "method": "POST",
+artifacts/api-server dev:       "url": "/api/ai/generate-quiz"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 200
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 2251
+artifacts/api-server dev: [04:12:27.403] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "5fb4285d-ae95-408e-9a6d-91cf913f330f",
+artifacts/api-server dev:       "method": "OPTIONS",
+artifacts/api-server dev:       "url": "/api/dashboard/student"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 204
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 1
+artifacts/api-server dev: [04:12:41.385] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "12d033fc-9eba-403b-b7f9-aed7459b5f19",
+artifacts/api-server dev:       "method": "GET",
+artifacts/api-server dev:       "url": "/api/dashboard/student"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 200
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 13963
