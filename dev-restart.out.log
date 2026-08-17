@@ -1,0 +1,139 @@
+
+> workspace@0.0.0 dev C:\learning-hub
+> pnpm --parallel --filter @workspace/api-server --filter @workspace/skillforge-ai run dev
+
+Scope: 2 of 10 workspace projects
+artifacts/api-server dev$ pnpm run build && pnpm run start
+artifacts/skillforge-ai dev$ vite --config vite.config.ts --host 0.0.0.0
+artifacts/api-server dev: > @workspace/api-server@0.0.0 build C:\learning-hub\artifacts\api-server
+artifacts/api-server dev: > node ./build.mjs
+artifacts/skillforge-ai dev:   [32m[1mVITE[22m v7.3.6[39m  [2mready in [0m[1m2651[22m[2m[0m ms[22m
+artifacts/skillforge-ai dev:   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5173[22m/[39m
+artifacts/skillforge-ai dev:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.38:[1m5173[22m/[39m
+artifacts/api-server dev:   dist\index.mjs                   2.8mb
+artifacts/api-server dev:   dist\pino-worker.mjs           153.4kb
+artifacts/api-server dev:   dist\pino-file.mjs             142.1kb
+artifacts/api-server dev:   dist\pino-pretty.mjs           114.4kb
+artifacts/api-server dev:   dist\thread-stream-worker.mjs    7.3kb
+artifacts/api-server dev:   ...and 5 more output files...
+artifacts/api-server dev: Done in 2106ms
+artifacts/api-server dev: > @workspace/api-server@0.0.0 start C:\learning-hub\artifacts\api-server
+artifacts/api-server dev: > node --enable-source-maps ./dist/index.mjs
+artifacts/api-server dev: [03:51:34.209] [32mINFO[39m (3924): [36mServer listening[39m
+artifacts/api-server dev:     [35mport[39m: 3000
+artifacts/api-server dev: [03:51:35.223] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "aaa84ad1-de19-4ad2-a20d-ebb8b330e4db",
+artifacts/api-server dev:       "method": "GET",
+artifacts/api-server dev:       "url": "/api/health"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 200
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 32
+artifacts/api-server dev: [04:01:51.781] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "8a71b1da-a4a1-4621-9211-ea1b768f13b2",
+artifacts/api-server dev:       "method": "GET",
+artifacts/api-server dev:       "url": "/api/health"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 200
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 9
+artifacts/api-server dev: [04:02:01.350] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "5707c59c-db9d-405c-9b23-4f8228f2a7bb",
+artifacts/api-server dev:       "method": "GET",
+artifacts/api-server dev:       "url": "/api/health"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 200
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 5
+artifacts/api-server dev: [04:02:01.560] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "6cecdf5a-ed24-4b1b-8794-c13c9321b1fa",
+artifacts/api-server dev:       "method": "POST",
+artifacts/api-server dev:       "url": "/api/payments/verify"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 401
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 34
+artifacts/api-server dev: [04:04:23.410] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "5a373d8d-cebb-4d6c-ac6e-d609a0863e50",
+artifacts/api-server dev:       "method": "POST",
+artifacts/api-server dev:       "url": "/api/ai/summarize-lesson"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 200
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 2040
+artifacts/api-server dev: [04:04:51.931] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "79fdd765-cd04-4927-807d-07ee37cdf4e0",
+artifacts/api-server dev:       "method": "POST",
+artifacts/api-server dev:       "url": "/api/ai/generate-quiz"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 200
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 2073
+artifacts/api-server dev: [04:04:56.408] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "ae4bf7ee-d301-4920-a991-64138bfa0945",
+artifacts/api-server dev:       "method": "POST",
+artifacts/api-server dev:       "url": "/api/ai/generate-course-outline"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 200
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 4371
+artifacts/api-server dev: [04:06:36.697] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "fd241fc2-584b-4a68-906d-2ea76beb9f37",
+artifacts/api-server dev:       "method": "POST",
+artifacts/api-server dev:       "url": "/api/payments/verify"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 200
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 8277
+artifacts/api-server dev: [04:06:40.225] [31mERROR[39m (3924): [36mFailed to create enrollment[39m
+artifacts/api-server dev:     [35morderId[39m: 1
+artifacts/api-server dev:     [35mcourseId[39m: 11
+artifacts/api-server dev:     err: {
+artifacts/api-server dev:       "type": "_DrizzleQueryError",
+artifacts/api-server dev:       "message": "Failed query: insert into \"enrollments\" (\"id\", \"user_id\", \"course_id\", \"enrolled_at\", \"completed_at\") values (default, $1, $2, default, default)\nparams: 25,11: duplicate key value violates unique constraint \"enrollments_user_id_course_id_key\"",
+artifacts/api-server dev:       "stack":
+artifacts/api-server dev:           Error: Failed query: insert into "enrollments" ("id", "user_id", "course_id", "enrolled_at", "completed_at") values (default, $1, $2, default, default)
+artifacts/api-server dev:           params: 25,11
+artifacts/api-server dev:               at NodePgPreparedQuery.queryWithCache (C:\learning-hub\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\pg-core\session.ts:73:11)
+artifacts/api-server dev:               at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+artifacts/api-server dev:               at async completePaidOrder (C:\learning-hub\artifacts\api-server\src\routes\payments.ts:536:5)
+artifacts/api-server dev:               at async <anonymous> (C:\learning-hub\artifacts\api-server\src\routes\payments.ts:138:7)
+artifacts/api-server dev:           caused by: error: duplicate key value violates unique constraint "enrollments_user_id_course_id_key"
+artifacts/api-server dev:               at <anonymous> (C:\learning-hub\node_modules\.pnpm\pg-pool@3.14.0_pg@8.22.0\node_modules\pg-pool\index.js:45:11)
+artifacts/api-server dev:               at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+artifacts/api-server dev:               at async <anonymous> (C:\learning-hub\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\node-postgres\session.ts:149:14)
+artifacts/api-server dev:               at async NodePgPreparedQuery.queryWithCache (C:\learning-hub\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\pg-core\session.ts:71:12)
+artifacts/api-server dev:               at async completePaidOrder (C:\learning-hub\artifacts\api-server\src\routes\payments.ts:536:5)
+artifacts/api-server dev:               at async <anonymous> (C:\learning-hub\artifacts\api-server\src\routes\payments.ts:138:7)
+artifacts/api-server dev:       "query": "insert into \"enrollments\" (\"id\", \"user_id\", \"course_id\", \"enrolled_at\", \"completed_at\") values (default, $1, $2, default, default)",
+artifacts/api-server dev:       "params": [
+artifacts/api-server dev:         25,
+artifacts/api-server dev:         11
+artifacts/api-server dev:       ]
+artifacts/api-server dev:     }
+artifacts/api-server dev: [04:06:44.874] [32mINFO[39m (3924): [36mrequest completed[39m
+artifacts/api-server dev:     [35mreq[39m: {
+artifacts/api-server dev:       "id": "28a7782e-5e8c-4829-baa7-23fac163d33c",
+artifacts/api-server dev:       "method": "POST",
+artifacts/api-server dev:       "url": "/api/payments/verify"
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mres[39m: {
+artifacts/api-server dev:       "statusCode": 200
+artifacts/api-server dev:     }
+artifacts/api-server dev:     [35mresponseTime[39m: 8078

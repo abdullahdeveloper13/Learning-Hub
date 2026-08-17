@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "wouter";
 import { 
   useGetStudentDashboard,
   getGetStudentDashboardQueryKey
 } from "@workspace/api-client-react/api";
+import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/use-auth";
+import { useToast } from "@/components/ui/toast";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { CourseCard } from "@/components/shared/CourseCard";
 import { LoadingState } from "@/components/shared/LoadingState";
@@ -22,12 +25,83 @@ import {
   CartesianGrid
 } from "recharts";
 
+function paymentApiBase() {
+  const envBaseUrl = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+  if (typeof window === "undefined") return envBaseUrl;
+  if (!envBaseUrl) return window.location.port === "5173" ? "http://localhost:3000" : "";
+  try {
+    const configured = new URL(envBaseUrl);
+    const pageIsLocal = ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname);
+    const configuredIsLocal = ["localhost", "127.0.0.1", "::1"].includes(configured.hostname);
+    return configuredIsLocal && !pageIsLocal ? "" : envBaseUrl;
+  } catch {
+    return envBaseUrl;
+  }
+}
+
 export default function Dashboard() {
   const { data: dashboard, isLoading } = useGetStudentDashboard({
     query: {
       queryKey: getGetStudentDashboardQueryKey()
     }
   });
+  const { token } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const paymentStatus = params.get("payment");
+    const orderId = params.get("order");
+    if (!paymentStatus || !orderId || !token) return;
+
+    const cleanUrl = () => {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("payment");
+      url.searchParams.delete("order");
+      window.history.replaceState({}, "", url.toString());
+    };
+
+    if (paymentStatus === "cancelled") {
+      toast({ title: "Payment cancelled", description: "You can try the checkout again anytime.", variant: "destructive" });
+      cleanUrl();
+      return;
+    }
+
+    if (paymentStatus !== "success") return;
+
+    (async () => {
+      try {
+        const response = await fetch(`${paymentApiBase()}/api/payments/verify`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ orderId: Number(orderId) }),
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (response.ok && payload.status === "paid") {
+          toast({ title: "Payment confirmed!", description: "Your course is now unlocked. Happy learning!" });
+        } else if (!response.ok) {
+          toast({
+            title: "Payment verification failed",
+            description: payload.error || "Please refresh this page to confirm your purchase.",
+            variant: "destructive",
+          });
+        }
+      } catch {
+        toast({
+          title: "Payment verification failed",
+          description: "Please refresh this page to confirm your purchase.",
+          variant: "destructive",
+        });
+      } finally {
+        cleanUrl();
+        queryClient.invalidateQueries({ queryKey: getGetStudentDashboardQueryKey() });
+      }
+    })();
+  }, [token, toast, queryClient]);
 
   return (
     <AppLayout requiredRole="student">

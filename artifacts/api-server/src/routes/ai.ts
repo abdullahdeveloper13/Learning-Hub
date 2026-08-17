@@ -116,7 +116,7 @@ class ChatCompletionsProvider implements AIProvider {
           },
           { role: "user", content: request.user },
         ],
-        max_tokens: 1800,
+        max_tokens: 4096,
         temperature: 0.4,
       }),
       signal: AbortSignal.timeout(60_000),
@@ -167,13 +167,13 @@ const courseOutlineInput = z.object({
 });
 
 const courseOutlineOutput = z.object({
-  title: z.string(),
-  description: z.string(),
+  title: z.string().catch("Course outline"),
+  description: z.string().catch(""),
   modules: z.array(z.object({
-    title: z.string(),
-    description: z.string(),
-    lessons: z.array(z.string()).min(2).max(8),
-  })).min(3).max(8),
+    title: z.string().catch("Module"),
+    description: z.string().catch(""),
+    lessons: z.array(z.string()).catch([]),
+  })).catch([]),
 });
 
 const quizInput = z.object({
@@ -182,14 +182,14 @@ const quizInput = z.object({
 });
 
 const quizOutput = z.object({
-  title: z.string(),
+  title: z.string().catch("Practice Quiz"),
   questions: z.array(z.object({
-    text: z.string(),
-    type: z.enum(["multiple_choice", "true_false", "fill_blank"]),
-    options: z.array(z.string()).default([]),
-    correctAnswer: z.string(),
-    explanation: z.string(),
-  })).min(1).max(10),
+    text: z.string().catch("Question"),
+    type: z.enum(["multiple_choice", "true_false", "fill_blank"]).catch("multiple_choice"),
+    options: z.array(z.string()).catch([]),
+    correctAnswer: z.string().catch(""),
+    explanation: z.string().catch(""),
+  })).catch([]),
 });
 
 const flashcardsInput = z.object({
@@ -199,9 +199,9 @@ const flashcardsInput = z.object({
 
 const flashcardsOutput = z.object({
   flashcards: z.array(z.object({
-    front: z.string(),
-    back: z.string(),
-  })).min(1).max(20),
+    front: z.string().catch(""),
+    back: z.string().catch(""),
+  })).catch([]),
 });
 
 const summaryInput = z.object({
@@ -209,8 +209,8 @@ const summaryInput = z.object({
 });
 
 const summaryOutput = z.object({
-  summary: z.string(),
-  keyPoints: z.array(z.string()).min(3).max(10),
+  summary: z.string().catch(""),
+  keyPoints: z.array(z.string()).catch([]),
 });
 
 const studyPlanInput = z.object({
@@ -221,14 +221,14 @@ const studyPlanInput = z.object({
 
 const studyPlanOutput = z.object({
   weeks: z.array(z.object({
-    week: z.number(),
+    week: z.coerce.number().catch(1),
     tasks: z.array(z.object({
-      day: z.string(),
-      title: z.string(),
-      estimatedMinutes: z.number(),
-      lessonId: z.number().nullable(),
-    })),
-  })).min(1).max(12),
+      day: z.string().catch("Day"),
+      title: z.string().catch("Task"),
+      estimatedMinutes: z.coerce.number().catch(60),
+      lessonId: z.number().nullable().catch(null),
+    })).catch([]),
+  })).catch([]),
 });
 
 const chatInput = z.object({
@@ -237,7 +237,7 @@ const chatInput = z.object({
 });
 
 const chatOutput = z.object({
-  message: z.string(),
+  message: z.string().catch(""),
 });
 
 function getProvider(): AIProvider {
@@ -252,15 +252,197 @@ function getProvider(): AIProvider {
   return new MissingAIProvider();
 }
 
+function asArray(value: unknown): unknown[] {
+  return Array.isArray(value) ? value : [];
+}
+
+function stringValue(value: unknown): string | null {
+  if (typeof value === "string") return value.trim();
+  if (typeof value === "number" || typeof value === "boolean") return String(value);
+  return null;
+}
+
+function answerToString(value: unknown): string {
+  if (typeof value === "boolean") return value ? "True" : "False";
+  if (Array.isArray(value)) {
+    const first = value.find((item) => typeof item === "string");
+    return typeof first === "string" ? first : "";
+  }
+  return stringValue(value) ?? "";
+}
+
+function normalizeQuestionType(raw: string): "multiple_choice" | "true_false" | "fill_blank" {
+  const normalized = raw.toLowerCase().replace(/[\s_-]+/g, "");
+  if (/true|false|boolean/i.test(normalized)) return "true_false";
+  if (/fill|blank|short|complete/i.test(normalized)) return "fill_blank";
+  return "multiple_choice";
+}
+
+function collectPoints(values: unknown[]): string[] {
+  const points: string[] = [];
+  for (const value of values) {
+    if (typeof value === "string" && value.trim()) {
+      points.push(value.trim());
+      continue;
+    }
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        const text = stringValue(item) ?? (item && typeof item === "object"
+          ? stringValue((item as Record<string, unknown>).name ?? (item as Record<string, unknown>).title ?? (item as Record<string, unknown>).description ?? (item as Record<string, unknown>).text)
+          : null);
+        if (text) points.push(text);
+      }
+    }
+  }
+  return points;
+}
+
+function normalizeOutline(raw: JsonObject): JsonObject {
+  const title = stringValue(raw.title ?? raw.course_title ?? raw.name) ?? "Course outline";
+  const description = stringValue(raw.description ?? raw.course_description ?? raw.overview) ?? "";
+  const rawModules = asArray(raw.modules ?? raw.sections ?? raw.course_outline ?? raw.units);
+  const modules = rawModules
+    .map((module) => {
+      const obj = module && typeof module === "object" ? module as Record<string, unknown> : { title: stringValue(module) };
+      const moduleTitle = stringValue(obj.title ?? obj.module_title ?? obj.name) ?? "";
+      const moduleDescription = stringValue(obj.description ?? obj.module_description ?? obj.overview) ?? "";
+      const lessons = asArray(obj.lessons ?? obj.lectures ?? obj.items ?? obj.topics)
+        .map((lesson) => {
+          if (typeof lesson === "string") return lesson.trim();
+          if (lesson && typeof lesson === "object") {
+            return stringValue((lesson as Record<string, unknown>).lesson_title ?? (lesson as Record<string, unknown>).title ?? (lesson as Record<string, unknown>).name) ?? "";
+          }
+          return "";
+        })
+        .filter(Boolean);
+      return { title: moduleTitle, description: moduleDescription, lessons };
+    })
+    .filter((module) => module.title && module.lessons.length > 0);
+  return { title, description, modules };
+}
+
+function normalizeQuiz(raw: JsonObject): JsonObject {
+  const questions = asArray(raw.questions ?? raw.items)
+    .map((question) => {
+      const obj = question && typeof question === "object" ? question as Record<string, unknown> : {};
+      const text = stringValue(obj.text ?? obj.question ?? obj.prompt) ?? "";
+      const type = normalizeQuestionType(stringValue(obj.type ?? obj.questionType) ?? "multiple_choice");
+      const options = asArray(obj.options ?? obj.choices).map((option) => stringValue(option) ?? "").filter(Boolean);
+      const correctAnswer = answerToString(obj.correctAnswer ?? obj.answer ?? obj.correct);
+      const explanation = stringValue(obj.explanation ?? obj.rationale) ?? "";
+      const finalOptions = type === "true_false" && options.length === 0 ? ["True", "False"] : options;
+      return { text, type, options: finalOptions, correctAnswer, explanation };
+    })
+    .filter((question) => question.text.length > 0);
+  return { title: stringValue(raw.title) ?? "Practice Quiz", questions };
+}
+
+function normalizeFlashcards(raw: JsonObject): JsonObject {
+  const flashcards = asArray(raw.flashcards ?? raw.cards)
+    .map((card) => {
+      if (typeof card === "string") return { front: card, back: "" };
+      const obj = card && typeof card === "object" ? card as Record<string, unknown> : {};
+      return {
+        front: stringValue(obj.front ?? obj.question ?? obj.term) ?? "",
+        back: stringValue(obj.back ?? obj.answer ?? obj.definition) ?? "",
+      };
+    })
+    .filter((card) => card.front.length > 0);
+  return { flashcards };
+}
+
+function normalizeSummary(raw: JsonObject): JsonObject {
+  let summaryText = "";
+  let keyPoints: string[] = [];
+  const summaryField = raw.summary;
+
+  if (typeof summaryField === "string") {
+    summaryText = summaryField.trim();
+  } else if (summaryField && typeof summaryField === "object") {
+    const summaryObj = summaryField as Record<string, unknown>;
+    summaryText = stringValue(summaryObj.summary ?? summaryObj.content ?? summaryObj.description ?? summaryObj.text ?? summaryObj.title) ?? "";
+    keyPoints = collectPoints([
+      summaryObj.keyPoints,
+      summaryObj.key_points,
+      summaryObj.points,
+      summaryObj.takeaways,
+      summaryObj.action_items,
+      summaryObj.key_concepts,
+    ]);
+  }
+
+  if (!summaryText) {
+    summaryText = stringValue(raw.summary_text ?? raw.content ?? raw.description ?? raw.text) ?? "";
+  }
+  if (keyPoints.length === 0) {
+    keyPoints = collectPoints([
+      raw.keyPoints,
+      raw.key_points,
+      raw.points,
+      raw.takeaways,
+      raw.action_items,
+      raw.key_concepts,
+    ]);
+  }
+  return { summary: summaryText, keyPoints };
+}
+
+function normalizeStudyPlan(raw: JsonObject): JsonObject {
+  const weeks = asArray(raw.weeks ?? raw.plan ?? raw.schedule)
+    .map((week, index) => {
+      const obj = week && typeof week === "object" ? week as Record<string, unknown> : {};
+      const tasks = asArray(obj.tasks ?? obj.items ?? obj.activities)
+        .map((task) => {
+          const taskObj = task && typeof task === "object" ? task as Record<string, unknown> : {};
+          return {
+            day: stringValue(taskObj.day ?? taskObj.day_of_week) ?? "",
+            title: stringValue(taskObj.title ?? taskObj.name ?? taskObj.task) ?? "",
+            estimatedMinutes: typeof taskObj.estimatedMinutes === "number" ? taskObj.estimatedMinutes
+              : typeof taskObj.minutes === "number" ? taskObj.minutes
+              : typeof taskObj.duration === "number" ? taskObj.duration
+              : 60,
+            lessonId: typeof taskObj.lessonId === "number" ? taskObj.lessonId
+              : typeof taskObj.lesson_id === "number" ? taskObj.lesson_id
+              : null,
+          };
+        })
+        .filter((task) => task.title.length > 0);
+      const weekNumber = typeof obj.week === "number" ? obj.week : index + 1;
+      return { week: weekNumber, tasks };
+    })
+    .filter((week) => week.tasks.length > 0);
+  return { weeks };
+}
+
+function normalizeChat(raw: JsonObject): JsonObject {
+  return { message: stringValue(raw.message ?? raw.response ?? raw.text ?? raw.answer) ?? "" };
+}
+
 async function runAI<T extends z.ZodTypeAny>(
   feature: string,
   outputSchema: T,
   system: string,
   user: string,
+  example?: string,
+  normalize?: (raw: JsonObject) => JsonObject,
 ) {
   const provider = getProvider();
-  const result = await provider.generateJson({ feature, system, user });
-  return outputSchema.parse(result);
+  try {
+    const raw = await provider.generateJson({
+      feature,
+      system: example ? `${system}\nReturn your answer as valid JSON. Prefer this shape: ${example}` : system,
+      user,
+    });
+    return outputSchema.parse(normalize ? normalize(raw) : raw);
+  } catch (error) {
+    if (!example || error instanceof AIProviderConfigurationError) throw error;
+    const raw = await provider.generateJson({
+      feature,
+      system: `${system}\nReturn ONLY valid JSON that matches EXACTLY this shape (no markdown fences, no prose, no extra fields):\n${example}`,
+      user,
+    });
+    return outputSchema.parse(normalize ? normalize(raw) : raw);
+  }
 }
 
 router.post("/ai/generate-course-outline", requireAuth, aiLimiter("course-outline"), async (req, res) => {
@@ -274,6 +456,8 @@ router.post("/ai/generate-course-outline", requireAuth, aiLimiter("course-outlin
       courseOutlineOutput,
       "You are an expert LMS instructional designer creating practical, production-ready course outlines.",
       `Create a ${level} course outline about "${topic}" for ${targetAudience}. Include 5 to 6 modules with clear lesson titles.`,
+      `{"title":"Course Title","description":"Short course description","modules":[{"title":"Module 1","description":"What learners cover","lessons":["Lesson 1","Lesson 2","Lesson 3"]}]}`,
+      normalizeOutline,
     );
     res.json(result);
   } catch (error) {
@@ -292,6 +476,8 @@ router.post("/ai/generate-quiz", requireAuth, aiLimiter("quiz"), async (req, res
       quizOutput,
       "You create LMS assessment questions with clear answer keys and concise explanations.",
       `Generate ${questionCount} assessment questions about "${topic}". Use a mix of multiple_choice, true_false, and fill_blank when appropriate.`,
+      `{"title":"Quiz Title","questions":[{"text":"Question text","type":"multiple_choice","options":["Option A","Option B","Option C"],"correctAnswer":"Option A","explanation":"Why this is correct"}]}`,
+      normalizeQuiz,
     );
     res.json(result);
   } catch (error) {
@@ -310,6 +496,8 @@ router.post("/ai/generate-flashcards", requireAuth, aiLimiter("flashcards"), asy
       flashcardsOutput,
       "You create concise study flashcards for LMS learners.",
       `Create ${count} flashcards about "${topic}". Keep fronts short and backs useful for recall.`,
+      `{"flashcards":[{"front":"Question or concept","back":"Answer or definition"}]}`,
+      normalizeFlashcards,
     );
     res.json(result);
   } catch (error) {
@@ -327,6 +515,8 @@ router.post("/ai/summarize-lesson", requireAuth, aiLimiter("summary"), async (re
       summaryOutput,
       "You summarize LMS lessons for students. Preserve important concepts and action items.",
       `Summarize this lesson content and extract key points:\n\n${parsed.data.content}`,
+      `{"summary":"Concise summary of the content","keyPoints":["Key point 1","Key point 2","Key point 3"]}`,
+      normalizeSummary,
     );
     res.json(result);
   } catch (error) {
@@ -345,6 +535,8 @@ router.post("/ai/study-plan", requireAuth, aiLimiter("study-plan"), async (req, 
       studyPlanOutput,
       "You create realistic LMS study plans with weekly tasks and reasonable time estimates.",
       `Create a ${durationWeeks}-week study plan for this goal: "${goal}". The learner has ${availableHoursPerWeek} hours per week.`,
+      `{"weeks":[{"week":1,"tasks":[{"day":"Monday","title":"Task title","estimatedMinutes":60,"lessonId":null}]}]}`,
+      normalizeStudyPlan,
     );
     res.json(result);
   } catch (error) {
@@ -362,6 +554,8 @@ router.post("/ai/chat", requireAuth, aiLimiter("chat"), async (req, res) => {
       chatOutput,
       "You are SkillForge AI's learning assistant. Give clear, supportive, course-safe tutoring guidance without pretending to access unavailable private data.",
       parsed.data.message,
+      `{"message":"Your helpful reply"}`,
+      normalizeChat,
     );
     res.json(result);
   } catch (error) {

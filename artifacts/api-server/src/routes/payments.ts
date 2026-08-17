@@ -17,6 +17,7 @@ import { and, eq, gt, isNull, or, sql } from "drizzle-orm";
 import { requireAuth, requireRole } from "../middlewares/auth";
 import { rateLimit } from "../middlewares/rateLimit";
 import { databaseErrorResponse } from "../lib/httpErrors";
+import { logger } from "../lib/logger";
 import { supabaseRest } from "../lib/supabaseRest";
 
 const router = Router();
@@ -97,9 +98,74 @@ router.post("/payments/checkout", requireAuth, rateLimit({ keyPrefix: "payments-
   }
 });
 
+const verifyInput = z.object({
+  orderId: z.coerce.number().int().positive(),
+});
+
+router.post("/payments/verify", requireAuth, rateLimit({ keyPrefix: "payments-verify", windowMs: 60_000, max: 30 }), async (req, res) => {
+  try {
+    const parsed = verifyInput.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: "Invalid verify request", issues: parsed.error.issues });
+      return;
+    }
+    const { orderId } = parsed.data;
+    const [order] = await db.select().from(ordersTable).where(eq(ordersTable.id, orderId)).limit(1);
+    if (!order || order.userId !== req.user!.id) {
+      res.status(404).json({ error: "Order not found" });
+      return;
+    }
+    if (order.status === "paid") {
+      res.json({ status: "paid", order });
+      return;
+    }
+    if (order.status !== "pending" || !order.providerSessionId) {
+      res.json({ status: order.status, order });
+      return;
+    }
+
+    if (!stripeSecretKey()) {
+      res.status(503).json({
+        error: "Payment provider is not configured",
+        code: "PAYMENT_PROVIDER_NOT_CONFIGURED",
+        requiredEnv: ["STRIPE_SECRET_KEY"],
+      });
+      return;
+    }
+
+    const session = await retrieveStripeSession(order.providerSessionId);
+    if (session?.payment_status === "paid") {
+      await completePaidOrder(order.id, session.payment_intent ?? undefined);
+      const [updated] = await db.select().from(ordersTable).where(eq(ordersTable.id, orderId)).limit(1);
+      res.json({ status: "paid", order: updated });
+      return;
+    }
+    res.json({ status: order.status, order });
+  } catch (err) {
+    req.log.error(err);
+    const dbError = databaseErrorResponse(err);
+    if (dbError) {
+      res.status(dbError.status).json(dbError.body);
+      return;
+    }
+    if (err instanceof StripeCheckoutError) {
+      res.status(err.status).json({ error: err.safeMessage, code: "STRIPE_VERIFY_FAILED" });
+      return;
+    }
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 router.get("/payments/orders", requireAuth, async (req, res) => {
   try {
     const rows = await db.select().from(ordersTable).where(eq(ordersTable.userId, req.user!.id));
+    const stuck = rows.some((order) => order.status === "pending" && order.providerSessionId);
+    if (stuck) {
+      await reconcilePendingOrders(rows);
+      const updated = await db.select().from(ordersTable).where(eq(ordersTable.userId, req.user!.id));
+      res.json(updated);
+      return;
+    }
     res.json(rows);
   } catch (err) {
     req.log.error(err);
@@ -115,6 +181,12 @@ router.get("/payments/orders", requireAuth, async (req, res) => {
 router.get("/admin/payments/orders", requireAuth, requireRole("admin"), async (req, res) => {
   try {
     const rows = await db.select().from(ordersTable);
+    const stuck = rows.filter((order) => order.status === "pending" && order.providerSessionId).slice(0, 20);
+    if (stuck.length) {
+      await reconcilePendingOrders(stuck);
+      res.json(await db.select().from(ordersTable));
+      return;
+    }
     res.json(rows);
   } catch (err) {
     req.log.error(err);
@@ -248,6 +320,22 @@ export async function hasPaidAccess(userId: number, courseId: number) {
     .where(and(eq(ordersTable.userId, userId), eq(ordersTable.status, "paid"), eq(orderItemsTable.courseId, courseId)))
     .limit(1);
   return rows.length > 0;
+}
+
+async function reconcilePendingOrders(orders: Array<{ id: number; status: string; providerSessionId: string | null }>) {
+  for (const order of orders) {
+    if (order.status !== "pending" || !order.providerSessionId) continue;
+    try {
+      if (!stripeSecretKey()) continue;
+      const session = await retrieveStripeSession(order.providerSessionId);
+      if (session?.payment_status === "paid") {
+        await completePaidOrder(order.id, session.payment_intent ?? undefined);
+        logger.info({ orderId: order.id }, "Reconciled pending Stripe order to paid");
+      }
+    } catch (err) {
+      logger.error({ err, orderId: order.id }, "Failed to reconcile pending order");
+    }
+  }
 }
 
 async function resolveCoupon(code: string, userId: number) {
@@ -438,21 +526,21 @@ async function completePaidOrder(orderId: number, paymentIntent?: unknown) {
     .where(eq(ordersTable.id, orderId))
     .returning();
   if (!order) return;
-  await db.insert(paymentsTable).values({ orderId, provider: order.provider, status: "paid", amount: order.total, currency: order.currency, providerPaymentId: order.providerPaymentIntentId }).catch(() => {});
+  await db.insert(paymentsTable).values({ orderId, provider: order.provider, status: "paid", amount: order.total, currency: order.currency, providerPaymentId: order.providerPaymentIntentId }).catch((err) => logger.error({ err, orderId }, "Failed to record payment"));
   if (order.couponId) {
-    await db.insert(couponRedemptionsTable).values({ couponId: order.couponId, userId: order.userId, orderId }).catch(() => {});
-    await db.update(couponsTable).set({ redemptionCount: sql`${couponsTable.redemptionCount} + 1`, updatedAt: new Date() }).where(eq(couponsTable.id, order.couponId)).catch(() => {});
+    await db.insert(couponRedemptionsTable).values({ couponId: order.couponId, userId: order.userId, orderId }).catch((err) => logger.error({ err, orderId }, "Failed to record coupon redemption"));
+    await db.update(couponsTable).set({ redemptionCount: sql`${couponsTable.redemptionCount} + 1`, updatedAt: new Date() }).where(eq(couponsTable.id, order.couponId)).catch((err) => logger.error({ err, orderId }, "Failed to increment coupon redemptions"));
   }
   const items = await db.select().from(orderItemsTable).where(eq(orderItemsTable.orderId, orderId));
   for (const item of items) {
-    await db.insert(enrollmentsTable).values({ userId: order.userId, courseId: item.courseId }).catch(() => {});
+    await db.insert(enrollmentsTable).values({ userId: order.userId, courseId: item.courseId }).catch((err) => logger.error({ err, orderId, courseId: item.courseId }, "Failed to create enrollment"));
     await db.insert(notificationsTable).values({
       userId: order.userId,
       type: "enrollment",
       title: `Enrolled in ${item.title}`,
       body: "Your payment was confirmed server-side.",
       link: `/learn/${item.courseId}`,
-    }).catch(() => {});
+    }).catch((err) => logger.error({ err, orderId }, "Failed to create enrollment notification"));
   }
 }
 
@@ -486,6 +574,21 @@ async function createStripeCheckoutSession(orderId: number, courseTitle: string,
     throw new StripeCheckoutError(response.status, detail);
   }
   return await response.json() as { id: string; url: string };
+}
+
+async function retrieveStripeSession(sessionId: string) {
+  const secretKey = stripeSecretKey();
+  if (!secretKey) {
+    throw new StripeCheckoutError(503, "Stripe secret key is missing or invalid");
+  }
+  const response = await fetch(`https://api.stripe.com/v1/checkout/sessions/${encodeURIComponent(sessionId)}`, {
+    headers: { Authorization: `Bearer ${secretKey}` },
+  });
+  if (!response.ok) {
+    const detail = await response.text().catch(() => "");
+    throw new StripeCheckoutError(response.status, detail);
+  }
+  return await response.json() as { payment_status?: string; payment_intent?: string | null };
 }
 
 class StripeCheckoutError extends Error {
