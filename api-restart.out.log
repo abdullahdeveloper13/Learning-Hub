@@ -1,0 +1,602 @@
+[02:47:09.060] [32mINFO[39m (2936): [36mServer listening[39m
+    [35mport[39m: 3000
+[03:03:35.222] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "56fc5727-6cab-4060-a841-355213fb9d3d",
+      "method": "HEAD",
+      "url": "/media/samples/sample-1.mp4"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 10
+[03:03:35.314] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "2b8d29c6-20c1-44fc-9f8b-58b66ba5120c",
+      "method": "HEAD",
+      "url": "/resources/courses/complete-web-development-bootcamp/lesson-1-notes.pdf"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 14
+[03:03:35.342] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "897d3293-791f-4886-8410-fc4456dece40",
+      "method": "HEAD",
+      "url": "/resources/courses/complete-web-development-bootcamp/lesson-1-starter.zip"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 2
+[03:03:48.323] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "96949e81-214d-41a1-a50a-684ffde06d0d",
+      "method": "GET",
+      "url": "/api/courses/3"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 3121
+[03:04:03.368] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "f05b8c9b-f0b1-486e-bfd3-4c5bebba0b62",
+      "method": "GET",
+      "url": "/api/courses"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 4785
+[03:04:17.811] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "afde3327-c17e-4fe6-bb77-dbb205c9db25",
+      "method": "GET",
+      "url": "/api/courses/9"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 5452
+[03:19:51.946] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "7a154f2a-259f-447a-8602-a5b905a718fa",
+      "method": "OPTIONS",
+      "url": "/api/courses/11"
+    }
+    [35mres[39m: {
+      "statusCode": 204
+    }
+    [35mresponseTime[39m: 3
+[03:19:51.952] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "9cd3b53d-76c7-4c57-b7b6-158f7372e867",
+      "method": "OPTIONS",
+      "url": "/api/progress/11"
+    }
+    [35mres[39m: {
+      "statusCode": 204
+    }
+    [35mresponseTime[39m: 1
+[03:19:52.866] [32mINFO[39m (2936): [36mrequest aborted[39m
+    [35mreq[39m: {
+      "id": "cefd5d76-db31-4d65-8895-54bec2ac0ab7",
+      "method": "GET",
+      "url": "/api/courses/11"
+    }
+    [35mres[39m: {
+      "statusCode": null
+    }
+    [35mresponseTime[39m: 841
+[03:19:52.873] [32mINFO[39m (2936): [36mrequest aborted[39m
+    [35mreq[39m: {
+      "id": "3df2cee8-b0e9-4506-a8a4-c4871eb6af11",
+      "method": "GET",
+      "url": "/api/progress/11"
+    }
+    [35mres[39m: {
+      "statusCode": null
+    }
+    [35mresponseTime[39m: 842
+[03:20:02.334] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "740df409-33fd-49fa-ba9f-81e484e1b3be",
+      "method": "OPTIONS",
+      "url": "/api/courses/11"
+    }
+    [35mres[39m: {
+      "statusCode": 204
+    }
+    [35mresponseTime[39m: 1
+[03:20:02.336] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "10ef9901-353d-4e8e-b2c3-1ac414172f56",
+      "method": "OPTIONS",
+      "url": "/api/progress/11"
+    }
+    [35mres[39m: {
+      "statusCode": 204
+    }
+    [35mresponseTime[39m: 1
+[03:20:04.423] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "1e3485f6-f929-46b4-b378-d0bb651cc8d8",
+      "method": "GET",
+      "url": "/api/courses/11"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 2083
+[03:20:04.620] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "9503bf15-a0d6-4d84-9bd1-73be5887fb30",
+      "method": "GET",
+      "url": "/media/samples/sample-1.mp4"
+    }
+    [35mres[39m: {
+      "statusCode": 206
+    }
+    [35mresponseTime[39m: 15
+[03:20:06.248] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "f8b0c2c2-ff0a-4937-9eb0-b14c9b8e2f69",
+      "method": "GET",
+      "url": "/api/progress/11"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 3904
+[03:20:08.495] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "43bd9023-2989-491c-971f-f42252fec208",
+      "method": "GET",
+      "url": "/media/samples/sample-1.mp4"
+    }
+    [35mres[39m: {
+      "statusCode": 304
+    }
+    [35mresponseTime[39m: 1
+[03:20:08.535] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "86afed73-5d9e-4acc-a1fa-5a6473833c0f",
+      "method": "GET",
+      "url": "/media/samples/sample-1.mp4"
+    }
+    [35mres[39m: {
+      "statusCode": 206
+    }
+    [35mresponseTime[39m: 11
+[03:20:13.979] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "8db56f00-ae50-4048-99a9-de233dfb702b",
+      "method": "OPTIONS",
+      "url": "/api/progress/lessons/43/complete"
+    }
+    [35mres[39m: {
+      "statusCode": 204
+    }
+    [35mresponseTime[39m: 1
+[03:20:15.770] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "cea334df-e7e8-41d3-bf4a-857831b0f1ab",
+      "method": "GET",
+      "url": "/api/health"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 8
+[03:20:18.639] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "1fa5eba5-54f9-4569-aef0-b530d2b9baf2",
+      "method": "POST",
+      "url": "/api/progress/lessons/43/complete"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 4659
+[03:20:18.648] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "aafbbeed-4c45-484f-8e61-00957cf0c6a5",
+      "method": "OPTIONS",
+      "url": "/api/progress/11"
+    }
+    [35mres[39m: {
+      "statusCode": 204
+    }
+    [35mresponseTime[39m: 1
+[03:20:22.647] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "eb747bb7-73b4-4d46-90ae-2c8ea3117969",
+      "method": "GET",
+      "url": "/api/progress/11"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 3996
+[03:20:33.028] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "70a32aa9-2e08-49f9-a9e5-9ad8de766d57",
+      "method": "GET",
+      "url": "/resources/courses/ai-machine-learning-masterclass/lesson-1-notes.pdf"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 6
+[03:20:33.115] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "09a0b4ee-27d5-424c-a4a0-b081c5cca872",
+      "method": "GET",
+      "url": "/favicon.ico"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 5
+[03:20:46.356] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "395edce7-33db-49ae-900a-df4de7893314",
+      "method": "GET",
+      "url": "/api/healthz"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 4
+[03:20:46.408] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "9d065ba0-e85f-415b-94d1-8c2e451a1ea3",
+      "method": "HEAD",
+      "url": "/media/samples/sample-1.mp4"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 1
+[03:20:46.447] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "0432f9f7-508d-410c-9e37-7aea0f3762f8",
+      "method": "HEAD",
+      "url": "/resources/courses/complete-web-development-bootcamp/lesson-1-notes.pdf"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 1
+[03:20:50.253] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "921e2411-06f5-4bf6-8fab-5bb97ed58f76",
+      "method": "OPTIONS",
+      "url": "/api/courses/11"
+    }
+    [35mres[39m: {
+      "statusCode": 204
+    }
+    [35mresponseTime[39m: 0
+[03:20:50.255] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "815f0a47-5bd4-417b-971a-845cf0026036",
+      "method": "OPTIONS",
+      "url": "/api/progress/11"
+    }
+    [35mres[39m: {
+      "statusCode": 204
+    }
+    [35mresponseTime[39m: 1
+[03:20:52.244] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "9c7a958a-319f-46a5-a026-76ae0a6e856c",
+      "method": "GET",
+      "url": "/media/samples/sample-2.mp4"
+    }
+    [35mres[39m: {
+      "statusCode": 206
+    }
+    [35mresponseTime[39m: 2
+[03:20:52.296] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "d8da1f96-d46c-431a-9acd-a05cf3c989c7",
+      "method": "GET",
+      "url": "/media/samples/sample-2.mp4"
+    }
+    [35mres[39m: {
+      "statusCode": 206
+    }
+    [35mresponseTime[39m: 7
+[03:20:52.308] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "e5119e65-720c-4326-b24f-e01194e33237",
+      "method": "GET",
+      "url": "/media/samples/sample-2.mp4"
+    }
+    [35mres[39m: {
+      "statusCode": 206
+    }
+    [35mresponseTime[39m: 2
+[03:20:54.737] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "dcfa57f0-47c3-494f-a9b0-ece7e3a3ca89",
+      "method": "GET",
+      "url": "/media/samples/sample-2.mp4"
+    }
+    [35mres[39m: {
+      "statusCode": 304
+    }
+    [35mresponseTime[39m: 3
+[03:20:54.751] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "773cb3ce-7133-4300-b13f-7867edc13569",
+      "method": "GET",
+      "url": "/media/samples/sample-2.mp4"
+    }
+    [35mres[39m: {
+      "statusCode": 206
+    }
+    [35mresponseTime[39m: 7
+[03:20:55.227] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "09a472c3-0805-43e9-959b-e7f0b554ef88",
+      "method": "GET",
+      "url": "/api/courses/11"
+    }
+    [35mres[39m: {
+      "statusCode": 304
+    }
+    [35mresponseTime[39m: 4864
+[03:20:55.371] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "8d79485d-9d3d-4042-9c17-f62e08780407",
+      "method": "GET",
+      "url": "/api/progress/11"
+    }
+    [35mres[39m: {
+      "statusCode": 304
+    }
+    [35mresponseTime[39m: 5005
+[03:21:05.035] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "02acec2c-e12c-4bbf-ba99-eca033d4835b",
+      "method": "OPTIONS",
+      "url": "/api/progress/lessons/44/complete"
+    }
+    [35mres[39m: {
+      "statusCode": 204
+    }
+    [35mresponseTime[39m: 1
+[03:21:09.820] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "3c01bf89-b514-462d-a007-c365f7062305",
+      "method": "POST",
+      "url": "/api/progress/lessons/44/complete"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 4782
+[03:21:09.830] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "e49ee85f-9e9d-42e9-96fd-7eaa8d673f6f",
+      "method": "OPTIONS",
+      "url": "/api/progress/11"
+    }
+    [35mres[39m: {
+      "statusCode": 204
+    }
+    [35mresponseTime[39m: 1
+[03:21:12.949] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "5fd750f2-0532-4490-b602-7d205b4aab8b",
+      "method": "GET",
+      "url": "/resources/courses/ai-machine-learning-masterclass/lesson-2-notes.pdf"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 7
+[03:21:13.012] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "d1d731c8-fec8-4e60-b032-143ab365dca4",
+      "method": "GET",
+      "url": "/favicon.ico"
+    }
+    [35mres[39m: {
+      "statusCode": 304
+    }
+    [35mresponseTime[39m: 6
+[03:21:13.877] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "ee077c63-a7bb-47e6-89a7-3edd5e01b2cb",
+      "method": "GET",
+      "url": "/api/progress/11"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 4044
+[03:21:28.185] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "b91c18d1-75a9-4624-88ea-8d2f2d9992f2",
+      "method": "OPTIONS",
+      "url": "/api/courses/11"
+    }
+    [35mres[39m: {
+      "statusCode": 204
+    }
+    [35mresponseTime[39m: 1
+[03:21:28.187] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "d5157f66-6425-427e-acac-69f4c70059b2",
+      "method": "OPTIONS",
+      "url": "/api/progress/11"
+    }
+    [35mres[39m: {
+      "statusCode": 204
+    }
+    [35mresponseTime[39m: 1
+[03:21:29.976] [32mINFO[39m (2936): [36mrequest aborted[39m
+    [35mreq[39m: {
+      "id": "285269bb-c9ed-4d57-a003-3b8a5603e68e",
+      "method": "GET",
+      "url": "/media/samples/sample-3.mp4"
+    }
+    [35mres[39m: {
+      "statusCode": 206
+    }
+    [35mresponseTime[39m: 13
+[03:21:29.990] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "cb5a9f83-a158-44d3-889f-3462a0352ed5",
+      "method": "GET",
+      "url": "/media/samples/sample-3.mp4"
+    }
+    [35mres[39m: {
+      "statusCode": 206
+    }
+    [35mresponseTime[39m: 8
+[03:21:32.296] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "bc192fa4-f63a-4011-bf10-d20518c61735",
+      "method": "GET",
+      "url": "/media/samples/sample-3.mp4"
+    }
+    [35mres[39m: {
+      "statusCode": 304
+    }
+    [35mresponseTime[39m: 2
+[03:21:32.349] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "402e8420-995c-49f7-ab44-ae2b1c8db33b",
+      "method": "GET",
+      "url": "/media/samples/sample-3.mp4"
+    }
+    [35mres[39m: {
+      "statusCode": 206
+    }
+    [35mresponseTime[39m: 38
+[03:21:32.433] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "bd43ed6c-afb0-4e03-9ce6-ca09637f1754",
+      "method": "GET",
+      "url": "/media/samples/sample-3.mp4"
+    }
+    [35mres[39m: {
+      "statusCode": 206
+    }
+    [35mresponseTime[39m: 2
+[03:21:32.745] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "1e3f3bde-2277-4782-b0b2-669a2cc5bb07",
+      "method": "GET",
+      "url": "/api/courses/11"
+    }
+    [35mres[39m: {
+      "statusCode": 304
+    }
+    [35mresponseTime[39m: 4539
+[03:21:33.134] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "b778f929-787d-4fe0-b32e-867f114384d7",
+      "method": "GET",
+      "url": "/api/progress/11"
+    }
+    [35mres[39m: {
+      "statusCode": 304
+    }
+    [35mresponseTime[39m: 4934
+[03:22:25.583] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "91bb1c5f-b118-4406-afc2-3e7301f89190",
+      "method": "OPTIONS",
+      "url": "/api/progress/lessons/45/complete"
+    }
+    [35mres[39m: {
+      "statusCode": 204
+    }
+    [35mresponseTime[39m: 1
+[03:22:32.236] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "13fbbed8-ff54-4be9-a161-c546d9bdb747",
+      "method": "POST",
+      "url": "/api/progress/lessons/45/complete"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 6648
+[03:22:32.243] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "3959ad40-48d0-457d-bfa9-07ca2a4681c9",
+      "method": "OPTIONS",
+      "url": "/api/progress/11"
+    }
+    [35mres[39m: {
+      "statusCode": 204
+    }
+    [35mresponseTime[39m: 1
+[03:22:36.311] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "e438afcc-fbad-4e68-95cb-dc943b53bf25",
+      "method": "GET",
+      "url": "/api/progress/11"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 4066
+[03:23:22.125] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "27eb9f64-66c0-4af8-a70c-80691776e4c4",
+      "method": "GET",
+      "url": "/api/courses/3"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 2322
+[03:23:32.940] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "ad8d34b1-7405-4c23-ba1e-4ea936e6e811",
+      "method": "GET",
+      "url": "/api/courses"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 3270
+[03:23:42.204] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "dedc02b0-4b6c-46f1-855a-8f94dca397ab",
+      "method": "GET",
+      "url": "/api/courses"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 1926
+[03:23:53.847] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "71069df3-994f-4b62-b091-859cadd60d4c",
+      "method": "GET",
+      "url": "/api/courses"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 2650
+[03:24:10.205] [32mINFO[39m (2936): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": "13077d0b-a4b6-42f2-abcc-9066f204d7e2",
+      "method": "GET",
+      "url": "/api/courses/11"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 5273

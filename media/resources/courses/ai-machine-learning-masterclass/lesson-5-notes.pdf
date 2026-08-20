@@ -1,0 +1,193 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R /F2 5 0 R /F3 6 0 R >> >> /Contents 8 0 R >>
+endobj
+7 0 obj
+<< /Length 3162 >>
+stream
+BT
+/F2 17 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Data cleaning with pandas) Tj
+/F1 10 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(Module 2 - Lesson 2) Tj
+/F2 13 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Overview) Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(Real data is messy. pandas provides the tools to load, inspect, and clean tabular data: missing) Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(values, wrong types, duplicates, and outliers.) Tj
+/F2 13 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Key Concepts) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(DataFrames are labeled tables; read_csv loads them from files.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(df.info\(\), df.describe\(\), and df.isna\(\).sum\(\) reveal the shape and health of data.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Handle missing values by dropping \(dropna\) or filling \(fillna\) based on context.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Convert and validate types with astype and pd.to_datetime.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Remove duplicate rows with drop_duplicates.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Detect outliers with describe\(\), boxplots, and domain knowledge before deciding.) Tj
+/F2 13 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Example) Tj
+q
+0.93 0.94 0.97 rg
+54 NaN 504 114 re f
+Q
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(import pandas as pd) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+() Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(df = pd.read_csv\("sales.csv"\)) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(df["date"] = pd.to_datetime\(df["date"]\)) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(df = df.drop_duplicates\(\)) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(df = df.dropna\(subset=["amount"]\)) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(df["amount"] = df["amount"].astype\(float\)) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(print\(df.isna\(\).sum\(\)\)) Tj
+/F2 13 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Summary) Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(Cleaning turns messy raw data into a reliable table. Inspect with describe/isna, then fix) Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(missing values, types, duplicates, and outliers with clear, documented decisions.) Tj
+/F2 13 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Practice Checklist) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Load a dataset and report its missing values and dtypes.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Clean it: drop duplicates, fix dates, and handle nulls.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Document each cleaning decision in a notebook cell.) Tj
+ET
+endstream
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000185 00000 n 
+0000000260 00000 n 
+0000000328 00000 n 
+0000000474 00000 n 
+trailer
+<< /Size 8 /Root 1 0 R >>
+startxref
+3688
+%%EOF

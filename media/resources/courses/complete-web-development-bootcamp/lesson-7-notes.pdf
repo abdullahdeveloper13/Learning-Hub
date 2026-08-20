@@ -1,0 +1,197 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R /F2 5 0 R /F3 6 0 R >> >> /Contents 8 0 R >>
+endobj
+7 0 obj
+<< /Length 3329 >>
+stream
+BT
+/F2 17 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Components, props, and state) Tj
+/F1 10 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(Module 3 - Lesson 1) Tj
+/F2 13 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Overview) Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(React applications are trees of components. Props flow data down from parents, state holds data) Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(that changes over time, and together they make the UI a pure function of your data.) Tj
+/F2 13 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Key Concepts) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(A component is a function that returns JSX describing the UI.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Props are read-only inputs passed from a parent; a component must not modify its own props.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(State is data owned by a component that can change; updating it re-renders the component.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(The useState hook returns the current value and an updater; updaters are async and batched.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Lift state up to the closest common ancestor when several components share it.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Derived values belong in regular variables, not state; avoid duplicating the same data in) Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(multiple places.) Tj
+/F2 13 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Example) Tj
+q
+0.93 0.94 0.97 rg
+54 NaN 504 114 re f
+Q
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(function Counter\(\) {) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(  const [count, setCount] = useState\(0\);) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(  return \() Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(    <button onClick={\(\) => setCount\(c => c + 1\)}>) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(      Count: {count}) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(    </button>) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(  \);) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(}) Tj
+/F2 13 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Summary) Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(Components, props, and state form React's mental model. Props pass data down, state owns mutable) Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(data, and re-renders keep the screen in sync with your data model.) Tj
+/F2 13 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Practice Checklist) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Split a page into components and pass data between them via props.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Convert a mutable value to state and observe how the UI updates.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Lift shared state to a common parent so two sibling components stay in sync.) Tj
+ET
+endstream
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000185 00000 n 
+0000000260 00000 n 
+0000000328 00000 n 
+0000000474 00000 n 
+trailer
+<< /Size 8 /Root 1 0 R >>
+startxref
+3855
+%%EOF

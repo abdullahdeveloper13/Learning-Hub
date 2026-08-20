@@ -1,0 +1,205 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R /F2 5 0 R /F3 6 0 R >> >> /Contents 8 0 R >>
+endobj
+7 0 obj
+<< /Length 3637 >>
+stream
+BT
+/F2 17 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Accessible forms and navigation) Tj
+/F1 10 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(Module 1 - Lesson 3) Tj
+/F2 13 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Overview) Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(Forms and navigation are the interactive heart of most websites. Accessibility here means every) Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(label is programmatically connected to its control, keyboard users can operate everything, and) Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(focus is always visible.) Tj
+/F2 13 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Key Concepts) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Every input needs a <label> connected via for/id, or wrapped inside the label element.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Use fieldset/legend to group related controls such as radio buttons or checkboxes.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Convey errors with both color and text, and use aria-describedby to link error messages to the) Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(field.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Navigation links must be reachable by keyboard and show a clear visible focus state.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Use <button> for actions and <a> for navigation; never fake a button with a div.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Respect native HTML behavior before adding JavaScript: required, min/max, type, and) Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(autocomplete improve usability for free.) Tj
+/F2 13 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Example) Tj
+q
+0.93 0.94 0.97 rg
+54 NaN 504 102 re f
+Q
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(<form>) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(  <label for="email">Email address</label>) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(  <input id="email" type="email" required) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(         autocomplete="email") Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(         aria-describedby="email-error" />) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(  <p id="email-error" role="alert">Enter a valid email.</p>) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(</form>) Tj
+/F2 13 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Summary) Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(Accessible forms connect labels to inputs, group related fields, and explain errors clearly.) Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(Accessible navigation stays keyboard-operable with visible focus and uses the correct semantic) Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(elements.) Tj
+/F2 13 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Practice Checklist) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Write a form where every field has a programmatically connected label.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Group a set of radio options with fieldset/legend and test it with a screen reader.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Tab through a page using only the keyboard and verify the focus ring is always visible.) Tj
+ET
+endstream
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000185 00000 n 
+0000000260 00000 n 
+0000000328 00000 n 
+0000000474 00000 n 
+trailer
+<< /Size 8 /Root 1 0 R >>
+startxref
+4163
+%%EOF

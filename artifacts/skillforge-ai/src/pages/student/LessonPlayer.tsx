@@ -26,8 +26,18 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { resolveMediaUrl, downloadMedia } from "@/lib/media";
 
 const API_BASE = (import.meta.env.VITE_API_URL || import.meta.env.BASE_URL || "").replace(/\/$/, "");
+
+function isYouTubeUrl(url?: string | null): boolean {
+  return !!url && /youtube\.com\/(watch\?v=|embed\/|shorts\/)|youtu\.be\//.test(url);
+}
+
+function getYouTubeEmbedUrl(url: string): string {
+  const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{6,20})/);
+  return match ? `https://www.youtube.com/embed/${match[1]}` : url;
+}
 
 // ── Quiz Player (inline) ────────────────────────────────────────────────────
 function InlineQuizPlayer({ lesson, courseId, onComplete }: { lesson: any; courseId: number; onComplete: () => void }) {
@@ -341,15 +351,21 @@ function InlineAssignmentPlayer({ lesson, onComplete }: { lesson: any; onComplet
 
 // ── PDF Viewer ──────────────────────────────────────────────────────────────
 function PdfViewer({ url, title }: { url: string; title: string }) {
+  const resolvedUrl = resolveMediaUrl(url);
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between px-4 py-2 border-b bg-muted/30">
         <span className="text-sm font-medium truncate">{title}</span>
-        <a href={url} download target="_blank" rel="noreferrer">
-          <Button variant="outline" size="sm" className="gap-1.5"><Download className="w-3.5 h-3.5" /> Download</Button>
-        </a>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5"
+          onClick={() => downloadMedia(resolvedUrl)}
+        >
+          <Download className="w-3.5 h-3.5" /> Download
+        </Button>
       </div>
-      <iframe src={url} className="flex-1 w-full" title={title} />
+      <iframe src={resolvedUrl} className="flex-1 w-full" title={title} />
     </div>
   );
 }
@@ -511,16 +527,31 @@ export default function LessonPlayer() {
         return (
           <div className="flex flex-col h-full">
             {l.videoUrl ? (
-              <div className="w-full bg-black">
-                <video
-                  key={l.videoUrl}
-                  src={l.videoUrl}
-                  controls
-                  className="w-full max-h-[55vh] object-contain"
-                  poster={l.thumbnailUrl || (course as any).thumbnailUrl || undefined}
-                  onEnded={handleComplete}
-                />
-              </div>
+              isYouTubeUrl(l.videoUrl) ? (
+                <div className="w-full bg-black">
+                  <div className="w-full max-w-4xl mx-auto aspect-video">
+                    <iframe
+                      key={getYouTubeEmbedUrl(l.videoUrl)}
+                      src={getYouTubeEmbedUrl(l.videoUrl)}
+                      title={l.title}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-full"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="w-full bg-black">
+                  <video
+                    key={l.videoUrl}
+                    src={resolveMediaUrl(l.videoUrl)}
+                    controls
+                    className="w-full max-h-[55vh] object-contain"
+                    poster={l.thumbnailUrl || (course as any).thumbnailUrl || undefined}
+                    onEnded={handleComplete}
+                  />
+                </div>
+              )
             ) : (
               <div className="w-full bg-black/5 border-b aspect-video flex items-center justify-center text-muted-foreground">
                 <div className="text-center">
@@ -536,11 +567,15 @@ export default function LessonPlayer() {
                 <div className="mt-6 space-y-2">
                   <p className="text-sm font-medium">Downloads</p>
                   {l.downloadableFiles.map((f: any, i: number) => (
-                    <a key={i} href={f.url} download target="_blank" rel="noreferrer"
-                      className="flex items-center gap-2 p-2.5 border rounded-lg hover:bg-muted/50 text-sm transition-colors group">
-                      <Download className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => downloadMedia(f.url, f.name)}
+                      className="flex items-center gap-2 p-2.5 border rounded-lg hover:bg-muted/50 text-sm transition-colors group w-full text-left"
+                    >
+                      <Download className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0" />
                       <span className="flex-1 truncate">{f.name}</span>
-                    </a>
+                    </button>
                   ))}
                 </div>
               )}
@@ -581,12 +616,16 @@ export default function LessonPlayer() {
                 <p className="text-sm font-medium">Downloadable Files</p>
                 <div className="grid sm:grid-cols-2 gap-2">
                   {l.downloadableFiles.map((f: any, i: number) => (
-                    <a key={i} href={f.url} download target="_blank" rel="noreferrer"
-                      className="flex items-center gap-2 p-3 border rounded-lg hover:bg-muted/50 text-sm transition-colors group">
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => downloadMedia(f.url, f.name)}
+                      className="flex items-center gap-2 p-3 border rounded-lg hover:bg-muted/50 text-sm transition-colors group w-full text-left"
+                    >
                       <File className="w-4 h-4 text-muted-foreground shrink-0" />
                       <span className="flex-1 truncate">{f.name}</span>
                       <Download className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary shrink-0" />
-                    </a>
+                    </button>
                   ))}
                 </div>
               </div>

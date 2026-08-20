@@ -1,0 +1,189 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R /F2 5 0 R /F3 6 0 R >> >> /Contents 8 0 R >>
+endobj
+7 0 obj
+<< /Length 3115 >>
+stream
+BT
+/F2 17 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Deployment readiness checklist) Tj
+/F1 10 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(Module 6 - Lesson 3) Tj
+/F2 13 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Overview) Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(Moving a model to production is engineering, not just science. A deployment checklist covers the) Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(API, monitoring, data pipeline, and rollback plan.) Tj
+/F2 13 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Key Concepts) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Expose the model behind a versioned API with input validation.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Set up monitoring: prediction latency, request volume, and error rate.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Detect data drift and prediction drift after deployment.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Automate retraining on fresh data and validate before replacing the model.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Plan rollback: keep the previous model version available and switchable.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Document the runbook: what to do when metrics go wrong.) Tj
+/F2 13 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Example) Tj
+q
+0.93 0.94 0.97 rg
+54 NaN 504 102 re f
+Q
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(Deployment checklist:) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(- Model versioned and reproducible \(code + data + config\)) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(- API validates input and returns errors clearly) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(- Logging for latency, errors, and drift) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(- Retraining pipeline scheduled and tested) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(- Rollback path tested) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(- Runbook written and owners assigned) Tj
+/F2 13 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Summary) Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(Production ML is about reliability, not just accuracy. Versioned models, monitoring for drift,) Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(automated retraining, and a tested rollback path keep deployments safe.) Tj
+/F2 13 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Practice Checklist) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Write a deployment checklist tailored to your model.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Add drift monitoring to the serving endpoint plan.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Document the rollback procedure step by step.) Tj
+ET
+endstream
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000185 00000 n 
+0000000260 00000 n 
+0000000328 00000 n 
+0000000474 00000 n 
+trailer
+<< /Size 8 /Root 1 0 R >>
+startxref
+3641
+%%EOF

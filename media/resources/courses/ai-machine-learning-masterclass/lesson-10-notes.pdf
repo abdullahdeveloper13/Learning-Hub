@@ -1,0 +1,189 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R /F2 5 0 R /F3 6 0 R >> >> /Contents 8 0 R >>
+endobj
+7 0 obj
+<< /Length 3153 >>
+stream
+BT
+/F2 17 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Clustering concepts) Tj
+/F1 10 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(Module 4 - Lesson 1) Tj
+/F2 13 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Overview) Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(Clustering finds groups in unlabeled data. K-means partitions data into k clusters by proximity;) Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(evaluating cluster quality is part of the workflow.) Tj
+/F2 13 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Key Concepts) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(K-means assigns points to the nearest centroid and iteratively refines centroids.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Choose k with the elbow method or silhouette score rather than guessing.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Scale features before clustering so distances are meaningful.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(The inertia \(within-cluster distance\) decreases as k grows; the elbow shows the trade-off.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Clusters reflect the chosen features and scale; they are descriptive, not causal.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Visualize clusters with PCA or t-SNE for inspection.) Tj
+/F2 13 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Example) Tj
+q
+0.93 0.94 0.97 rg
+54 NaN 504 102 re f
+Q
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(from sklearn.cluster import KMeans) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(from sklearn.preprocessing import StandardScaler) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+() Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(X_scaled = StandardScaler\(\).fit_transform\(X\)) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(model = KMeans\(n_clusters=4, n_init=10, random_state=42\)) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(labels = model.fit_predict\(X_scaled\)) Tj
+/F3 9.5 Tf
+0.1 0.25 0.45 rg
+1 0 0 1 64 NaN Tm
+(print\(model.inertia_\)) Tj
+/F2 13 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Summary) Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(Clustering surfaces structure in unlabeled data. Pick k deliberately with the elbow or) Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 54 NaN Tm
+(silhouette, scale features first, and treat clusters as descriptive groupings.) Tj
+/F2 13 Tf
+0.1 0.2 0.45 rg
+1 0 0 1 54 NaN Tm
+(Practice Checklist) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Run K-means for several values of k and plot the elbow curve.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Scale the data and re-run; describe how results change.) Tj
+/F2 11 Tf
+0.2 0.35 0.6 rg
+1 0 0 1 54 NaN Tm
+(") Tj
+/F1 11 Tf
+0.15 0.15 0.18 rg
+1 0 0 1 68 NaN Tm
+(Silhouette-score the clusters and pick the best k.) Tj
+ET
+endstream
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000185 00000 n 
+0000000260 00000 n 
+0000000328 00000 n 
+0000000474 00000 n 
+trailer
+<< /Size 8 /Root 1 0 R >>
+startxref
+3679
+%%EOF

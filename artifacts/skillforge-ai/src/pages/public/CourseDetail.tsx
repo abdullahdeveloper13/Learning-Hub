@@ -6,6 +6,7 @@ import {
   useGetCourseProgress,
   getGetCourseQueryKey,
   getGetCourseProgressQueryKey,
+  getGetStudentDashboardQueryKey,
 } from "@workspace/api-client-react/api";
 import { useAuth } from "@/hooks/use-auth";
 import { PublicLayout } from "@/components/layout/PublicLayout";
@@ -26,6 +27,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
+import { resolveMediaUrl } from "@/lib/media";
 
 function lessonIcon(type: string) {
   switch (type) {
@@ -85,11 +87,12 @@ export default function CourseDetail() {
     query: { enabled: !!courseId && isAuthenticated, queryKey: getGetCourseProgressQueryKey(courseId) },
   });
 
-  const enrollMutation = useEnrollCourse({
+const enrollMutation = useEnrollCourse({
     mutation: {
       onSuccess: () => {
         toast({ title: "Enrolled! Let's start learning." });
         queryClient.invalidateQueries({ queryKey: getGetCourseProgressQueryKey(courseId) });
+        queryClient.invalidateQueries({ queryKey: getGetStudentDashboardQueryKey() });
         setLocation(`/learn/${courseId}`);
       },
       onError: (error) => toast({ title: error instanceof Error ? error.message : "Enrollment failed", variant: "destructive" }),
@@ -156,9 +159,10 @@ export default function CourseDetail() {
         return;
       }
 
-      if (payload.free || payload.freeWithCoupon || payload.status === "paid") {
+if (payload.free || payload.freeWithCoupon || payload.status === "paid") {
         toast({ title: "Enrolled! Let's start learning." });
         queryClient.invalidateQueries({ queryKey: getGetCourseProgressQueryKey(courseId) });
+        queryClient.invalidateQueries({ queryKey: getGetStudentDashboardQueryKey() });
         setLocation(`/learn/${courseId}`);
         return;
       }
@@ -367,7 +371,7 @@ export default function CourseDetail() {
               {/* Preview media */}
               {c.previewVideoUrl ? (
                 <div className="aspect-video bg-black relative flex items-center justify-center group cursor-pointer">
-                  <video src={c.previewVideoUrl} className="w-full h-full object-cover opacity-80" />
+                  <video src={resolveMediaUrl(c.previewVideoUrl)} className="w-full h-full object-cover opacity-80" />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-primary transition-colors">
                       <PlayCircle className="w-7 h-7 text-white fill-current" />

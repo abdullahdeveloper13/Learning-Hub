@@ -3,8 +3,6 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
 
-import runtimeErrorOverlay from '@replit/vite-plugin-runtime-error-modal';
-
 export default defineConfig(async ({ command }) => {
   const rawPort = process.env.PORT || '5173';
   const port = Number(rawPort);
@@ -15,14 +13,21 @@ export default defineConfig(async ({ command }) => {
 
   const basePath = process.env.BASE_PATH || '/';
 
+  const isDev = command === 'serve';
+
   return {
   base: basePath,
   plugins: [
     react(),
     tailwindcss(),
-    runtimeErrorOverlay(),
-    ...(process.env.NODE_ENV !== 'production' &&
-    process.env.REPL_ID !== undefined
+    ...(isDev
+      ? [
+          await import('@replit/vite-plugin-runtime-error-modal').then((m) =>
+            m.default(),
+          ),
+        ]
+      : []),
+    ...(isDev && process.env.REPL_ID !== undefined
       ? [
           await import('@replit/vite-plugin-cartographer').then((m) =>
             m.cartographer({
@@ -52,13 +57,21 @@ export default defineConfig(async ({ command }) => {
     outDir: path.resolve(import.meta.dirname, 'dist/public'),
     emptyOutDir: true,
   },
-  server: {
+server: {
     port,
-    strictPort: true,
+    strictPort: false,
     host: '0.0.0.0',
     allowedHosts: true,
-    proxy: {
+proxy: {
       '/api': {
+        target: process.env.API_URL || 'http://localhost:3000',
+        changeOrigin: true,
+      },
+      '/media': {
+        target: process.env.API_URL || 'http://localhost:3000',
+        changeOrigin: true,
+      },
+      '/resources': {
         target: process.env.API_URL || 'http://localhost:3000',
         changeOrigin: true,
       },
