@@ -3,7 +3,7 @@
 << /Type /Catalog /Pages 2 0 R >>
 endobj
 2 0 obj
-<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+<< /Type /Pages /Kids [6 0 R] /Count 1 >>
 endobj
 3 0 obj
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
@@ -15,7 +15,7 @@ endobj
 << /Type /Font /Subtype /Type1 /BaseFont /Courier >>
 endobj
 6 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R /F2 5 0 R /F3 6 0 R >> >> /Contents 8 0 R >>
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 7 0 R >>
 endobj
 7 0 obj
 << /Length 3763 >>
@@ -23,179 +23,179 @@ stream
 BT
 /F2 17 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 738 Tm
 (Variables, functions, and control flow) Tj
 /F1 10 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 712 Tm
 (Module 2 - Lesson 1) Tj
 /F2 13 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 691 Tm
 (Overview) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 669 Tm
 (JavaScript programs are built from variables that store data, functions that package behavior,) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 654 Tm
 (and control flow statements that decide what runs. This lesson covers the fundamentals you will) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 639 Tm
 (use in every program.) Tj
 /F2 13 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 620 Tm
 (Key Concepts) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 598 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 598 Tm
 (let and const are the modern variable declarations; const is the default unless you need to) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 583 Tm
 (reassign.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 568 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 568 Tm
 (Functions capture behavior and can take parameters and return values; arrow functions provide) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 553 Tm
 (a concise syntax.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 538 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 538 Tm
 (Comparison operators and logical operators \(&&, ||, !\) drive conditional logic.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 523 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 523 Tm
 (if/else, switch, and the ternary operator choose between code paths.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 508 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 508 Tm
 (Loops \(for, while, for...of\) repeat work; map/filter/reduce replace most hand-written loops.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 493 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 493 Tm
 (Scope determines where a variable is visible; prefer function and block scope over globals.) Tj
 /F2 13 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 474 Tm
 (Example) Tj
 q
 0.93 0.94 0.97 rg
-54 NaN 504 138 re f
+54 314 504 138 re f
 Q
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 443 Tm
 (const prices = [12, 45, 8];) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 431 Tm
 (const total = prices) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 419 Tm
 (  .filter\(p => p > 10\)) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 407 Tm
 (  .reduce\(\(sum, p\) => sum + p, 0\);) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 395 Tm
 () Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 383 Tm
 (function classify\(score\) {) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 371 Tm
 (  if \(score >= 90\) return 'A';) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 359 Tm
 (  if \(score >= 80\) return 'B';) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 347 Tm
 (  return 'C';) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 335 Tm
 (}) Tj
 /F2 13 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 307 Tm
 (Summary) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 285 Tm
 (Variables hold state, functions package reusable behavior, and control flow directs execution.) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 270 Tm
 (Mastering these fundamentals and the array methods built on them makes everything else in) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 255 Tm
 (JavaScript easier.) Tj
 /F2 13 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 236 Tm
 (Practice Checklist) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 214 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 214 Tm
 (Rewrite a for loop using map and filter to transform an array.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 199 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 199 Tm
 (Write a function that validates a score and returns a grade using early returns.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 184 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 184 Tm
 (Explain the difference between let, const, and var and when each is appropriate.) Tj
 ET
 endstream

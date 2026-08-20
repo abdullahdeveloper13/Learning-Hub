@@ -3,7 +3,7 @@
 << /Type /Catalog /Pages 2 0 R >>
 endobj
 2 0 obj
-<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+<< /Type /Pages /Kids [6 0 R] /Count 1 >>
 endobj
 3 0 obj
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
@@ -15,7 +15,7 @@ endobj
 << /Type /Font /Subtype /Type1 /BaseFont /Courier >>
 endobj
 6 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R /F2 5 0 R /F3 6 0 R >> >> /Contents 8 0 R >>
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 7 0 R >>
 endobj
 7 0 obj
 << /Length 3463 >>
@@ -23,167 +23,167 @@ stream
 BT
 /F2 17 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 738 Tm
 (Relational data modeling) Tj
 /F1 10 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 712 Tm
 (Module 5 - Lesson 1) Tj
 /F2 13 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 691 Tm
 (Overview) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 669 Tm
 (Relational databases organize data into tables with relationships. Good modeling prevents) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 654 Tm
 (duplicates, keeps data consistent, and makes queries simple and fast.) Tj
 /F2 13 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 635 Tm
 (Key Concepts) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 613 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 613 Tm
 (Tables have a primary key \(usually an auto-incrementing id\) that uniquely identifies rows.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 598 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 598 Tm
 (Foreign keys reference rows in other tables and enforce referential integrity.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 583 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 583 Tm
 (One-to-many: one course has many lessons; store the foreign key on the many side.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 568 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 568 Tm
 (Many-to-many needs a join table \(e.g., students_courses\) with two foreign keys.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 553 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 553 Tm
 (Normalize to remove redundancy, but denormalize selectively for performance.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 538 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 538 Tm
 (Index columns you filter or join on; indexes speed reads at the cost of slower writes.) Tj
 /F2 13 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 519 Tm
 (Example) Tj
 q
 0.93 0.94 0.97 rg
-54 NaN 504 150 re f
+54 347 504 150 re f
 Q
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 488 Tm
 (CREATE TABLE courses \() Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 476 Tm
 (  id SERIAL PRIMARY KEY,) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 464 Tm
 (  title TEXT NOT NULL,) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 452 Tm
 (  price NUMERIC\(8,2\)) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 440 Tm
 (\);) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 428 Tm
 (CREATE TABLE lessons \() Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 416 Tm
 (  id SERIAL PRIMARY KEY,) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 404 Tm
 (  course_id INTEGER REFERENCES courses\(id\),) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 392 Tm
 (  title TEXT NOT NULL,) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 380 Tm
 (  position INTEGER) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 368 Tm
 (\);) Tj
 /F2 13 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 340 Tm
 (Summary) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 318 Tm
 (Relational modeling centers on primary keys, foreign keys, and well-defined relationships. A) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 303 Tm
 (normalized schema with the right indexes keeps data consistent and queries fast.) Tj
 /F2 13 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 284 Tm
 (Practice Checklist) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 262 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 262 Tm
 (Model a course with modules, lessons, and students including a join table.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 247 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 247 Tm
 (Draw the relationships and identify which side holds each foreign key.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 232 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 232 Tm
 (Add an index to a column you filter on and explain the trade-off.) Tj
 ET
 endstream

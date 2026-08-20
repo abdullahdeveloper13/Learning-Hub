@@ -91,8 +91,8 @@ const enrollMutation = useEnrollCourse({
     mutation: {
       onSuccess: () => {
         toast({ title: "Enrolled! Let's start learning." });
-        queryClient.invalidateQueries({ queryKey: getGetCourseProgressQueryKey(courseId) });
-        queryClient.invalidateQueries({ queryKey: getGetStudentDashboardQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetCourseProgressQueryKey(courseId), refetchType: 'all' });
+        queryClient.invalidateQueries({ queryKey: getGetStudentDashboardQueryKey(), refetchType: 'all' });
         setLocation(`/learn/${courseId}`);
       },
       onError: (error) => toast({ title: error instanceof Error ? error.message : "Enrollment failed", variant: "destructive" }),
@@ -161,8 +161,8 @@ const enrollMutation = useEnrollCourse({
 
 if (payload.free || payload.freeWithCoupon || payload.status === "paid") {
         toast({ title: "Enrolled! Let's start learning." });
-        queryClient.invalidateQueries({ queryKey: getGetCourseProgressQueryKey(courseId) });
-        queryClient.invalidateQueries({ queryKey: getGetStudentDashboardQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetCourseProgressQueryKey(courseId), refetchType: 'all' });
+        queryClient.invalidateQueries({ queryKey: getGetStudentDashboardQueryKey(), refetchType: 'all' });
         setLocation(`/learn/${courseId}`);
         return;
       }

@@ -3,7 +3,7 @@
 << /Type /Catalog /Pages 2 0 R >>
 endobj
 2 0 obj
-<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+<< /Type /Pages /Kids [6 0 R] /Count 1 >>
 endobj
 3 0 obj
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
@@ -15,7 +15,7 @@ endobj
 << /Type /Font /Subtype /Type1 /BaseFont /Courier >>
 endobj
 6 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R /F2 5 0 R /F3 6 0 R >> >> /Contents 8 0 R >>
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 7 0 R >>
 endobj
 7 0 obj
 << /Length 3455 >>
@@ -23,171 +23,171 @@ stream
 BT
 /F2 17 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 738 Tm
 (Training loops) Tj
 /F1 10 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 712 Tm
 (Module 5 - Lesson 2) Tj
 /F2 13 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 691 Tm
 (Overview) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
-(Training adjusts weights to reduce loss. The loop  forward pass, loss, backward pass, update ) Tj
+1 0 0 1 54 669 Tm
+(Training adjusts weights to reduce loss. The loop - forward pass, loss, backward pass, update -) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 654 Tm
 (repeats over batches until the model converges.) Tj
 /F2 13 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 635 Tm
 (Key Concepts) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 613 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 613 Tm
 (The forward pass computes predictions; the loss measures the error.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 598 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 598 Tm
 (Backpropagation computes gradients of the loss with respect to every weight.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 583 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 583 Tm
 (Gradient descent updates weights opposite to the gradient scaled by a learning rate.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 568 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 568 Tm
 (Stochastic/mini-batch descent updates on subsets for speed and stability.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 553 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 553 Tm
 (The learning rate controls step size: too large diverges, too small crawls.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 538 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 538 Tm
 (Track training and validation loss per epoch to detect under/overfitting.) Tj
 /F2 13 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 519 Tm
 (Example) Tj
 q
 0.93 0.94 0.97 rg
-54 NaN 504 162 re f
+54 335 504 162 re f
 Q
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 488 Tm
 (import torch) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 476 Tm
 () Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 464 Tm
 (optimizer = torch.optim.SGD\(model.parameters\(\), lr=0.01\)) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 452 Tm
 (loss_fn = torch.nn.MSELoss\(\)) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 440 Tm
 () Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 428 Tm
 (for epoch in range\(100\):) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 416 Tm
 (    y_pred = model\(X\)) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 404 Tm
 (    loss = loss_fn\(y_pred, y\)) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 392 Tm
 (    optimizer.zero_grad\(\)) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 380 Tm
 (    loss.backward\(\)) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 368 Tm
 (    optimizer.step\(\)) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 356 Tm
 (    print\(epoch, loss.item\(\)\)) Tj
 /F2 13 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 328 Tm
 (Summary) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 306 Tm
 (The training loop moves weights down the loss landscape. Backpropagation, a tuned learning rate,) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 291 Tm
 (and monitoring both training and validation loss produce a model that generalizes.) Tj
 /F2 13 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 272 Tm
 (Practice Checklist) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 250 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 250 Tm
 (Train a small network and plot loss per epoch.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 235 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 235 Tm
 (Try two learning rates and compare convergence.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 220 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 220 Tm
 (Watch for divergence \(loss exploding\) and fix the learning rate.) Tj
 ET
 endstream

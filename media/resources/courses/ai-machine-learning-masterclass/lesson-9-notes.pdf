@@ -3,7 +3,7 @@
 << /Type /Catalog /Pages 2 0 R >>
 endobj
 2 0 obj
-<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+<< /Type /Pages /Kids [6 0 R] /Count 1 >>
 endobj
 3 0 obj
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
@@ -15,7 +15,7 @@ endobj
 << /Type /Font /Subtype /Type1 /BaseFont /Courier >>
 endobj
 6 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R /F2 5 0 R /F3 6 0 R >> >> /Contents 8 0 R >>
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 7 0 R >>
 endobj
 7 0 obj
 << /Length 3099 >>
@@ -23,147 +23,147 @@ stream
 BT
 /F2 17 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 738 Tm
 (Feature engineering) Tj
 /F1 10 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 712 Tm
 (Module 3 - Lesson 3) Tj
 /F2 13 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 691 Tm
 (Overview) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 669 Tm
 (Features are the inputs a model learns from. Feature engineering transforms raw data into) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 654 Tm
 (predictors that make patterns easy to learn.) Tj
 /F2 13 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 635 Tm
 (Key Concepts) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 613 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 613 Tm
 (Clean features matter more than clever algorithms; good features beat bigger models.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 598 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 598 Tm
 (Create derived features: ratios, differences, aggregations, and date parts.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 583 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 583 Tm
 (Encode categorical data with one-hot encoding or label encoding.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 568 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 568 Tm
 (Scale numeric features for distance-based models with StandardScaler.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 553 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 553 Tm
 (Missing values become features: a missing flag can itself be predictive.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 538 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 538 Tm
 (Select features by importance and domain knowledge; remove noise.) Tj
 /F2 13 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 519 Tm
 (Example) Tj
 q
 0.93 0.94 0.97 rg
-54 NaN 504 78 re f
+54 419 504 78 re f
 Q
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 488 Tm
 (df["revenue_per_hour"] = df["revenue"] / df["hours"]) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 476 Tm
 (df["signup_weekday"] = df["signup_date"].dt.dayofweek) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 464 Tm
 (df["is_weekend"] = df["signup_weekday"].isin\([5, 6]\).astype\(int\)) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 452 Tm
 () Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 440 Tm
 (df = pd.get_dummies\(df, columns=["plan"], prefix="plan"\)) Tj
 /F2 13 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 412 Tm
 (Summary) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 390 Tm
 (Feature engineering converts raw data into learnable predictors. Derived ratios, proper) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 375 Tm
 (encoding, scaling, and informative missing-value flags often improve models more than algorithm) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 360 Tm
 (choice.) Tj
 /F2 13 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 341 Tm
 (Practice Checklist) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 319 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 319 Tm
 (Create three derived features from a dataset and justify each.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 304 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 304 Tm
 (One-hot encode a categorical column and inspect the result.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 289 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 289 Tm
 (Compare model performance with and without your new features.) Tj
 ET
 endstream

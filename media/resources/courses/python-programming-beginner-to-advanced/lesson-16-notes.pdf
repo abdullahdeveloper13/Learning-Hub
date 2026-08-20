@@ -3,7 +3,7 @@
 << /Type /Catalog /Pages 2 0 R >>
 endobj
 2 0 obj
-<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+<< /Type /Pages /Kids [6 0 R] /Count 1 >>
 endobj
 3 0 obj
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
@@ -15,7 +15,7 @@ endobj
 << /Type /Font /Subtype /Type1 /BaseFont /Courier >>
 endobj
 6 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R /F2 5 0 R /F3 6 0 R >> >> /Contents 8 0 R >>
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 7 0 R >>
 endobj
 7 0 obj
 << /Length 3102 >>
@@ -23,155 +23,155 @@ stream
 BT
 /F2 17 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 738 Tm
 (Automation script project) Tj
 /F1 10 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 712 Tm
 (Module 6 - Lesson 1) Tj
 /F2 13 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 691 Tm
 (Overview) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 669 Tm
 (Automation scripts replace repetitive manual work. A well-structured script takes inputs,) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 654 Tm
 (performs a task, and reports results clearly.) Tj
 /F2 13 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 635 Tm
 (Key Concepts) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 613 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 613 Tm
 (Start from a real pain point: what do you do by hand more than once?) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 598 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 598 Tm
 (Accept inputs via arguments \(argparse or sys.argv\) and configuration files.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 583 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 583 Tm
 (Validate inputs and fail with clear messages early.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 568 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 568 Tm
 (Structure the script with small functions: parse, process, output.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 553 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 553 Tm
 (Log progress so a long run is auditable.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 538 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 538 Tm
 (Handle partial failure: process what works, report what failed.) Tj
 /F2 13 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 519 Tm
 (Example) Tj
 q
 0.93 0.94 0.97 rg
-54 NaN 504 114 re f
+54 383 504 114 re f
 Q
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 488 Tm
 (import argparse) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 476 Tm
 () Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 464 Tm
 (parser = argparse.ArgumentParser\(description="Rename files by pattern"\)) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 452 Tm
 (parser.add_argument\("pattern"\)) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 440 Tm
 (parser.add_argument\("--dry-run", action="store_true"\)) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 428 Tm
 (args = parser.parse_args\(\)) Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 416 Tm
 () Tj
 /F3 9.5 Tf
 0.1 0.25 0.45 rg
-1 0 0 1 64 NaN Tm
+1 0 0 1 64 404 Tm
 (# with args.pattern and args.dry_run, walk files and rename) Tj
 /F2 13 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 376 Tm
 (Summary) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 354 Tm
 (An automation script turns repeated manual steps into one command. Clear input handling, small) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 339 Tm
 (functions, and logging keep it robust for daily use.) Tj
 /F2 13 Tf
 0.1 0.2 0.45 rg
-1 0 0 1 54 NaN Tm
+1 0 0 1 54 320 Tm
 (Practice Checklist) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 298 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 298 Tm
 (Identify a repetitive task and script it end to end.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 283 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 283 Tm
 (Add a --dry-run flag that prints what would happen.) Tj
 /F2 11 Tf
 0.2 0.35 0.6 rg
-1 0 0 1 54 NaN Tm
-(") Tj
+1 0 0 1 54 268 Tm
+(-) Tj
 /F1 11 Tf
 0.15 0.15 0.18 rg
-1 0 0 1 68 NaN Tm
+1 0 0 1 68 268 Tm
 (Write a test for the core processing function.) Tj
 ET
 endstream

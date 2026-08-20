@@ -378,7 +378,7 @@ export const notesContent = {
       ],
     },
     {
-      title: "Production monitoring",
+      title: "Production monitoring checklist",
       overview:
         "Once deployed, you need visibility. Logging, structured errors, health checks, and alerting tell you what broke before users complain.",
       concepts: [
@@ -490,7 +490,7 @@ export const notesContent = {
       ],
     },
     {
-      title: "Lists, dicts, sets, and tuples",
+      title: "Lists, dictionaries, sets, and tuples",
       overview:
         "Collections hold many values. Choosing the right container is a design decision: lists are ordered, dicts map keys to values, sets store unique items, and tuples are fixed.",
       concepts: [
@@ -644,7 +644,7 @@ export const notesContent = {
       ],
     },
     {
-      title: "SQLite and PostgreSQL",
+      title: "SQLite and PostgreSQL basics",
       overview:
         "Databases store data durably. SQLite is a file-based database for small apps; PostgreSQL is a full server for production. Both speak SQL and integrate with Python.",
       concepts: [

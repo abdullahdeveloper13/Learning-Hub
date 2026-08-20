@@ -1,6 +1,18 @@
 // Minimal dependency-free PDF generator producing valid single/multi-page PDFs
 // with headings, wrapped paragraphs, bullet lists, and monospace code blocks.
 
+function normalizeAscii(text) {
+  return String(text)
+    .replace(/\u2014/g, "-")
+    .replace(/\u2013/g, "-")
+    .replace(/\u2022/g, "-")
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
+    .replace(/\u2026/g, "...")
+    .replace(/\u00A0/g, " ")
+    .replace(/[^\x00-\x7F]/g, "?");
+}
+
 class SimplePdf {
   constructor({ title = "Lecture Notes", pageWidth = 612, pageHeight = 792 } = {}) {
     this.pageWidth = pageWidth;
@@ -136,25 +148,24 @@ class SimplePdf {
     this.pages.push(this.page);
     const objects = [];
     objects.push({ data: "<< /Type /Catalog /Pages 2 0 R >>" });
-    const kids = this.pages.map((_, i) => `${3 + i} 0 R`).join(" ");
+
+    // Object layout: 1 Catalog, 2 Pages, 3 Helvetica, 4 Helvetica-Bold,
+    // 5 Courier, then for each page i: page dict at 6 + 2*i, content stream at 7 + 2*i.
+    const kids = this.pages.map((_, i) => `${6 + 2 * i} 0 R`).join(" ");
     objects.push({
       data: `<< /Type /Pages /Kids [${kids}] /Count ${this.pages.length} >>`,
     });
 
-    const fontId = 3 + this.pages.length;
-    const fontIdBold = fontId + 1;
-    const fontIdMono = fontId + 2;
     objects.push({ data: "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>" });
     objects.push({ data: "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>" });
     objects.push({ data: "<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>" });
 
-    let objNum = fontIdMono + 1;
-    this.pages.forEach((page) => {
+    this.pages.forEach((page, p) => {
       // content stream
       let stream = "BT\n";
       for (const item of page.content) {
         if (item.type === "rect") {
-          stream += `q\n${item.color.join(" ")} rg\n${item.x} ${page.pageHeight - item.y - item.h} ${item.w} ${item.h} re f\nQ\n`;
+          stream += `q\n${item.color.join(" ")} rg\n${item.x} ${this.pageHeight - item.y - item.h} ${item.w} ${item.h} re f\nQ\n`;
         } else {
           const font = item.mono
             ? `/F3`
@@ -163,19 +174,18 @@ class SimplePdf {
               : `/F1`;
           const color = item.color.join(" ");
           stream += `${font} ${item.size} Tf\n${color} rg\n`;
-          const escaped = String(item.text).replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)");
-          stream += `1 0 0 1 ${item.x} ${page.pageHeight - item.y} Tm\n(${escaped}) Tj\n`;
+          const escaped = normalizeAscii(item.text).replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)");
+          stream += `1 0 0 1 ${item.x} ${this.pageHeight - item.y} Tm\n(${escaped}) Tj\n`;
         }
       }
       stream += "ET";
 
       objects.push({
-        data: `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${this.pageWidth} ${this.pageHeight}] /Resources << /Font << /F1 ${fontId} 0 R /F2 ${fontIdBold} 0 R /F3 ${fontIdMono} 0 R >> >> /Contents ${objNum + 1} 0 R >>`,
+        data: `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${this.pageWidth} ${this.pageHeight}] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents ${7 + 2 * p} 0 R >>`,
       });
       objects.push({
         data: `<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`,
       });
-      objNum += 2;
     });
 
     let pdf = "%PDF-1.4\n";

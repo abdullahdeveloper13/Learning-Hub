@@ -39,6 +39,18 @@ function getYouTubeEmbedUrl(url: string): string {
   return match ? `https://www.youtube.com/embed/${match[1]}` : url;
 }
 
+function isNotesFile(f: any): boolean {
+  return /notes/i.test(f?.name || "") || /-notes\.pdf/i.test(f?.url || "");
+}
+
+function lessonNotes(l: any): any[] {
+  return (l?.downloadableFiles || []).filter(isNotesFile);
+}
+
+function otherDownloads(l: any): any[] {
+  return (l?.downloadableFiles || []).filter((f: any) => !isNotesFile(f));
+}
+
 // ── Quiz Player (inline) ────────────────────────────────────────────────────
 function InlineQuizPlayer({ lesson, courseId, onComplete }: { lesson: any; courseId: number; onComplete: () => void }) {
   const { toast } = useToast();
@@ -563,22 +575,57 @@ export default function LessonPlayer() {
             <div className="p-6 md:p-10 max-w-4xl">
               <h1 className="text-2xl font-bold font-serif mb-4">{l.title}</h1>
               {l.content && <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{l.content}</p>}
-              {l.downloadableFiles?.length > 0 && (
-                <div className="mt-6 space-y-2">
-                  <p className="text-sm font-medium">Downloads</p>
-                  {l.downloadableFiles.map((f: any, i: number) => (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => downloadMedia(f.url, f.name)}
-                      className="flex items-center gap-2 p-2.5 border rounded-lg hover:bg-muted/50 text-sm transition-colors group w-full text-left"
-                    >
-                      <Download className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0" />
-                      <span className="flex-1 truncate">{f.name}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
+              {(() => {
+                const notes = lessonNotes(l);
+                const others = otherDownloads(l);
+                return (
+                  <>
+                    {notes.length > 0 && (
+                      <div className="mt-8 space-y-3">
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                          <div className="flex items-center gap-2">
+                            <FileText className="w-4 h-4 text-primary" />
+                            <h2 className="font-semibold font-serif text-lg">Lesson Notes</h2>
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="gap-1.5"
+                            onClick={() => downloadMedia(notes[0].url, notes[0].name)}
+                          >
+                            <Download className="w-3.5 h-3.5" /> Download Notes
+                          </Button>
+                        </div>
+                        <div className="rounded-xl border overflow-hidden bg-card">
+                          <div className="h-[420px]">
+                            <iframe
+                              src={resolveMediaUrl(notes[0].url)}
+                              className="w-full h-full"
+                              title={`${l.title} notes`}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {others.length > 0 && (
+                      <div className="mt-6 space-y-2">
+                        <p className="text-sm font-medium">Downloads</p>
+                        {others.map((f: any, i: number) => (
+                          <button
+                            key={i}
+                            type="button"
+                            onClick={() => downloadMedia(f.url, f.name)}
+                            className="flex items-center gap-2 p-2.5 border rounded-lg hover:bg-muted/50 text-sm transition-colors group w-full text-left"
+                          >
+                            <Download className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0" />
+                            <span className="flex-1 truncate">{f.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
             </div>
           </div>
         );

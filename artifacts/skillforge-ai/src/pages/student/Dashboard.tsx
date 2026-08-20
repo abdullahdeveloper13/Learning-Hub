@@ -42,7 +42,9 @@ function paymentApiBase() {
 export default function Dashboard() {
   const { data: dashboard, isLoading } = useGetStudentDashboard({
     query: {
-      queryKey: getGetStudentDashboardQueryKey()
+      queryKey: getGetStudentDashboardQueryKey(),
+      refetchOnMount: 'always',
+      staleTime: 0,
     }
   });
   const { token } = useAuth();
