@@ -16,7 +16,7 @@ run = "pnpm --filter @workspace/skillforge-ai run dev"
 [services.production]
 build = [ "pnpm", "--filter", "@workspace/skillforge-ai", "run", "build" ]
 serve = "static"
-publicDir = "artifacts/skillforge-ai/dist/public"
+publicDir = "dist"
 
 [[services.production.rewrites]]
 from = "/*"

@@ -41,7 +41,7 @@ const mediaRootPath = path.resolve(import.meta.dirname, "../../../media");
 app.use("/media", express.static(mediaRootPath, { fallthrough: true }));
 app.use("/resources", express.static(path.join(mediaRootPath, "resources"), { fallthrough: true }));
 
-const frontendDistPath = path.resolve(import.meta.dirname, "../../skillforge-ai/dist/public");
+const frontendDistPath = path.resolve(import.meta.dirname, "../../../dist");
 const frontendIndexPath = path.join(frontendDistPath, "index.html");
 
 if (fs.existsSync(frontendIndexPath)) {

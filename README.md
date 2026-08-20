@@ -181,7 +181,7 @@ Start the API server:
 pnpm --filter @workspace/api-server run start
 ```
 
-When the frontend has been built, the API server serves `artifacts/skillforge-ai/dist/public` as a static single-page app.
+When the frontend has been built, the API server serves the repo-root `dist` folder as a static single-page app.
 
 ## Docker
 

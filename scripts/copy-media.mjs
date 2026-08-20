@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const mediaSource = path.join(repoRoot, "media");
-const distPublic = path.resolve(repoRoot, "artifacts/skillforge-ai/dist/public");
+const distPublic = path.resolve(repoRoot, "dist");
 
 function copyDir(src, dest) {
   if (!fs.existsSync(src)) {

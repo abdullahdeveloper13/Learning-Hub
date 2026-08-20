@@ -1,8 +1,7 @@
 {
   "installCommand": "pnpm install --frozen-lockfile",
   "buildCommand": "pnpm --filter @workspace/skillforge-ai run build",
-  "outputDirectory": "artifacts/skillforge-ai/dist/public",
-  "framework": "vite",
+  "outputDirectory": "dist",
   "rewrites": [
     {
       "source": "/((?!media|resources|api|assets|images|favicon\\.svg|robots\\.txt).*)",
