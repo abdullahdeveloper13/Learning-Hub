@@ -4,7 +4,12 @@ import { fileURLToPath } from "node:url";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const mediaSource = path.join(repoRoot, "media");
-const distPublic = path.resolve(repoRoot, "dist");
+// Destination defaults to the repo-root dist/ (used when the API serves the
+// built frontend), or the first CLI argument, relative to the current working
+// directory (e.g. `node ../../scripts/copy-media.mjs dist` from a workspace).
+const distPublic = process.argv[2]
+  ? path.resolve(process.argv[2])
+  : path.resolve(repoRoot, "dist");
 
 function copyDir(src, dest) {
   if (!fs.existsSync(src)) {
