@@ -9,6 +9,8 @@ import { logger } from "./lib/logger";
 
 const app: Express = express();
 
+const allowedOrigins = getAllowedOrigins();
+
 app.use(
   pinoHttp({
     logger,
@@ -29,7 +31,18 @@ app.use(
     },
   }),
 );
-app.use(cors());
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || allowedOrigins === "*") {
+        callback(null, true);
+        return;
+      }
+
+      callback(null, allowedOrigins.has(origin));
+    },
+  }),
+);
 app.use("/api/storage/uploads", express.raw({ type: "*/*", limit: "2gb" }));
 app.use("/api/payments/webhook/stripe", express.raw({ type: "application/json", limit: "2mb" }));
 app.use(express.json());
@@ -59,3 +72,24 @@ app.use((err: unknown, req: express.Request, res: express.Response, _next: expre
 });
 
 export default app;
+
+function getAllowedOrigins() {
+  const configured = [
+    process.env["CORS_ORIGINS"],
+    process.env["PUBLIC_APP_URL"],
+    process.env["FRONTEND_URL"],
+  ]
+    .filter(Boolean)
+    .flatMap((value) => value!.split(","))
+    .map((value) => value.trim().replace(/\/$/, ""))
+    .filter(Boolean);
+
+  if (configured.includes("*")) return "*";
+
+  const defaults =
+    process.env.NODE_ENV === "production"
+      ? []
+      : ["http://localhost:5173", "http://127.0.0.1:5173"];
+
+  return new Set([...configured, ...defaults]);
+}

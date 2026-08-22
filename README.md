@@ -79,6 +79,7 @@ pnpm run db:diagnose
 - `VITE_API_URL`: browser API base URL.
 - `PUBLIC_APP_URL`: public frontend URL used in emails and redirects.
 - `API_PUBLIC_URL`: public API URL used for OAuth callback URLs.
+- `CORS_ORIGINS`: comma-separated browser origins allowed to call the API.
 - `JWT_SECRET`: signs API session tokens.
 - `DATABASE_URL`: PostgreSQL connection string.
 - `SUPABASE_URL`: Supabase project URL for REST/storage fallback.
